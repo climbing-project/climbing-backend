@@ -1,0 +1,4 @@
+spring:
+  datasource:
+    driverClassName: org.
+    url: jdbc:h2:~/database
