@@ -1,1 +1,4 @@
-build
+build/
+### Intellij Settings ###
+.gradle
+.idea
