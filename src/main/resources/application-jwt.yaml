@@ -1,0 +1,12 @@
+jwt:
+  secretKey: 6719fb957c154661498bbe8ee5f9b301585ae89526f4f40f8d810182b01b5076
+
+  access:
+    expiration: 3600000 #1시간
+    header: Authorization
+
+  refresh:
+    expiration: 1209600000 # 2주
+    header: Authorization-refresh
+
+
