@@ -1,15 +1,24 @@
 package com.climbing.api.controller;
 
+import com.climbing.domain.member.MemberDTO;
 import com.climbing.domain.member.MemberService;
-import org.springframework.stereotype.Controller;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequestMapping("/member")
+@RequiredArgsConstructor
 public class MemberController {
-    private MemberService memberService;
 
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
+    private final MemberService memberService;
+
+    @PostMapping("/sign-up")
+    public String signU(@RequestBody MemberDTO memberDTO) throws Exception {
+        memberService.signUp(memberDTO);
+        return "sign-up success";
     }
+
 }
