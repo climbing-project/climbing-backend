@@ -1,14 +1,13 @@
 package com.climbing.api.controller;
 
+import com.climbing.api.command.PostGymCommand;
+import com.climbing.api.request.PostGymRequest;
 import com.climbing.api.response.GetGymResponse;
 import com.climbing.api.response.GetSimpleGymResponse;
+import com.climbing.api.response.PostGymResponse;
 import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.GymService;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,5 +36,12 @@ public class GymController {
         } catch (GymNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @PostMapping
+    public PostGymResponse postGym(@RequestBody PostGymRequest request) {
+        PostGymCommand command = request.toCommand();
+        Long gymId = gymService.createGym(command);
+        return PostGymResponse.from(gymId);
     }
 }

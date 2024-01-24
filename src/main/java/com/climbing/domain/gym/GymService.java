@@ -1,5 +1,6 @@
 package com.climbing.domain.gym;
 
+import com.climbing.api.command.PostGymCommand;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,5 +26,10 @@ public class GymService {
         if(optionalGym.isEmpty())
             throw new GymNotFoundException();
         return optionalGym.get();
+    }
+
+    public Long createGym(PostGymCommand command) {
+        Gym gym = Gym.of(null, command.getName(), command.getAddress());
+        return gymRepository.save(gym).getId();
     }
 }
