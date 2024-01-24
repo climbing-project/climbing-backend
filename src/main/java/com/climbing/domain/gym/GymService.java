@@ -32,4 +32,10 @@ public class GymService {
         Gym gym = Gym.of(null, command.getName(), command.getAddress());
         return gymRepository.save(gym).getId();
     }
+
+    public void deleteGym(Long gymId) throws GymNotFoundException {
+        if(!gymRepository.existsById(gymId))
+            throw new GymNotFoundException();
+        gymRepository.deleteById(gymId);
+    }
 }

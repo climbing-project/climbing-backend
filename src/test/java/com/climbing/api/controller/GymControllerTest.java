@@ -1,6 +1,7 @@
 package com.climbing.api.controller;
 
 import com.climbing.domain.gym.Gym;
+import com.climbing.domain.gym.GymException;
 import com.climbing.domain.gym.GymService;
 import com.climbing.util.JsonUtil;
 import org.junit.jupiter.api.Test;
@@ -21,14 +22,18 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class GymControllerTest {
+
+    static String BASE_ENDPOINT = "/gyms";
+
     @Autowired
     MockMvc mockMvc;
 
@@ -45,7 +50,7 @@ class GymControllerTest {
         }
         given(gymService.findGymList()).willReturn(gyms);
 
-        ResultActions result = mockMvc.perform(get("/gyms"));
+        ResultActions result = mockMvc.perform(get(BASE_ENDPOINT));
 
         result.andExpect(jsonPath("$", hasSize(length)));
     }
@@ -59,7 +64,7 @@ class GymControllerTest {
 
         given(gymService.findGym(anyLong())).willReturn(gym);
 
-        ResultActions result = mockMvc.perform(get("/gyms/" + id));
+        ResultActions result = mockMvc.perform(get(BASE_ENDPOINT + "/" + id));
 
         result.andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value(name))
@@ -78,9 +83,19 @@ class GymControllerTest {
         given(gymService.createGym(any())).willReturn(id);
 
         mockMvc.perform(
-                        post("/gyms")
+                        post(BASE_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content))
                 .andExpect(jsonPath("$.id").value(id));
+    }
+
+    @Test
+    void deleteGym() throws Exception {
+        long id = 2L;
+
+        doThrow(GymException.GymNotFoundException.class).when(gymService).deleteGym(anyLong());
+
+        mockMvc.perform(delete(BASE_ENDPOINT + "/" + id))
+                .andExpect(status().isBadRequest());
     }
 }
