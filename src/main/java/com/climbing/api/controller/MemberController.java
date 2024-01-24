@@ -16,7 +16,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/sign-up")
-    public String signU(@RequestBody MemberDTO memberDTO) throws Exception {
+    public String signUp(@RequestBody MemberDTO memberDTO) throws Exception {
         memberService.signUp(memberDTO);
         return "sign-up success";
     }
