@@ -24,6 +24,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.auth0:java-jwt:4.2.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
 
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1")
 
