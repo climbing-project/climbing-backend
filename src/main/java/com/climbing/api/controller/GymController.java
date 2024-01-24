@@ -2,6 +2,7 @@ package com.climbing.api.controller;
 
 import com.climbing.api.command.PostGymCommand;
 import com.climbing.api.request.PostGymRequest;
+import com.climbing.api.response.DeleteGymResponse;
 import com.climbing.api.response.GetGymResponse;
 import com.climbing.api.response.GetSimpleGymResponse;
 import com.climbing.api.response.PostGymResponse;
@@ -44,4 +45,9 @@ public class GymController {
         Long gymId = gymService.createGym(command);
         return PostGymResponse.from(gymId);
     }
+
+//    @DeleteMapping("/{gymId}")
+//    public DeleteGymResponse deleteGym() {
+//
+//    }
 }
