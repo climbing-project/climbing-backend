@@ -1,4 +1,4 @@
-package com.climbing.climbingbackend;
+package com.climbing;
 
 import com.climbing.domain.gym.GymService;
 import org.junit.jupiter.api.Test;

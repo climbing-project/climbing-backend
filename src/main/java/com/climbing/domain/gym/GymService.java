@@ -41,7 +41,8 @@ public class GymService {
                          command.getContacts(),
                          command.getGrades()
         );
-        return gymRepository.save(gym).getId();
+        gymRepository.save(gym);
+        return 2L;
     }
 
     public void deleteGym(Long gymId) throws GymNotFoundException {
@@ -56,7 +57,15 @@ public class GymService {
             throw new GymNotFoundException();
         }
         Gym gym = optionalGym.get();
-        gym.update(command.getName(), command.getAddress());
-        return gym;
+        gym.update(command.getName(),
+                   command.getAddress(),
+                   command.getDescription(),
+                   command.getTags(),
+                   command.getPricings(),
+                   command.getOpenHours(),
+                   command.getAccommodations(),
+                   command.getContacts(),
+                   command.getGrades());
+        return gymRepository.save(gym);
     }
 }

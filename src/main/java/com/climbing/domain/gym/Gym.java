@@ -43,7 +43,7 @@ public class Gym {
 //    @Getter
 //    private Member member;
 
-    public static Gym of(String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grade) {
+    public static Gym of(String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grades) {
         return Gym.builder()
                 .id(null)
                 .name(name)
@@ -54,12 +54,19 @@ public class Gym {
                 .openHours(openHours)
                 .accommodations(accommodations)
                 .contacts(contacts)
-                .grades(grade)
+                .grades(grades)
                 .build();
     }
 
-    public void update(String name, String address) {
+    public void update(String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grades) {
         this.name = name;
         this.address = address;
+        this.description = description;
+        this.tags = tags;
+        this.pricings = pricings;
+        this.openHours = openHours;
+        this.accommodations = accommodations;
+        this.contacts = contacts;
+        this.grades = grades;
     }
 }
