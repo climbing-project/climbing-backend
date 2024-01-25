@@ -1,8 +1,8 @@
 package com.climbing.api.request;
 
-import com.climbing.api.command.PostGymCommand;
+import com.climbing.api.command.UpdateGymCommand;
 
-public class PostGymRequest {
+public class UpdateGymRequest {
     private String name;
     private String address;
     private String description;
@@ -13,7 +13,7 @@ public class PostGymRequest {
     private String contacts;
     private String grades;
 
-    public PostGymCommand toCommand() {
-        return new PostGymCommand(name, address, description, tags, pricings, openHours, accommodations, contacts, grades);
+    public UpdateGymCommand toCommand(Long gymId) {
+        return new UpdateGymCommand(gymId, name, address, description, tags, pricings, openHours, accommodations, contacts, grades);
     }
 }

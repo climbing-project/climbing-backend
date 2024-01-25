@@ -2,7 +2,9 @@ package com.climbing.api.command;
 
 import lombok.Getter;
 
-public class PostGymCommand {
+public class UpdateGymCommand {
+    @Getter
+    private Long id;
     @Getter
     private String name;
     @Getter
@@ -22,8 +24,8 @@ public class PostGymCommand {
     @Getter
     private String grades;
 
-
-    public PostGymCommand(String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grades) {
+    public UpdateGymCommand(Long id, String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grades) {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.description = description;

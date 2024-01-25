@@ -14,7 +14,7 @@ public class GetSimpleGymResponse {
     @Getter
     private final String address;
 
-    public GetSimpleGymResponse(Long id, String name, String address) {
+    private GetSimpleGymResponse(Long id, String name, String address) {
         this.id = id;
         this.name = name;
         this.address = address;

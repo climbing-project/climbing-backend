@@ -1,11 +1,10 @@
 package com.climbing.api.controller;
 
 import com.climbing.api.command.PostGymCommand;
+import com.climbing.api.command.UpdateGymCommand;
 import com.climbing.api.request.PostGymRequest;
-import com.climbing.api.response.GetGymResponse;
-import com.climbing.api.response.GetSimpleGymResponse;
-import com.climbing.api.response.PostGymResponse;
-import com.climbing.api.response.Responsible;
+import com.climbing.api.request.UpdateGymRequest;
+import com.climbing.api.response.*;
 import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.GymService;
 import org.springframework.http.HttpStatus;
@@ -53,6 +52,18 @@ public class GymController {
         try {
             gymService.deleteGym(gymId);
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (GymNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/{gymId}")
+    public ResponseEntity<UpdateGymResponse> updateGym(@PathVariable(value = "gymId") Long gymId,
+                                                       @RequestBody UpdateGymRequest request) {
+        UpdateGymCommand command = request.toCommand(gymId);
+        try {
+            Gym gym = gymService.updateGym(command);
+            return new ResponseEntity<>(UpdateGymResponse.from(gym), HttpStatus.OK);
         } catch (GymNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
