@@ -27,17 +27,17 @@ public class MemberController {
         return "sign-up success";
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
     public void updateMemberInfo(@Valid @RequestBody MemberUpdateDto memberUpdateDto) throws Exception {
-        String nickName = GetLoginMember.getLoginMemberNickname();
-        memberService.update(memberUpdateDto, nickName);
+        String email = GetLoginMember.getLoginMemberEmail();
+        memberService.update(memberUpdateDto, email);
     }
 
-    @PostMapping("/password")
+    @PutMapping("/password")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
-        memberService.updatePassword(updatePasswordDto.beforePassword(), updatePasswordDto.afterPassword(), GetLoginMember.getLoginMemberNickname());
+        memberService.updatePassword(updatePasswordDto.beforePassword(), updatePasswordDto.afterPassword(), GetLoginMember.getLoginMemberEmail());
 
     }
 
@@ -47,7 +47,7 @@ public class MemberController {
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
     public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
-        memberService.withdraw(memberWithdrawDto.checkPassword(), GetLoginMember.getLoginMemberNickname());
+        memberService.withdraw(memberWithdrawDto.checkPassword(), GetLoginMember.getLoginMemberEmail());
     }
 
     @GetMapping("/{id}")
