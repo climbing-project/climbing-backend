@@ -1,7 +1,6 @@
 package com.climbing.api.response;
 
 import com.climbing.domain.gym.Gym;
-import jakarta.persistence.Id;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,15 +8,13 @@ import java.util.stream.Collectors;
 
 public class GetSimpleGymResponse {
     @Getter
-    private Long id;
-
+    private final Long id;
     @Getter
-    private String name;
-
+    private final String name;
     @Getter
-    private String address;
+    private final String address;
 
-    public GetSimpleGymResponse(Long id, String name, String address) {
+    private GetSimpleGymResponse(Long id, String name, String address) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -29,6 +26,5 @@ public class GetSimpleGymResponse {
                                                      gym.getName(),
                                                      gym.getAddress()))
                 .collect(Collectors.toList());
-
     }
 }
