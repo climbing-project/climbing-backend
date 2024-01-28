@@ -1,8 +1,6 @@
-package com.climbing.climbingbackend.domain.member;
+package com.climbing.domain.member;
 
-import com.climbing.domain.member.Member;
-import com.climbing.domain.member.MemberRepository;
-import com.climbing.domain.member.Role;
+import com.climbing.domain.member.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -71,6 +69,22 @@ class MemberRepositoryTest {
         assertThat(memberRepository.findByEmail(email).get().getNickname()).isEqualTo(member.getNickname());
         assertThrows(Exception.class,
                 () -> memberRepository.findByEmail("12345@1234.com").orElseThrow(Exception::new));
+    }
+
+    @Test
+    @DisplayName("회원 삭제")
+    public void deleteMember() throws Exception {
+        //given
+        Member member = Member.builder().email("1234@1234.com").password("12341234").nickname("tiger").role(Role.USER).build();
+        memberRepository.save(member);
+        em.clear();
+
+        //when
+        memberRepository.delete(member);
+
+
+        //then
+        assertThrows(Exception.class, () -> memberRepository.findById(member.getId()).orElseThrow(Exception::new));
     }
 
 }

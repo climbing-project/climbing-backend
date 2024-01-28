@@ -20,7 +20,13 @@ spring:
         use_sql_comments: true
 
   profiles:
-    include: jwt
+    active: local
+    include:
+      - jwt
+      - oauth
+  thymeleaf:
+    prefix: /templates/
+    suffix: .html
 
 logging:
   level:
@@ -31,5 +37,4 @@ logging:
 
       hibernate:
         SQL: debug
-
 
