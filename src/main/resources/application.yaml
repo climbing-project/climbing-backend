@@ -24,9 +24,6 @@ spring:
     include:
       - jwt
       - oauth
-  thymeleaf:
-    prefix: /templates/
-    suffix: .html
 
 logging:
   level:
