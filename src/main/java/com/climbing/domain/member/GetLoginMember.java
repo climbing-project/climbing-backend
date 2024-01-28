@@ -1,12 +1,12 @@
 package com.climbing.domain.member;
 
-import com.climbing.domain.member.dto.MemberDto;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class GetLoginMember {
-    public static String getLoginMemberNickname() {
+    public static String getLoginMemberEmail() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = (Member) principal;
-        return new MemberDto(member).getNickname();
+        UserDetails userDetails = (UserDetails) principal;
+        return ((UserDetails) principal).getUsername();
     }
 }
