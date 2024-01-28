@@ -1,4 +1,4 @@
-package com.climbing.global.login;
+package com.climbing.global.login.handler;
 
 import com.climbing.domain.member.repository.MemberRepository;
 import com.climbing.global.jwt.JwtService;
