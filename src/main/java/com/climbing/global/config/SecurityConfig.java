@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/", "/h2-console/**", "/member/**").permitAll()
+                                .requestMatchers("/", "/h2-console/**", "/member/**", "/gyms/**").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2Login((oauth2Login) ->
                         oauth2Login
