@@ -29,6 +29,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
                 response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
                 response.sendRedirect("/member/oauth2/sign-up");
+                //TODO : 프론트로 리다이렉트 보낼시 accessToken이 헤더에 추가되지 않으므로 쿼리 파라미터에 담아서 리다이렉트 URL 제작과정 추가
                 jwtService.sendAccessTokenAndRefreshToken(response, accessToken, null);
             } else {
                 loginSuccess(response, oAuth2User);
