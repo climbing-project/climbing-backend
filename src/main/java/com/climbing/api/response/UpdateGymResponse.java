@@ -3,7 +3,7 @@ package com.climbing.api.response;
 import com.climbing.domain.gym.Gym;
 import lombok.Getter;
 
-public class GetGymResponse {
+public class UpdateGymResponse {
     @Getter
     private String name;
     @Getter
@@ -23,7 +23,7 @@ public class GetGymResponse {
     @Getter
     private String grades;
 
-    private GetGymResponse(String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grades) {
+    private UpdateGymResponse(String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grades) {
         this.name = name;
         this.address = address;
         this.description = description;
@@ -35,15 +35,15 @@ public class GetGymResponse {
         this.grades = grades;
     }
 
-    public static GetGymResponse from(Gym gym) {
-        return new GetGymResponse(gym.getName(),
-                                  gym.getAddress(),
-                                  gym.getDescription(),
-                                  gym.getTags(),
-                                  gym.getPricings(),
-                                  gym.getOpenHours(),
-                                  gym.getAccommodations(),
-                                  gym.getContacts(),
-                                  gym.getGrades());
+    public static UpdateGymResponse from(Gym gym) {
+        return new UpdateGymResponse(gym.getName(),
+                                     gym.getAddress(),
+                                     gym.getDescription(),
+                                     gym.getTags(),
+                                     gym.getPricings(),
+                                     gym.getOpenHours(),
+                                     gym.getAccommodations(),
+                                     gym.getContacts(),
+                                     gym.getGrades());
     }
 }

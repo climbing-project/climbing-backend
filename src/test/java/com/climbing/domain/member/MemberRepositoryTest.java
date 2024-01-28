@@ -1,8 +1,5 @@
-package com.climbing.climbingbackend.domain.member;
+package com.climbing.domain.member;
 
-import com.climbing.domain.member.Member;
-import com.climbing.domain.member.MemberRepository;
-import com.climbing.domain.member.Role;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -70,7 +67,7 @@ class MemberRepositoryTest {
         assertThat(memberRepository.findByEmail(email).get().getEmail()).isEqualTo(member.getEmail());
         assertThat(memberRepository.findByEmail(email).get().getNickname()).isEqualTo(member.getNickname());
         assertThrows(Exception.class,
-                () -> memberRepository.findByEmail("12345@1234.com").orElseThrow(Exception::new));
+                     () -> memberRepository.findByEmail("12345@1234.com").orElseThrow(Exception::new));
     }
 
 }

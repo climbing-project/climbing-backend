@@ -1,14 +1,15 @@
 package com.climbing.api.controller;
 
-import com.climbing.api.response.GetGymResponse;
-import com.climbing.api.response.GetSimpleGymResponse;
+import com.climbing.api.command.PostGymCommand;
+import com.climbing.api.command.UpdateGymCommand;
+import com.climbing.api.request.PostGymRequest;
+import com.climbing.api.request.UpdateGymRequest;
+import com.climbing.api.response.*;
 import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.GymService;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,18 +25,48 @@ public class GymController {
     }
 
     @GetMapping
-    public List<GetSimpleGymResponse> getGymList() {
+    public ResponseEntity<List<GetSimpleGymResponse>> getGymList() {
         List<Gym> gyms = gymService.findGymList();
-        return GetSimpleGymResponse.from(gyms);
+        return new ResponseEntity<>(GetSimpleGymResponse.from(gyms), HttpStatus.OK);
     }
 
     @GetMapping("/{gymId}")
-    public GetGymResponse getGym(@PathVariable(name = "gymId") Long gymId) {
+    public ResponseEntity<GetGymResponse> getGym(@PathVariable(name = "gymId") Long gymId) {
         try {
             Gym gym = gymService.findGym(gymId);
-            return GetGymResponse.from(gym);
+            return new ResponseEntity<>(GetGymResponse.from(gym), HttpStatus.OK);
         } catch (GymNotFoundException e) {
-            throw new RuntimeException(e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping
+    public ResponseEntity<PostGymResponse> postGym(@RequestBody PostGymRequest request) {
+        PostGymCommand command = request.toCommand();
+        Long gymId = gymService.createGym(command);
+        return new ResponseEntity<>(PostGymResponse.from(gymId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{gymId}")
+    public ResponseEntity<Responsible> deleteGym(@PathVariable(value = "gymId") Long gymId) {
+        try {
+            gymService.deleteGym(gymId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (GymNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/{gymId}")
+    public ResponseEntity<UpdateGymResponse> updateGym(@PathVariable(value = "gymId") Long gymId,
+                                                       @RequestBody UpdateGymRequest request) {
+        UpdateGymCommand command = request.toCommand(gymId);
+        try {
+            Gym gym = gymService.updateGym(command);
+            return new ResponseEntity<>(UpdateGymResponse.from(gym), HttpStatus.OK);
+        } catch (GymNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
