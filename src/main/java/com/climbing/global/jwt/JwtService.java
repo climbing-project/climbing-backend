@@ -1,8 +1,8 @@
-package com.climbing.auth.jwt;
+package com.climbing.global.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.climbing.domain.member.MemberRepository;
+import com.climbing.domain.member.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Optional;
 
-@Service
 @RequiredArgsConstructor
+@Service
 @Getter
 @Slf4j
 public class JwtService {
