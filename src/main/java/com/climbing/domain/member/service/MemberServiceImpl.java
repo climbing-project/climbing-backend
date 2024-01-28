@@ -35,14 +35,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void update(MemberUpdateDto memberUpdateDto, String nickname) throws Exception {
-        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public void update(MemberUpdateDto memberUpdateDto, String email) throws Exception {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         memberUpdateDto.nickname().ifPresent(member::updateNickname);
     }
 
     @Override
-    public void updatePassword(String beforePassword, String afterPassword, String nickname) throws Exception {
-        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public void updatePassword(String beforePassword, String afterPassword, String email) throws Exception {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if (!member.matchPassword(passwordEncoder, beforePassword)) {
             throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
@@ -52,8 +52,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void withdraw(String checkPassword, String nickname) throws Exception {
-        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public void withdraw(String checkPassword, String email) throws Exception {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if (!member.matchPassword(passwordEncoder, checkPassword)) {
             throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
@@ -70,7 +70,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDto getMyInfo() throws Exception {
-        Member member = memberRepository.findByNickname(GetLoginMember.getLoginMemberNickname()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(GetLoginMember.getLoginMemberEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberDto(member);
     }
 }
