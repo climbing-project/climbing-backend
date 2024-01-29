@@ -8,6 +8,7 @@ import com.climbing.domain.member.dto.MemberUpdateDto;
 import com.climbing.domain.member.exception.MemberException;
 import com.climbing.domain.member.exception.MemberExceptionType;
 import com.climbing.domain.member.repository.MemberRepository;
+import com.climbing.global.exception.BaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +23,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
+    public void signUp(MemberSignUpDto memberSignUpDto) throws BaseException {
         Member member = memberSignUpDto.toEntity();
         member.authorizeUser();
         member.encodePassword(passwordEncoder);
@@ -35,13 +36,16 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void update(MemberUpdateDto memberUpdateDto, String email) throws Exception {
+    public void update(MemberUpdateDto memberUpdateDto, String email) throws BaseException {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        memberUpdateDto.nickname().ifPresent(member::updateNickname);
+        if (memberRepository.findByNickname(memberUpdateDto.nickname()).isPresent()) {
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_NICKNAME);
+        }
+        member.updateNickname(memberUpdateDto.nickname());
     }
 
     @Override
-    public void updatePassword(String beforePassword, String afterPassword, String email) throws Exception {
+    public void updatePassword(String beforePassword, String afterPassword, String email) throws BaseException {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if (!member.matchPassword(passwordEncoder, beforePassword)) {
@@ -52,7 +56,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void withdraw(String checkPassword, String email) throws Exception {
+    public void withdraw(String checkPassword, String email) throws BaseException {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if (!member.matchPassword(passwordEncoder, checkPassword)) {
@@ -63,13 +67,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDto getInfo(Long id) throws Exception {
+    public MemberDto getInfo(Long id) throws BaseException {
         Member member = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberDto(member);
     }
 
     @Override
-    public MemberDto getMyInfo() throws Exception {
+    public MemberDto getMyInfo() throws BaseException {
         Member member = memberRepository.findByEmail(GetLoginMember.getLoginMemberEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberDto(member);
     }
