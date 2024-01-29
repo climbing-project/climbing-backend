@@ -59,7 +59,6 @@ public class SecurityConfig {
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2MemberService))
                                 .successHandler(oAuth2LoginSuccessHandler)
                                 .failureHandler(oAuth2LoginFailureHandler)
-                                .permitAll()
                 );
         http.addFilterAfter(jsonAuthenticationFilter(), LogoutFilter.class);
         http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
