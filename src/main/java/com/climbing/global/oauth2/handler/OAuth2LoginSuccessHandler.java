@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtService jwtService;
 
+    @Value("${jwt.access.header}")
+    private String accessHeader;
+
+    @Value("${jwt.refresh.header}")
+    private String refreshHeader;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, SecurityException {
         log.info("OAuth2 로그인 성공");
@@ -27,7 +34,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             CustomOAuth2Member oAuth2User = (CustomOAuth2Member) authentication.getPrincipal();
             if (oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
-                response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
+                response.addHeader(accessHeader, "Bearer " + accessToken);
                 response.sendRedirect("/member/oauth2/sign-up");
                 //TODO : 프론트로 리다이렉트 보낼시 accessToken이 헤더에 추가되지 않으므로 쿼리 파라미터에 담아서 리다이렉트 URL 제작과정 추가
                 jwtService.sendAccessTokenAndRefreshToken(response, accessToken, null);
@@ -42,8 +49,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private void loginSuccess(HttpServletResponse response, CustomOAuth2Member oAuth2User) throws IOException {
         String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
         String refreshToken = jwtService.createRefreshToken();
-        response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
-        response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
+        response.addHeader(accessHeader, "Bearer " + accessToken);
+        response.addHeader(refreshHeader, "Bearer " + refreshToken);
 
         jwtService.sendAccessTokenAndRefreshToken(response, accessToken, refreshToken);
         jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
