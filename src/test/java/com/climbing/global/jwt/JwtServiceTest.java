@@ -109,6 +109,7 @@ public class JwtServiceTest {
         //then
         assertThrows(Exception.class, () -> memberRepository.findByRefreshToken(refreshToken).get());
         assertThat(memberRepository.findByRefreshToken(reCreateRefreshToken).get().getEmail()).isEqualTo(email);
+        assertThat(refreshToken).isNotEqualTo(reCreateRefreshToken);
     }
 
     @Test
