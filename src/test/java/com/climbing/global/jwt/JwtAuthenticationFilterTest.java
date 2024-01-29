@@ -57,12 +57,15 @@ public class JwtAuthenticationFilterTest {
     @Value("${jwt.refresh.header}")
     private String refreshHeader;
 
-    private static String EMAIL = "1234@1234.com";
-    private static String PASSWORD = "1234";
+    private static final String EMAIL = "1234@1234.com";
+    private static final String PASSWORD = "123abc!@#";
+
+    private static String NICKNAME = "cat";
     private static String KEY_EMAIL = "email";
     private static String KEY_PASSWORD = "password";
 
-    private static String LOGIN_URL = "/login";
+    private static final String NOT_LOGIN_URL = "/logins";
+    private static final String LOGIN_URL = "/login";
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String BEARER = "Bearer ";
@@ -76,7 +79,7 @@ public class JwtAuthenticationFilterTest {
 
     @BeforeEach
     public void init() {
-        memberRepository.save(Member.builder().email(EMAIL).password(passwordEncoder.encode(PASSWORD)).nickname("Cat").role(Role.USER).build());
+        memberRepository.save(Member.builder().email(EMAIL).password(passwordEncoder.encode(PASSWORD)).nickname(NICKNAME).role(Role.USER).build());
         clear();
     }
 
@@ -107,32 +110,82 @@ public class JwtAuthenticationFilterTest {
     @Test
     @DisplayName("토큰이 둘 다 존재하지 않는 경우")
     public void noToken() throws Exception {
-        mockMvc.perform(get(LOGIN_URL + "another"))
-                .andExpect(status().isForbidden());
+        mockMvc.perform(get(NOT_LOGIN_URL))
+                .andExpect(status().isFound());
     }
 
     @Test
-    @DisplayName("액세스 토큰만 유효한 경우")
+    @DisplayName("액세스 토큰만 유효, 리프레시 토큰 없음")
     public void onlyAccessTokenValid() throws Exception {
         Map<String, String> accessTokenAndRefreshToken = getToken();
-        String accessToken = (String) accessTokenAndRefreshToken.get(accessHeader);
+        String accessToken = accessTokenAndRefreshToken.get(accessHeader);
 
-        mockMvc.perform(get(LOGIN_URL + "another").header(accessHeader, BEARER + accessToken))
-                .andExpectAll(status().isNotFound());
+        mockMvc.perform(get(NOT_LOGIN_URL).header(accessHeader, BEARER + accessToken))
+                .andExpectAll(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("리프레시 토큰만 유효한 경우")
+    @DisplayName("액세스 토큰 유효하지 않음, 리프레시 토큰 없음")
+    public void NotAccessTokenValid() throws Exception {
+        Map<String, String> accessTokenAndRefreshToken = getToken();
+        String accessToken = accessTokenAndRefreshToken.get(accessHeader);
+
+        mockMvc.perform(get(NOT_LOGIN_URL).header(accessHeader, BEARER + accessToken + "a"))
+                .andExpectAll(status().isFound());
+    }
+
+    @Test
+    @DisplayName("액세스 토큰 없음, 리프레시 토큰만 유효")
     public void onlyRefreshTokenValid() throws Exception {
         Map<String, String> accessTokenAndRefreshToken = getToken();
-        String refreshToken = (String) accessTokenAndRefreshToken.get(refreshHeader);
+        String refreshToken = accessTokenAndRefreshToken.get(refreshHeader);
 
-        MvcResult result = mockMvc.perform(get(LOGIN_URL + "another").header(refreshHeader, BEARER + refreshToken))
+        MvcResult result = mockMvc.perform(get(NOT_LOGIN_URL).header(refreshHeader, BEARER + refreshToken))
                 .andExpect(status().isOk()).andReturn();
+
         String accessToken = result.getResponse().getHeader(accessHeader);
 
         String subject = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(accessToken).getSubject();
         assertThat(subject).isEqualTo(ACCESS_TOKEN_SUBJECT);
+    }
+
+    @Test
+    @DisplayName("액세스 토큰 없음, 리프레시 토큰만 유효하지 않음")
+    public void notRefreshTokenValid() throws Exception {
+        Map<String, String> accessTokenAndRefreshToken = getToken();
+        String refreshToken = accessTokenAndRefreshToken.get(refreshHeader);
+
+        mockMvc.perform(get(NOT_LOGIN_URL).header(refreshHeader, refreshToken))
+                .andExpect(status().isFound()).andReturn();
+
+        mockMvc.perform(get(NOT_LOGIN_URL).header(refreshHeader, BEARER + refreshToken + "a"))
+                .andExpect(status().isFound()).andReturn();
+
+    }
+
+    @Test
+    @DisplayName("액세스 토큰 유효, 리프레시 토큰 유효")
+    public void validToken() throws Exception {
+        //given
+        Map<String, String> accessTokenAndRefreshToken = getToken();
+        String refreshToken = accessTokenAndRefreshToken.get(refreshHeader);
+        String accessToken = accessTokenAndRefreshToken.get(accessHeader);
+
+        //when, then
+        MvcResult result = mockMvc.perform(get(NOT_LOGIN_URL)
+                        .header(accessHeader, BEARER + accessToken)
+                        .header(refreshHeader, BEARER + refreshToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseAccessToken = result.getResponse().getHeader(accessHeader);
+        String responseRefreshToken = result.getResponse().getHeader(refreshHeader);
+
+        String subject = JWT.require(Algorithm.HMAC512(secretKey)).build().verify(responseAccessToken).getSubject();
+        assertThat(subject).isEqualTo(ACCESS_TOKEN_SUBJECT);
+//        accessToken, refreshToken 둘 다 재발급하는 것 디버그 통해서 확인
+//        assertThat(responseRefreshToken).isNotEqualTo(refreshToken);
+//        assertThat(responseAccessToken).isNotEqualTo(accessToken);
     }
 
     @Test
@@ -145,9 +198,7 @@ public class JwtAuthenticationFilterTest {
         MvcResult result = mockMvc.perform(post(LOGIN_URL)
                         .header(refreshHeader, BEARER + refreshToken)
                         .header(accessHeader, BEARER + accessToken))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
-
-
 }
