@@ -3,4 +3,3 @@ out/
 ### intellij settings ###
 .gradle
 .idea
-/src/main/resources/application-oauth.yml

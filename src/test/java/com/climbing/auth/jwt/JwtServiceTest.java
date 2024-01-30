@@ -1,12 +1,11 @@
-package com.climbing.climbingbackend.auth.jwt;
+package com.climbing.auth.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.climbing.auth.jwt.JwtService;
 import com.climbing.domain.member.Member;
-import com.climbing.domain.member.MemberRepository;
 import com.climbing.domain.member.Role;
+import com.climbing.domain.member.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -110,6 +109,7 @@ public class JwtServiceTest {
         //then
         assertThrows(Exception.class, () -> memberRepository.findByRefreshToken(refreshToken).get());
         assertThat(memberRepository.findByRefreshToken(reCreateRefreshToken).get().getEmail()).isEqualTo(email);
+        assertThat(refreshToken).isNotEqualTo(reCreateRefreshToken);
     }
 
     @Test
