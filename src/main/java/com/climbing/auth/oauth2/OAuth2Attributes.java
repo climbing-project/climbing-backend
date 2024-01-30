@@ -6,7 +6,6 @@ import com.climbing.auth.oauth2.userinfo.NaverOAuth2MemberInfo;
 import com.climbing.auth.oauth2.userinfo.OAuth2MemberInfo;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.Role;
-import com.climbing.domain.member.SocialType;
 import lombok.Builder;
 import lombok.Getter;
 

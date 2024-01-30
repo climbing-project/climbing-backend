@@ -1,7 +1,6 @@
 package com.climbing.auth.oauth2;
 
 import com.climbing.domain.member.Member;
-import com.climbing.domain.member.SocialType;
 import com.climbing.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

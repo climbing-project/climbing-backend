@@ -1,5 +1,6 @@
 package com.climbing.domain.member;
 
+import com.climbing.auth.oauth2.SocialType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;

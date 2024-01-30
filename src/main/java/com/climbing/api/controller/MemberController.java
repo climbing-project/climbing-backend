@@ -1,6 +1,6 @@
 package com.climbing.api.controller;
 
-import com.climbing.domain.member.GetLoginMember;
+import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.dto.*;
 import com.climbing.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletResponse;

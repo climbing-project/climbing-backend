@@ -1,7 +1,7 @@
 package com.climbing.domain.member.repository;
 
+import com.climbing.auth.oauth2.SocialType;
 import com.climbing.domain.member.Member;
-import com.climbing.domain.member.SocialType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

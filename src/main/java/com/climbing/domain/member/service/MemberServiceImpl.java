@@ -1,6 +1,6 @@
 package com.climbing.domain.member.service;
 
-import com.climbing.domain.member.GetLoginMember;
+import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.dto.MemberDto;
 import com.climbing.domain.member.dto.MemberSignUpDto;
