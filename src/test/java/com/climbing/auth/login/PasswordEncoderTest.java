@@ -1,4 +1,4 @@
-package com.climbing.global.login;
+package com.climbing.auth.login;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

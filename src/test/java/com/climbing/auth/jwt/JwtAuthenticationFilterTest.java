@@ -1,8 +1,7 @@
-package com.climbing.global.jwt;
+package com.climbing.auth.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.climbing.auth.jwt.JwtService;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.Role;
 import com.climbing.domain.member.repository.MemberRepository;
