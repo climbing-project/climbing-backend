@@ -46,7 +46,7 @@ class MemberControllerTest {
     PasswordEncoder passwordEncoder;
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private String SIGN_UP_URL = "/member/sign-up";
+    private String SIGN_UP_URL = "/member/join";
     private String email = "1234@1234.com";
     private String password = "123abc@!#";
     private String nickname = "cat";
@@ -273,7 +273,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        delete("/member/delete")
+                        delete("/member")
                                 .header(accessHeader, BEARER + accessTokenAndLogin)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -298,7 +298,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        delete("/member/delete")
+                        delete("/member")
                                 .header(accessHeader, BEARER + accessTokenAndLogin)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -324,7 +324,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        delete("/member/delete")
+                        delete("/member")
                                 .header(accessHeader, BEARER + accessTokenAndLogin + "a")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
