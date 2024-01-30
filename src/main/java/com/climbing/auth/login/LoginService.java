@@ -1,4 +1,4 @@
-package com.climbing.global.login;
+package com.climbing.auth.login;
 
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.repository.MemberRepository;

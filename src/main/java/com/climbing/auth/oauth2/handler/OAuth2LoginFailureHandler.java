@@ -1,4 +1,4 @@
-package com.climbing.global.oauth2.handler;
+package com.climbing.auth.oauth2.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
-package com.climbing.global.login.handler;
+package com.climbing.auth.login.handler;
 
+import com.climbing.auth.jwt.JwtService;
 import com.climbing.domain.member.repository.MemberRepository;
-import com.climbing.global.jwt.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

@@ -1,15 +1,15 @@
-package com.climbing.global.config;
+package com.climbing.auth.config;
 
+import com.climbing.auth.jwt.JwtAuthenticationFilter;
+import com.climbing.auth.jwt.JwtService;
+import com.climbing.auth.login.JsonAuthenticationFilter;
+import com.climbing.auth.login.LoginService;
+import com.climbing.auth.login.handler.LoginFailureHandler;
+import com.climbing.auth.login.handler.LoginSuccessHandler;
+import com.climbing.auth.oauth2.CustomOAuth2MemberService;
+import com.climbing.auth.oauth2.handler.OAuth2LoginFailureHandler;
+import com.climbing.auth.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.climbing.domain.member.repository.MemberRepository;
-import com.climbing.global.jwt.JwtAuthenticationFilter;
-import com.climbing.global.jwt.JwtService;
-import com.climbing.global.login.JsonAuthenticationFilter;
-import com.climbing.global.login.LoginService;
-import com.climbing.global.login.handler.LoginFailureHandler;
-import com.climbing.global.login.handler.LoginSuccessHandler;
-import com.climbing.global.oauth2.CustomOAuth2MemberService;
-import com.climbing.global.oauth2.handler.OAuth2LoginFailureHandler;
-import com.climbing.global.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

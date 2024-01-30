@@ -1,12 +1,12 @@
-package com.climbing.global.oauth2;
+package com.climbing.auth.oauth2;
 
+import com.climbing.auth.oauth2.userinfo.GoogleOAuth2MemberInfo;
+import com.climbing.auth.oauth2.userinfo.KakaoOAuth2MemberInfo;
+import com.climbing.auth.oauth2.userinfo.NaverOAuth2MemberInfo;
+import com.climbing.auth.oauth2.userinfo.OAuth2MemberInfo;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.Role;
 import com.climbing.domain.member.SocialType;
-import com.climbing.global.oauth2.userinfo.GoogleOAuth2MemberInfo;
-import com.climbing.global.oauth2.userinfo.KakaoOAuth2MemberInfo;
-import com.climbing.global.oauth2.userinfo.NaverOAuth2MemberInfo;
-import com.climbing.global.oauth2.userinfo.OAuth2MemberInfo;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -64,6 +64,4 @@ public class OAuth2Attributes {
                 .role(Role.GUEST)
                 .build();
     }
-
-
 }

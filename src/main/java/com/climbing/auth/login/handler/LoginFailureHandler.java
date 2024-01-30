@@ -1,4 +1,4 @@
-package com.climbing.global.login.handler;
+package com.climbing.auth.login.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

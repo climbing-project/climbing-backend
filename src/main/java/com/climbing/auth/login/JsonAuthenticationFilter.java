@@ -1,4 +1,4 @@
-package com.climbing.global.login;
+package com.climbing.auth.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;

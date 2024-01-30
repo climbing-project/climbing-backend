@@ -1,4 +1,4 @@
-package com.climbing.global.jwt;
+package com.climbing.auth.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -70,7 +70,6 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public void sendAccessToken(HttpServletResponse response, String accessToken) {
         response.setStatus(HttpServletResponse.SC_OK);
-
         response.setHeader(accessHeader, accessToken);
         log.info("Access Token : {}", accessToken);
     }

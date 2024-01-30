@@ -34,4 +34,3 @@ logging:
 
       hibernate:
         SQL: debug
-

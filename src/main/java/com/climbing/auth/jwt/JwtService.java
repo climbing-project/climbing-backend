@@ -1,4 +1,4 @@
-package com.climbing.global.jwt;
+package com.climbing.auth.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

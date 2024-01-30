@@ -4,7 +4,7 @@ import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.GymException;
 import com.climbing.domain.gym.GymService;
 import com.climbing.domain.gym.MockGym;
-import com.climbing.util.JsonUtil;
+import com.climbing.global.util.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -153,9 +153,9 @@ class GymControllerTest {
 
         String content = JsonUtil.toJson(gym);
         mockMvc.perform(
-                put(BASE_ENDPOINT + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
+                        put(BASE_ENDPOINT + "/" + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content))
                 .andExpect(status().isBadRequest());
     }
 }

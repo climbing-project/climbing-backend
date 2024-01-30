@@ -1,4 +1,4 @@
-package com.climbing.global.oauth2.userinfo;
+package com.climbing.auth.oauth2.userinfo;
 
 import java.util.Map;
 

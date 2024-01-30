@@ -1,4 +1,4 @@
-package com.climbing.global.oauth2;
+package com.climbing.auth.oauth2;
 
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.SocialType;
