@@ -40,7 +40,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             if (oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
                 response.addHeader(accessHeader, "Bearer " + accessToken);
-                response.sendRedirect("/member/oauth2/sign-up");
+                response.sendRedirect("/member/oauth2/join");
                 //TODO : 프론트로 리다이렉트 보낼시 accessToken이 헤더에 추가되지 않은 현상 발생
                 // 따라서 쿼리 파라미터에 담아서 리다이렉트 URL 제작과정 추가
                 jwtService.sendAccessTokenAndRefreshToken(response, accessToken, null);

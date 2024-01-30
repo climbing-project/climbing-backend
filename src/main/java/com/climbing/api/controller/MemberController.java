@@ -20,7 +20,7 @@ public class MemberController {
     /**
      * 회원 가입
      */
-    @PostMapping("/sign-up")
+    @PostMapping("/join")
     @ResponseStatus(HttpStatus.OK)
     public String signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
         memberService.signUp(memberSignUpDto);
@@ -44,7 +44,7 @@ public class MemberController {
     /**
      * 회원 탈퇴
      */
-    @DeleteMapping("/delete")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
         memberService.withdraw(memberWithdrawDto.checkPassword(), GetLoginMember.getLoginMemberEmail());
@@ -62,8 +62,7 @@ public class MemberController {
         return new ResponseEntity(dto, HttpStatus.OK);
     }
 
-
-    @GetMapping("/oauth2/sign-up") //oauth redirect url 테스트용
+    @GetMapping("/oauth2/join") //oauth redirect url
     public String oauthSignUp() throws Exception {
         return "sign-up success";
     }
