@@ -54,11 +54,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
     }
 
-    private void loginSuccess(HttpServletResponse response, CustomOAuth2Member oAuth2User) throws IOException {
+    private void loginSuccess(HttpServletResponse response, CustomOAuth2Member oAuth2User) {
+        log.info("OAuth2.0 기존 사용자 로그인");
         Member member = memberRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
         String refreshToken = jwtService.createRefreshToken();
-        
+
         if (member.getRefreshToken() != null && jwtService.isTokenValid(refreshToken)) {
             refreshToken = member.getRefreshToken();
         }
