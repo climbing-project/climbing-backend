@@ -60,6 +60,9 @@ jobs:
     environment: production
 
     steps:
+      - services:
+        - docker
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -85,9 +88,10 @@ jobs:
           
           mkdir scripts
           touch scripts/deploy.sh
+          
           echo "aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $ECR_REGISTRY" >> scripts/deploy.sh
-#          echo "docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
-#          echo "docker run -p 8080:8080 -d --restart always --name oruri-backend-dev $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
+          echo "docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
+          echo "docker run -p 8080:8080 -d --restart always --name oruri-backend-dev $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
 
       - name: Upload CodeDeploy files to S3
         id: upload-appspec
