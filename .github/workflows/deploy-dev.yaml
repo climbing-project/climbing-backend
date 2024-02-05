@@ -82,7 +82,6 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           
           mkdir scripts
           touch scripts/deploy.sh
@@ -107,4 +106,3 @@ jobs:
           --application-name backend-dev \
           --deployment-group-name backend-dev \
           --s3-location bucket=${{ secrets.AWS_S3_BUCKET_NAME }},bundleType=zip,key=deploy-$IMAGE_TAG.zip
-          
