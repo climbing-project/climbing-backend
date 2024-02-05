@@ -83,6 +83,26 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-  
+          
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          mkdir scripts
+          touch scripts/deploy.sh
+          echo "aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $ECR_REGISTRY" >> scripts/deploy.sh
+          echo "docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
+          echo "docker run -p 8080:8080 -d --restart always --name oruri-backend-dev $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
 
- 
+      - name: Upload CodeDeploy files to S3
+        id: upload-appspec
+        run: |
+          zip -r deploy-$IMAGE_TAG.zip ./scripts aws/code-deploy/appspec.yml
+          aws s3 cp --region ${{ env.AWS_REGION }} ./deploy-$IMAGE_TAG.zip s3://${{ secrets.AWS_S3_BUCKET_NAME }}
+
+      - name: Deploy to AWS EC2
+        id: deploy-to-EC2
+        run: |
+          aws deploy create-deployment \
+          --application-name oruri-backend-dev \
+          --deployment-group-name backend-dev \
+          --s3-location bucket=${{ secrets.AWS_S3_BUCKET_NAME }},bundleType=zip,key=deploy-$IMAGE_TAG.zip
+          
