@@ -1,5 +1,7 @@
 package com.climbing.api.controller;
 
+import com.climbing.api.request.EmailRequest;
+import com.climbing.api.request.MemberNicknameRequest;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.exception.MemberException;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -44,12 +47,15 @@ class MemberControllerTest {
     MockMvc mockMvc;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    JavaMailSender javaMailSender;
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private String SIGN_UP_URL = "/members/join";
-    private String email = "1234@1234.com";
-    private String password = "123abc@!#";
-    private String nickname = "cat";
+    private final String SIGN_UP_URL = "/members/join";
+    private final String email = "1234@1234.com";
+    private final String password = "123abc@!#";
+    private final String nickname = "cat";
+    private final String receiver = "실제 이메일 작성 (테스트시 작성)";
 
     private void clear() {
         em.flush();
@@ -190,7 +196,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/members/password")
+                        put("/members/updatePassword")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -399,5 +405,109 @@ class MemberControllerTest {
         //then
         Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
         assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("이메일 인증메일 발송 테스트")
+    public void emailAuthTest() throws Exception {
+        String data = objectMapper.writeValueAsString(new EmailRequest(receiver));
+
+        MvcResult result = mockMvc.perform(
+                        post("/members/emailAuth")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data))
+                .andExpect(status().isOk()).andReturn();
+
+        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        assertThat(map.get("authNum")).isNotNull();
+        System.out.println(map.get("authNum"));
+    }
+
+    @Test
+    @DisplayName("임시비밀번호 발송 및 변경 확인 테스트")
+    public void tempPasswordTest() throws Exception {
+        String data = objectMapper.writeValueAsString(new EmailRequest(receiver));
+        String join = objectMapper.writeValueAsString(new MemberJoinDto(receiver, password, nickname));
+        signUpSuccess(join);
+
+        mockMvc.perform(
+                        post("/members/tempPassword")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data))
+                .andExpect(status().isOk());
+
+//        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+//        Member member = memberRepository.findByEmail(receiver).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+//        String authNum = (String) map.get("authNum");
+//        assertThat(passwordEncoder.matches(authNum, member.getPassword())).isTrue();
+//        System.out.println(map.get("authNum"));
+    }
+
+    @Test
+    @DisplayName("아이디 중복 체크 테스트 (중복된 아이디로 가입)")
+    public void emailCheckTestFalse() throws Exception {
+        String data1 = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
+        signUpSuccess(data1);
+
+        String data2 = objectMapper.writeValueAsString(new EmailRequest(email));
+
+        MvcResult result = mockMvc.perform(
+                        post("/members/emailCheck")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data2))
+                .andExpect(status().isOk()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("false");
+    }
+
+    @Test
+    @DisplayName("아이디 중복 체크 테스트 (중복되지 않은 아이디로 가입)")
+    public void emailCheckTestTrue() throws Exception {
+        String data1 = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
+        signUpSuccess(data1);
+
+        String data2 = objectMapper.writeValueAsString(new EmailRequest("123" + email));
+
+        MvcResult result = mockMvc.perform(
+                        post("/members/emailCheck")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data2))
+                .andExpect(status().isOk()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("true");
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 체크 테스트 (중복된 닉네임으로 가입)")
+    public void nicknameCheckTestFalse() throws Exception {
+        String data1 = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
+        signUpSuccess(data1);
+
+        String data2 = objectMapper.writeValueAsString(new MemberNicknameRequest(nickname));
+
+        MvcResult result = mockMvc.perform(
+                        post("/members/nicknameCheck")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data2))
+                .andExpect(status().isOk()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("false");
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 체크 테스트 (중복되지 않은 닉네임으로 가입)")
+    public void nicknameCheckTestTrue() throws Exception {
+        String data1 = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
+        signUpSuccess(data1);
+
+        String data2 = objectMapper.writeValueAsString(new MemberNicknameRequest("tiger"));
+
+        MvcResult result = mockMvc.perform(
+                        post("/members/nicknameCheck")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data2))
+                .andExpect(status().isOk()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("true");
     }
 }

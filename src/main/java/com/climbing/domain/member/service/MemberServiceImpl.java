@@ -56,6 +56,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public void setTempPassword(String email, String tempPassword) throws BaseException {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+        member.updatePassword(passwordEncoder, tempPassword);
+    }
+
+    @Override
     public void withdraw(String checkPassword, String email) throws BaseException {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
@@ -76,5 +83,15 @@ public class MemberServiceImpl implements MemberService {
     public MemberDto getMyInfo() throws BaseException {
         Member member = memberRepository.findByEmail(GetLoginMember.getLoginMemberEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberDto(member);
+    }
+
+    @Override
+    public boolean checkEmail(String email) throws BaseException {
+        return memberRepository.findByEmail(email).isPresent();
+    }
+
+    @Override
+    public boolean checkNickname(String nickname) throws BaseException {
+        return memberRepository.findByNickname(nickname).isPresent();
     }
 }
