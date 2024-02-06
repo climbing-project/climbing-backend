@@ -44,8 +44,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 //TODO : 프론트로 리다이렉트 보낼시 accessToken이 헤더에 추가되지 않은 현상 발생
                 // 따라서 쿼리 파라미터에 담아서 리다이렉트 URL 제작과정 추가
                 jwtService.sendAccessTokenAndRefreshToken(response, accessToken, null);
-                Member member = memberRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-                member.authorizeUser();
+                //TODO : 아래 부분은 추가 회원 정보 입력하는 폼에서 회원 정보 업데이트할 때 컨트롤러에서 같이 진행
+//                Member member = memberRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+//                member.authorizeUser();
             } else {
                 loginSuccess(response, oAuth2User);
             }

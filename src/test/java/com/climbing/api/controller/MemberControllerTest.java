@@ -1,7 +1,7 @@
 package com.climbing.api.controller;
 
 import com.climbing.domain.member.Member;
-import com.climbing.domain.member.dto.MemberSignUpDto;
+import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.exception.MemberException;
 import com.climbing.domain.member.exception.MemberExceptionType;
 import com.climbing.domain.member.repository.MemberRepository;
@@ -46,7 +46,7 @@ class MemberControllerTest {
     PasswordEncoder passwordEncoder;
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private String SIGN_UP_URL = "/member/join";
+    private String SIGN_UP_URL = "/members/join";
     private String email = "1234@1234.com";
     private String password = "123abc@!#";
     private String nickname = "cat";
@@ -84,7 +84,7 @@ class MemberControllerTest {
         map.put("password", password);
 
         MvcResult result = mockMvc.perform(
-                        post("/login")
+                        post("/members/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(map)))
                 .andExpect(status().isOk()).andReturn();
@@ -96,8 +96,8 @@ class MemberControllerTest {
     @DisplayName("회원가입 정상")
     public void signUpSucceed() throws Exception {
         //given
-        MemberSignUpDto memberSignUpDto = new MemberSignUpDto(email, password, nickname);
-        String data = objectMapper.writeValueAsString(memberSignUpDto);
+        MemberJoinDto memberJoinDto = new MemberJoinDto(email, password, nickname);
+        String data = objectMapper.writeValueAsString(memberJoinDto);
 
         //when
         signUpSuccess(data);
@@ -111,9 +111,9 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입 실패 (이메일, 패스워드, 닉네임 하나가 없음)")
     public void noDataSignUp() throws Exception {
-        String noEmail = objectMapper.writeValueAsString(new MemberSignUpDto(null, password, nickname));
-        String noPassword = objectMapper.writeValueAsString(new MemberSignUpDto(email, null, nickname));
-        String noNickname = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, null));
+        String noEmail = objectMapper.writeValueAsString(new MemberJoinDto(null, password, nickname));
+        String noPassword = objectMapper.writeValueAsString(new MemberJoinDto(email, null, nickname));
+        String noNickname = objectMapper.writeValueAsString(new MemberJoinDto(email, password, null));
 
         signUpFail(noEmail);
         signUpFail(noPassword);
@@ -126,7 +126,7 @@ class MemberControllerTest {
     @DisplayName("회원정보 수정")
     public void updateMember() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
 
         String accessToken = getAccessTokenAndLogin();
@@ -136,7 +136,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/member/update")
+                        put("/members/update")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updateData))
@@ -151,8 +151,8 @@ class MemberControllerTest {
     @DisplayName("회원정보 수정 (닉네임 중복 오류)")
     public void updateMemberNicknameDuplicate() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        String data2 = objectMapper.writeValueAsString(new MemberSignUpDto("12" + email, password, "tiger"));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
+        String data2 = objectMapper.writeValueAsString(new MemberJoinDto("12" + email, password, "tiger"));
         signUpSuccess(data);
         signUpSuccess(data2);
 
@@ -163,7 +163,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/member/update")
+                        put("/members/update")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updateData))
@@ -178,7 +178,7 @@ class MemberControllerTest {
     @DisplayName("비밀번호 변경 성공")
     public void changPassword() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
         String accessToken = getAccessTokenAndLogin();
 
@@ -190,7 +190,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/member/password")
+                        put("/members/password")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -206,7 +206,7 @@ class MemberControllerTest {
     @DisplayName("비밀번호 수정 실패 (비밀번호 확인 실패)")
     public void changPasswordWithDifferentPassword() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
         String accessToken = getAccessTokenAndLogin();
 
@@ -218,7 +218,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/member/password")
+                        put("/members/password")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -234,7 +234,7 @@ class MemberControllerTest {
     @DisplayName("비밀번호 변경 실패 (올바르지 않은 형식의 비밀번호)")
     public void changWrongPassword() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
         String accessToken = getAccessTokenAndLogin();
 
@@ -246,7 +246,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/member/password")
+                        put("/members/password")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -262,7 +262,7 @@ class MemberControllerTest {
     @DisplayName("회원 탈퇴 성공")
     public void withDrawMember() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
 
         String accessTokenAndLogin = getAccessTokenAndLogin(); //로그인
@@ -273,7 +273,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        delete("/member")
+                        delete("/members")
                                 .header(accessHeader, BEARER + accessTokenAndLogin)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -287,7 +287,7 @@ class MemberControllerTest {
     @DisplayName("회원 탈퇴 실패 (비밀번호 확인 실패)")
     public void withDrawWithWrongPassword() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
 
         String accessTokenAndLogin = getAccessTokenAndLogin(); //로그인
@@ -298,7 +298,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        delete("/member")
+                        delete("/members")
                                 .header(accessHeader, BEARER + accessTokenAndLogin)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -313,7 +313,7 @@ class MemberControllerTest {
     @DisplayName("회원탈퇴 실패 (탈퇴 권한이 없음)")
     public void WithdrawWithNoAuthentication() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
 
         String accessTokenAndLogin = getAccessTokenAndLogin(); //로그인
@@ -324,7 +324,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        delete("/member")
+                        delete("/members")
                                 .header(accessHeader, BEARER + accessTokenAndLogin + "a")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -339,14 +339,14 @@ class MemberControllerTest {
     @DisplayName("나의 회원정보 조회하기")
     public void findInfo() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
 
         String accessTokenAndLogin = getAccessTokenAndLogin();
 
         //when
         MvcResult result = mockMvc.perform(
-                        get("/member/myInfo")
+                        get("/members/myInfo")
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER + accessTokenAndLogin))
                 .andExpect(status().isOk()).andReturn();
@@ -362,14 +362,14 @@ class MemberControllerTest {
     @DisplayName("일반 회원정보 조회하기")
     public void memberInfo() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
         String accessTokenAndLogin = getAccessTokenAndLogin();
         Long id = memberRepository.findAll().getFirst().getId();
 
         //when
         MvcResult result = mockMvc.perform(
-                        get("/member/" + id)
+                        get("/members/" + id)
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER + accessTokenAndLogin))
                 .andExpect(status().isOk()).andReturn();
@@ -385,13 +385,13 @@ class MemberControllerTest {
     @DisplayName("없는 회원정보 조회")
     public void notMemberInfo() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
         signUpSuccess(data);
         String accessTokenAndLogin = getAccessTokenAndLogin();
 
         //when
         MvcResult result = mockMvc.perform(
-                        get("/member/123")
+                        get("/members/123")
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER + accessTokenAndLogin))
                 .andExpect(status().isNotFound()).andReturn();

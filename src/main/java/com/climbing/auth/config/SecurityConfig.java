@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/", "/h2-console/**", "/member/**", "/gyms/**").permitAll()
+                                .requestMatchers("/", "/h2-console/**", "/members/**", "/gyms/**").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2Login((oauth2Login) ->
                         oauth2Login
@@ -60,10 +60,8 @@ public class SecurityConfig {
                                 .successHandler(oAuth2LoginSuccessHandler)
                                 .failureHandler(oAuth2LoginFailureHandler)
                 );
-        http.addFilterAfter(jsonAuthenticationFilter(), LogoutFilter.class);
         http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
-        http.addFilterBefore(jwtAuthenticationFilter(), JsonAuthenticationFilter.class);
-
+        http.addFilterAfter(jsonAuthenticationFilter(), JwtAuthenticationFilter.class);
 
         return http.build();
     }

@@ -64,8 +64,8 @@ public class JwtAuthenticationFilterTest {
     private static String KEY_EMAIL = "email";
     private static String KEY_PASSWORD = "password";
 
-    private static final String NOT_LOGIN_URL = "/logins";
-    private static final String LOGIN_URL = "/login";
+    private static final String NOT_LOGIN_URL = "/members/logins";
+    private static final String LOGIN_URL = "/members/login";
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String BEARER = "Bearer ";
@@ -111,7 +111,7 @@ public class JwtAuthenticationFilterTest {
     @DisplayName("토큰이 둘 다 존재하지 않는 경우")
     public void noToken() throws Exception {
         mockMvc.perform(get(NOT_LOGIN_URL))
-                .andExpect(status().isFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class JwtAuthenticationFilterTest {
         String accessToken = accessTokenAndRefreshToken.get(accessHeader);
 
         mockMvc.perform(get(NOT_LOGIN_URL).header(accessHeader, BEARER + accessToken + "a"))
-                .andExpectAll(status().isFound());
+                .andExpectAll(status().isBadRequest());
     }
 
     @Test
@@ -156,10 +156,10 @@ public class JwtAuthenticationFilterTest {
         String refreshToken = accessTokenAndRefreshToken.get(refreshHeader);
 
         mockMvc.perform(get(NOT_LOGIN_URL).header(refreshHeader, refreshToken))
-                .andExpect(status().isFound()).andReturn();
+                .andExpect(status().isBadRequest()).andReturn();
 
         mockMvc.perform(get(NOT_LOGIN_URL).header(refreshHeader, BEARER + refreshToken + "a"))
-                .andExpect(status().isFound()).andReturn();
+                .andExpect(status().isBadRequest()).andReturn();
 
     }
 

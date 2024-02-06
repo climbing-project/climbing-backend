@@ -11,20 +11,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/members")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
 
-    /**
-     * 회원 가입
-     */
     @PostMapping("/join")
     @ResponseStatus(HttpStatus.OK)
-    public String signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
-        memberService.signUp(memberSignUpDto);
-        return "sign-up success";
+    public String join(@Valid @RequestBody MemberJoinDto memberJoinDto) throws Exception {
+        memberService.join(memberJoinDto);
+        return "Join success";
     }
 
     @PutMapping("/update")
@@ -34,16 +31,13 @@ public class MemberController {
         memberService.update(memberUpdateDto, email);
     }
 
-    @PutMapping("/password")
+    @PutMapping("/updatePassword")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         memberService.updatePassword(updatePasswordDto.beforePassword(), updatePasswordDto.afterPassword(), GetLoginMember.getLoginMemberEmail());
 
     }
-
-    /**
-     * 회원 탈퇴
-     */
+    
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {

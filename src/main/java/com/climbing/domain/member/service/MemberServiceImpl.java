@@ -3,7 +3,7 @@ package com.climbing.domain.member.service;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.dto.MemberDto;
-import com.climbing.domain.member.dto.MemberSignUpDto;
+import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.dto.MemberUpdateDto;
 import com.climbing.domain.member.exception.MemberException;
 import com.climbing.domain.member.exception.MemberExceptionType;
@@ -23,12 +23,12 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void signUp(MemberSignUpDto memberSignUpDto) throws BaseException {
-        Member member = memberSignUpDto.toEntity();
+    public void join(MemberJoinDto memberJoinDto) throws BaseException {
+        Member member = memberJoinDto.toEntity();
         member.authorizeUser();
         member.encodePassword(passwordEncoder);
 
-        if (memberRepository.findByEmail(memberSignUpDto.email()).isPresent()) {
+        if (memberRepository.findByEmail(memberJoinDto.email()).isPresent()) {
             throw new MemberException(MemberExceptionType.ALREADY_EXIST_EMAIL);
         }
 

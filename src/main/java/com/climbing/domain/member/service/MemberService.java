@@ -1,11 +1,11 @@
 package com.climbing.domain.member.service;
 
 import com.climbing.domain.member.dto.MemberDto;
-import com.climbing.domain.member.dto.MemberSignUpDto;
+import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.dto.MemberUpdateDto;
 
 public interface MemberService {
-    void signUp(MemberSignUpDto memberSignUpDto) throws Exception;
+    void join(MemberJoinDto memberJoinDto) throws Exception;
 
     void update(MemberUpdateDto memberUpdateDto, String email) throws Exception;
 
