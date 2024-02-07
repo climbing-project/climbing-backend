@@ -34,6 +34,8 @@ public class Member {
 
     private String refreshToken;
 
+    private boolean isBlocked = false;
+
     public void authorizeUser() {
         this.role = Role.USER;
     }

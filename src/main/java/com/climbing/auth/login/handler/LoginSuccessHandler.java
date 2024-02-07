@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -32,6 +33,9 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 .ifPresent(member -> {
                     member.updateRefreshToken(refreshToken);
                     memberRepository.saveAndFlush(member);
+                    if (member.isBlocked()) {
+                        throw new LockedException("비활성화된 계정. DB 확인 필요");
+                    }
                 });
         log.info("로그인에 성공하였습니다. 이메일 : {}", email);
         log.info("로그인에 성공하였습니다. 액세스 토큰 : {}", accessToken);
