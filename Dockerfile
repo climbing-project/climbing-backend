@@ -1,9 +1,13 @@
 FROM openjdk:21-jdk-slim
 
+COPY . .
+
 RUN ./gradlew clean build -x test
 
-COPY ./build/libs/*-SNAPSHOT.jar /app.jar
+RUN mkdir /opt/app
 
-EXPOSE 80
+COPY ./build/libs/*-SNAPSHOT.jar opt/app/app.jar
+
+EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
