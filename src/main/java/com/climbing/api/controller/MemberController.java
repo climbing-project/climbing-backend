@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,7 @@ public class MemberController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('USER'||'ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public void updateMemberInfo(@Valid @RequestBody MemberUpdateDto memberUpdateDto) throws Exception {
         String email = GetLoginMember.getLoginMemberEmail();
@@ -41,25 +43,22 @@ public class MemberController {
     }
 
     @PutMapping("/updatePassword")
+    @PreAuthorize("hasRole('USER'||'ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         memberService.updatePassword(updatePasswordDto.beforePassword(), updatePasswordDto.afterPassword(), GetLoginMember.getLoginMemberEmail());
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('USER'||'ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
         memberService.withdraw(memberWithdrawDto.checkPassword(), GetLoginMember.getLoginMemberEmail());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity getInfo(@Valid @PathVariable("id") Long id) throws Exception {
-        MemberDto dto = memberService.getInfo(id);
-        return ResponseEntity.ok(dto);
-    }
-
     @GetMapping("/myInfo")
-    public ResponseEntity getMyInfo(HttpServletResponse response) throws Exception {
+    @PreAuthorize("hasRole('USER'||'ADMIN')")
+    public ResponseEntity getMyInfo() throws Exception {
         MemberDto dto = memberService.getMyInfo();
         return ResponseEntity.ok(dto);
     }
@@ -85,6 +84,7 @@ public class MemberController {
     }
 
     @PostMapping("/tempPassword")
+    @PreAuthorize("hasRole('USER'||'ADMIN')")
     public ResponseEntity sendTempPassword(@RequestBody EmailRequest request) {
         EmailInfo emailInfo = EmailInfo.builder()
                 .receiver(request.email())
@@ -114,6 +114,7 @@ public class MemberController {
     }
 
     @GetMapping("/logout")
+    @PreAuthorize("hasRole('USER'||'ADMIN')")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
         return "redirect:/login";

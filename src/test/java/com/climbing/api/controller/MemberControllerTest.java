@@ -364,48 +364,48 @@ class MemberControllerTest {
         assertThat(member.getNickname()).isEqualTo(map.get("nickname"));
     }
 
-    @Test
-    @DisplayName("일반 회원정보 조회하기")
-    public void memberInfo() throws Exception {
-        //given
-        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
-        signUpSuccess(data);
-        String accessTokenAndLogin = getAccessTokenAndLogin();
-        Long id = memberRepository.findAll().getFirst().getId();
-
-        //when
-        MvcResult result = mockMvc.perform(
-                        get("/members/" + id)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER + accessTokenAndLogin))
-                .andExpect(status().isOk()).andReturn();
-
-        //then
-        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        assertThat(member.getEmail()).isEqualTo(map.get("email"));
-        assertThat(member.getNickname()).isEqualTo(map.get("nickname"));
-    }
-
-    @Test
-    @DisplayName("없는 회원정보 조회")
-    public void notMemberInfo() throws Exception {
-        //given
-        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
-        signUpSuccess(data);
-        String accessTokenAndLogin = getAccessTokenAndLogin();
-
-        //when
-        MvcResult result = mockMvc.perform(
-                        get("/members/123")
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER + accessTokenAndLogin))
-                .andExpect(status().isNotFound()).andReturn();
-
-        //then
-        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());
-    }
+//    @Test
+//    @DisplayName("일반 회원정보 조회하기")
+//    public void memberInfo() throws Exception {
+//        //given
+//        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
+//        signUpSuccess(data);
+//        String accessTokenAndLogin = getAccessTokenAndLogin();
+//        Long id = memberRepository.findAll().getFirst().getId();
+//
+//        //when
+//        MvcResult result = mockMvc.perform(
+//                        get("/members/" + id)
+//                                .characterEncoding(StandardCharsets.UTF_8)
+//                                .header(accessHeader, BEARER + accessTokenAndLogin))
+//                .andExpect(status().isOk()).andReturn();
+//
+//        //then
+//        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+//        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+//        assertThat(member.getEmail()).isEqualTo(map.get("email"));
+//        assertThat(member.getNickname()).isEqualTo(map.get("nickname"));
+//    }
+//
+//    @Test
+//    @DisplayName("없는 회원정보 조회")
+//    public void notMemberInfo() throws Exception {
+//        //given
+//        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
+//        signUpSuccess(data);
+//        String accessTokenAndLogin = getAccessTokenAndLogin();
+//
+//        //when
+//        MvcResult result = mockMvc.perform(
+//                        get("/members/123")
+//                                .characterEncoding(StandardCharsets.UTF_8)
+//                                .header(accessHeader, BEARER + accessTokenAndLogin))
+//                .andExpect(status().isNotFound()).andReturn();
+//
+//        //then
+//        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+//        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());
+//    }
 
     @Test
     @DisplayName("이메일 인증메일 발송 테스트")
