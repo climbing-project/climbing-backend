@@ -38,7 +38,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         try {
             CustomOAuth2Member oAuth2User = (CustomOAuth2Member) authentication.getPrincipal();
             if (oAuth2User.getRole() == Role.GUEST) {
-                String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
+                String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), Role.USER.getKey());
                 response.addHeader(accessHeader, "Bearer " + accessToken);
                 response.sendRedirect("/member/oauth2/join");
                 //TODO : 프론트로 리다이렉트 보낼시 accessToken이 헤더에 추가되지 않은 현상 발생
@@ -58,7 +58,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private void loginSuccess(HttpServletResponse response, CustomOAuth2Member oAuth2User) {
         log.info("OAuth2.0 기존 사용자 로그인");
         Member member = memberRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
+        String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), oAuth2User.getRole().getKey());
         String refreshToken = jwtService.createRefreshToken();
 
         if (member.getRefreshToken() != null && jwtService.isTokenValid(refreshToken)) {

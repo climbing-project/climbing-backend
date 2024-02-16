@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 public interface JwtService {
-    String createAccessToken(String email);
+    String createAccessToken(String email, String role);
 
     String createRefreshToken();
 

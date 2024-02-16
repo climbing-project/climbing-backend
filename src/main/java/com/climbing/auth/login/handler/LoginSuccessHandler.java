@@ -12,6 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -24,7 +27,12 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String email = extractUsername(authentication);
-        String accessToken = jwtService.createAccessToken(email);
+        List<String> roleList = new ArrayList<>();
+        authentication.getAuthorities().forEach(authority -> {
+            roleList.add(authority.getAuthority());
+        });
+        String role = roleList.getFirst();
+        String accessToken = jwtService.createAccessToken(email, role);
         String refreshToken = jwtService.createRefreshToken();
 
         jwtService.sendAccessTokenAndRefreshToken(response, accessToken, refreshToken);

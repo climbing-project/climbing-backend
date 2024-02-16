@@ -45,16 +45,18 @@ public class JwtServiceImpl implements JwtService {
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String EMAIL_CLAIM = "email";
     private static final String BEARER = "Bearer ";
+    private static final String ROLE_CLAIM = "role";
 
     private final MemberRepository memberRepository;
 
     @Override
-    public String createAccessToken(String email) {
+    public String createAccessToken(String email, String role) {
         Date now = new Date();
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(now.getTime() + accessTokenExpirationPeriod))
                 .withClaim(EMAIL_CLAIM, email)
+                .withClaim(ROLE_CLAIM, role)
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
