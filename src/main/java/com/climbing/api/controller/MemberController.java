@@ -31,6 +31,11 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     public String join(@Valid @RequestBody MemberJoinDto memberJoinDto) throws Exception {
         memberService.join(memberJoinDto);
+        EmailInfo emailInfo = EmailInfo.builder()
+                .receiver(memberJoinDto.email())
+                .title("[오르리]" + memberJoinDto.nickname() + "님 가입을 진심으로 환영합니다.")
+                .build();
+        emailService.sendJoinEmail(emailInfo);
         return "Join success";
     }
 
@@ -53,7 +58,13 @@ public class MemberController {
     @PreAuthorize("hasRole('USER'||'ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
-        memberService.withdraw(memberWithdrawDto.checkPassword(), GetLoginMember.getLoginMemberEmail());
+        String email = GetLoginMember.getLoginMemberEmail();
+        memberService.withdraw(memberWithdrawDto.checkPassword(), email);
+        EmailInfo emailInfo = EmailInfo.builder()
+                .receiver(email)
+                .title("[오르리] 회원탈퇴가 완료되었습니다.")
+                .build();
+        emailService.sendWithdrawEmail(emailInfo);
     }
 
     @GetMapping("/myInfo")
@@ -101,13 +112,13 @@ public class MemberController {
 //        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/emailCheck")
+    @GetMapping("/emailCheck")
     public ResponseEntity<Boolean> checkEmail(@RequestBody EmailRequest request) throws Exception {
         boolean result = !memberService.checkEmail(request.email());
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/nicknameCheck")
+    @GetMapping("/nicknameCheck")
     public ResponseEntity<Boolean> checkNickname(@RequestBody MemberNicknameRequest request) throws Exception {
         boolean result = !memberService.checkNickname(request.nickname());
         return ResponseEntity.ok(result);

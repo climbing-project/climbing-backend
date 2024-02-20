@@ -43,6 +43,30 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public String writeJoinContent(String receiver) {
+        String content;
+
+        content = "<h2>오르리에 방문해주셔서 감사합니다</h2>" +
+                "<h3> 회원가입이 완료되었습니다. </h3>" +
+                "<h2> 회원 가입 이메일은 아래와 같습니다. </h2>" +
+                "<h2>" + receiver + "</h2>";
+
+        return content;
+    }
+
+    @Override
+    public String writeWithdrawContent(String receiver) {
+        String content;
+
+        content = "<h2>오르리 회원탈퇴가 완료되었습니다.</h2>" +
+                "<h3> 오르리 서비스를 이용해주셔서 감사합니다. </h3>" +
+                "<h2> 회원 탈퇴 이메일은 아래와 같습니다. </h2>" +
+                "<h2>" + receiver + "</h2>";
+
+        return content;
+    }
+
+    @Override
     public String sendEmail(EmailInfo emailInfo, String type) {
         String authNum;
 
@@ -65,6 +89,40 @@ public class EmailServiceImpl implements EmailService {
             return authNum;
         } catch (MessagingException e) {
             log.info("이메일 인증용 메일 전송 실패");
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void sendJoinEmail(EmailInfo emailInfo) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            mimeMessageHelper.setTo(emailInfo.getReceiver());
+            mimeMessageHelper.setSubject(emailInfo.getTitle());
+            mimeMessageHelper.setText(writeJoinContent(emailInfo.getReceiver()), true);
+            mailSender.send(mimeMessage);
+            log.info("이메일 회원가입 승인 메일 전송 완료");
+        } catch (MessagingException e) {
+            log.info("이메일 회원가입 승인 메일 전송 실패");
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void sendWithdrawEmail(EmailInfo emailInfo) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            mimeMessageHelper.setTo(emailInfo.getReceiver());
+            mimeMessageHelper.setSubject(emailInfo.getTitle());
+            mimeMessageHelper.setText(writeWithdrawContent(emailInfo.getReceiver()), true);
+            mailSender.send(mimeMessage);
+            log.info("이메일 회원탈퇴 승인 메일 전송 완료");
+        } catch (MessagingException e) {
+            log.info("이메일 회원탈퇴 승인 메일 전송 실패");
             throw new RuntimeException(e);
         }
     }

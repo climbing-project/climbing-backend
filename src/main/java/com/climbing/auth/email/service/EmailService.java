@@ -11,5 +11,12 @@ public interface EmailService {
     String makeAuthNum();
 
     String makeTempPassword();
-    
+
+    void sendJoinEmail(EmailInfo emailInfo);
+
+    String writeJoinContent(String receiver);
+
+    void sendWithdrawEmail(EmailInfo emailInfo);
+
+    String writeWithdrawContent(String receiver);
 }
