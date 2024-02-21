@@ -40,7 +40,7 @@ public class MemberController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('USER'||'ADMIN')")
+    @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     public void updateMemberInfo(@Valid @RequestBody MemberUpdateDto memberUpdateDto) throws Exception {
         String email = GetLoginMember.getLoginMemberEmail();
@@ -48,14 +48,14 @@ public class MemberController {
     }
 
     @PutMapping("/updatePassword")
-    @PreAuthorize("hasRole('USER'||'ADMIN')")
+    @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         memberService.updatePassword(updatePasswordDto.beforePassword(), updatePasswordDto.afterPassword(), GetLoginMember.getLoginMemberEmail());
     }
 
     @DeleteMapping
-    @PreAuthorize("hasRole('USER'||'ADMIN')")
+    @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
         String email = GetLoginMember.getLoginMemberEmail();
@@ -68,7 +68,7 @@ public class MemberController {
     }
 
     @GetMapping("/myInfo")
-    @PreAuthorize("hasRole('USER'||'ADMIN')")
+    @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     public ResponseEntity getMyInfo() throws Exception {
         MemberDto dto = memberService.getMyInfo();
         return ResponseEntity.ok(dto);
@@ -95,7 +95,6 @@ public class MemberController {
     }
 
     @PostMapping("/tempPassword")
-    @PreAuthorize("hasRole('USER'||'ADMIN')")
     public ResponseEntity sendTempPassword(@RequestBody EmailRequest request) {
         EmailInfo emailInfo = EmailInfo.builder()
                 .receiver(request.email())
@@ -125,7 +124,7 @@ public class MemberController {
     }
 
     @GetMapping("/logout")
-    @PreAuthorize("hasRole('USER'||'ADMIN')")
+    @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
         return "redirect:/login";

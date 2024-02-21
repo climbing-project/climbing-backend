@@ -66,13 +66,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//                .withUser("user").password(passwordEncoder().encode("1234")).roles("USER")
-//                .and()
-//                .withUser("admin").password(passwordEncoder().encode("1234")).roles("ADMIN");
-//    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
