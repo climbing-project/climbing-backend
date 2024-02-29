@@ -82,21 +82,6 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          
-          mkdir scripts
-          touch scripts/deploy.sh
-
-          echo "aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $ECR_REGISTRY" >> scripts/deploy.sh
-          echo "docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
-          echo "docker run -p 8080:8080 -d --restart always --name oruri-backend-dev $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
-
-      - name: Upload CodeDeploy files to S3
-        id: upload-appspec
-        env:
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          zip -r deploy-$IMAGE_TAG.zip ./scripts appspec.yml
-          aws s3 cp --region ${{ env.AWS_REGION }} ./deploy-$IMAGE_TAG.zip s3://${{ secrets.AWS_S3_BUCKET_NAME }}
 
       - name: Deploy to AWS EC2
         id: deploy-to-EC2

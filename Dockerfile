@@ -8,7 +8,7 @@ FROM openjdk:21-jdk-slim
 
 RUN mkdir /opt/app
 
-COPY --from=builder build/libs/*-SNAPSHOT.jar opt/app/app.jar
+COPY --from=builder build/libs/*-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
