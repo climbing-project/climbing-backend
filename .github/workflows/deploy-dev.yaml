@@ -82,14 +82,3 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-      - name: Deploy to AWS EC2
-        id: deploy-to-EC2
-        env:
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          aws deploy create-deployment \
-          --application-name backend-dev \
-          --deployment-group-name backend-dev \
-          --s3-location bucket=${{ secrets.AWS_S3_BUCKET_NAME }},bundleType=zip,key=deploy-$IMAGE_TAG.zip
-
