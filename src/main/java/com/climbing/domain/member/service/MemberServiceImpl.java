@@ -1,5 +1,6 @@
 package com.climbing.domain.member.service;
 
+import com.climbing.api.request.OauthJoinRequest;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.dto.MemberDto;
@@ -42,6 +43,15 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberException(MemberExceptionType.ALREADY_EXIST_NICKNAME);
         }
         member.updateNickname(memberUpdateDto.nickname());
+    }
+
+    @Override
+    public void oauthJoin(OauthJoinRequest oauthJoinRequest) throws BaseException {
+        Member member = memberRepository.findByEmail(oauthJoinRequest.email()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if (memberRepository.findByNickname(oauthJoinRequest.nickname()).isPresent()) {
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_NICKNAME);
+        }
+        member.updateNickname(oauthJoinRequest.nickname());
     }
 
     @Override
@@ -93,5 +103,11 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean checkNickname(String nickname) throws BaseException {
         return memberRepository.findByNickname(nickname).isPresent();
+    }
+
+    @Override
+    public String findMemberEmailToNickname(String email) throws BaseException {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        return member.getNickname();
     }
 }

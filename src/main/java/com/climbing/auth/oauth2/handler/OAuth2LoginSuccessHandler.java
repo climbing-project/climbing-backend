@@ -12,16 +12,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
@@ -35,29 +38,30 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, SecurityException {
         log.info("OAuth2 로그인 성공");
-        try {
-            CustomOAuth2Member oAuth2User = (CustomOAuth2Member) authentication.getPrincipal();
-            if (oAuth2User.getRole() == Role.GUEST) {
-                String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), Role.USER.getKey());
-                response.addHeader(accessHeader, "Bearer " + accessToken);
-                response.sendRedirect("/member/oauth2/join");
-                //TODO : 프론트로 리다이렉트 보낼시 accessToken이 헤더에 추가되지 않은 현상 발생
-                // 따라서 쿼리 파라미터에 담아서 리다이렉트 URL 제작과정 추가
-                jwtService.sendAccessTokenAndRefreshToken(response, accessToken, null);
-                //TODO : 아래 부분은 추가 회원 정보 입력하는 폼에서 회원 정보 업데이트할 때 컨트롤러에서 같이 진행
-//                Member member = memberRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-//                member.authorizeUser();
-            } else {
-                loginSuccess(response, oAuth2User);
-            }
-        } catch (Exception e) {
-            throw e;
+        CustomOAuth2Member oAuth2User = (CustomOAuth2Member) authentication.getPrincipal();
+        if (oAuth2User.getRole() == Role.GUEST) {
+            Member member = memberRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+            member.authorizeUser();
+            memberRepository.saveAndFlush(member);
+            String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), Role.USER.getKey());
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/members/oauth2/join")
+                    .queryParam("email", member.getEmail())
+                    .queryParam("accessToken", accessToken)
+                    .build()
+                    .encode(StandardCharsets.UTF_8)
+                    .toUriString();
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        } else {
+            loginSuccess(response, oAuth2User);
         }
     }
 
     private void loginSuccess(HttpServletResponse response, CustomOAuth2Member oAuth2User) {
         log.info("OAuth2.0 기존 사용자 로그인");
         Member member = memberRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if (member.isBlocked()) {
+            throw new LockedException("비활성화된 계정. DB 확인 필요");
+        }
         String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), oAuth2User.getRole().getKey());
         String refreshToken = jwtService.createRefreshToken();
 

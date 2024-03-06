@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class GetLoginMember {
     public static String getLoginMemberEmail() {
-        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
-        return loggedInUser.getName();
+        Authentication loggedInMember = SecurityContextHolder.getContext().getAuthentication();
+        return loggedInMember.getName();
     }
 }

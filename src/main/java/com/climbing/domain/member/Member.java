@@ -36,6 +36,12 @@ public class Member {
 
     private boolean isBlocked = false;
 
+//    @OneToMany(mappedBy = "member", orphanRemoval = true)
+//    private List<Question> qnaBoardList;
+//
+//    @OneToMany(mappedBy = "member", orphanRemoval = true)
+//    private List<Answer> answers;
+
     public void authorizeUser() {
         this.role = Role.USER;
     }

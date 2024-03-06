@@ -2,6 +2,7 @@ package com.climbing.api.controller;
 
 import com.climbing.api.request.EmailRequest;
 import com.climbing.api.request.MemberNicknameRequest;
+import com.climbing.api.request.OauthJoinRequest;
 import com.climbing.auth.email.EmailAuthResponse;
 import com.climbing.auth.email.EmailInfo;
 import com.climbing.auth.email.service.EmailService;
@@ -47,6 +48,17 @@ public class MemberController {
         memberService.update(memberUpdateDto, email);
     }
 
+    @PutMapping("/oauth2/update")
+    @ResponseStatus(HttpStatus.OK)
+    public void oauthJoin(@Valid @RequestBody OauthJoinRequest oauthJoinRequest) throws Exception {
+        memberService.oauthJoin(oauthJoinRequest);
+        EmailInfo emailInfo = EmailInfo.builder()
+                .receiver(oauthJoinRequest.email())
+                .title("[오르리]" + oauthJoinRequest.nickname() + "님 가입을 진심으로 환영합니다.")
+                .build();
+        emailService.sendJoinEmail(emailInfo);
+    }
+
     @PutMapping("/updatePassword")
     @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
@@ -76,7 +88,7 @@ public class MemberController {
 
     @GetMapping("/oauth2/join") //oauth redirect url
     public String oauthSignUp() throws Exception {
-        return "sign-up success";
+        return "oauth2-join-page";
     }
 
     @PostMapping("/emailAuth")
@@ -127,6 +139,6 @@ public class MemberController {
     @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        return "redirect:/login";
+        return "/";
     }
 }

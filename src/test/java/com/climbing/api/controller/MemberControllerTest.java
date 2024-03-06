@@ -158,6 +158,33 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("Oauth 회원 가입 페이지에서 회원 가입 완료 버튼 누른 후 닉네임 변경 확인")
+    public void checkOauthJoin() throws Exception {
+        //given
+        MemberJoinDto memberJoinDto = new MemberJoinDto(realEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+
+        String accessToken = getAccessTokenAndLogin(realEmail);
+        Map<String, Object> map = new HashMap<>();
+        String newNickname = "success";
+        map.put("nickname", newNickname);
+        map.put("email", realEmail);
+        String updateData = objectMapper.writeValueAsString(map);
+
+        //when
+        mockMvc.perform(
+                        put("/members/oauth2/update")
+                                .header(accessHeader, BEARER + accessToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(updateData))
+                .andExpect(status().isOk());
+
+        //then
+        Member member = memberRepository.findByNickname(newNickname).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        assertThat(member.getNickname()).isEqualTo(newNickname);
+    }
+
+    @Test
     @DisplayName("회원정보 수정 (닉네임 중복 오류)")
     public void updateMemberNicknameDuplicate() throws Exception {
         //given

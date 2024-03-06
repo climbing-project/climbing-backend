@@ -18,13 +18,13 @@ public class NaverOAuth2MemberInfo extends OAuth2MemberInfo {
     }
 
     @Override
-    public String getNickname() {
+    public String getEmail() {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
         if (response == null) {
             return null;
         }
 
-        return (String) response.get("nickname");
+        return (String) response.get("email");
     }
 }
