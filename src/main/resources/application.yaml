@@ -25,6 +25,10 @@ spring:
       - jwt
       - oauth
 
+  mail:
+    username: orliclimbing
+    password: ${GOOGLE_MAIL_PASSWORD}
+
 logging:
   level:
     org:
