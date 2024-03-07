@@ -139,6 +139,12 @@ public class MemberController {
     @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        return "/";
+        return "/home";
     }
+
+    @GetMapping("/accessDenied")
+    public String accessDenied() {
+        return ("access-denied page");
+    }
+    
 }

@@ -44,19 +44,19 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             member.authorizeUser();
             memberRepository.saveAndFlush(member);
             String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), Role.USER.getKey());
+            response.addHeader(accessHeader, "Bearer " + accessToken);
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/members/oauth2/join")
                     .queryParam("email", member.getEmail())
-                    .queryParam("accessToken", accessToken)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
-            loginSuccess(response, oAuth2User);
+            loginSuccess(request, response, oAuth2User);
         }
     }
 
-    private void loginSuccess(HttpServletResponse response, CustomOAuth2Member oAuth2User) {
+    private void loginSuccess(HttpServletRequest request, HttpServletResponse response, CustomOAuth2Member oAuth2User) throws IOException {
         log.info("OAuth2.0 기존 사용자 로그인");
         Member member = memberRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         if (member.isBlocked()) {
@@ -71,7 +71,14 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         response.addHeader(accessHeader, "Bearer " + accessToken);
         response.addHeader(refreshHeader, "Bearer " + refreshToken);
 
-        jwtService.sendAccessTokenAndRefreshToken(response, accessToken, refreshToken);
         jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
+
+        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/login")
+                .build()
+                .encode(StandardCharsets.UTF_8)
+                .toUriString();
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+
+//        jwtService.sendAccessTokenAndRefreshToken(response, accessToken, refreshToken);
     }
 }

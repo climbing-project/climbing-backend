@@ -64,6 +64,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
+                                .requestMatchers("/members/jwt-test").authenticated()
                                 .requestMatchers("/", "/h2-console/**", "/members/**", "/gyms/**").permitAll()
                                 .anyRequest().authenticated())
                 .logout((logout) ->
@@ -74,6 +75,9 @@ public class SecurityConfig {
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2MemberService))
                                 .successHandler(oAuth2LoginSuccessHandler)
                                 .failureHandler(oAuth2LoginFailureHandler)
+                )
+                .exceptionHandling((exceptionHandling) ->
+                        exceptionHandling.accessDeniedPage("/members/accessDenied")
                 );
         http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
         http.addFilterAfter(jsonAuthenticationFilter(), JwtAuthenticationFilter.class);
