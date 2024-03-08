@@ -30,14 +30,13 @@ public class MemberController {
 
     @PostMapping("/join")
     @ResponseStatus(HttpStatus.OK)
-    public String join(@Valid @RequestBody MemberJoinDto memberJoinDto) throws Exception {
+    public void join(@Valid @RequestBody MemberJoinDto memberJoinDto) throws Exception {
         memberService.join(memberJoinDto);
         EmailInfo emailInfo = EmailInfo.builder()
                 .receiver(memberJoinDto.email())
                 .title("[오르리]" + memberJoinDto.nickname() + "님 가입을 진심으로 환영합니다.")
                 .build();
         emailService.sendJoinEmail(emailInfo);
-        return "Join success";
     }
 
     @PutMapping("/update")
@@ -87,8 +86,7 @@ public class MemberController {
     }
 
     @GetMapping("/oauth2/join") //oauth redirect url
-    public String oauthSignUp() throws Exception {
-        return "oauth2-join-page";
+    public void oauthSignUp() {
     }
 
     @PostMapping("/emailAuth")
@@ -137,14 +135,13 @@ public class MemberController {
 
     @GetMapping("/logout")
     @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-        return "/home";
     }
 
     @GetMapping("/accessDenied")
     public String accessDenied() {
         return ("access-denied page");
     }
-    
+
 }
