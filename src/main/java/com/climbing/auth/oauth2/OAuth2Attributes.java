@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Map;
-import java.util.UUID;
 
 @Getter
 public class OAuth2Attributes {
@@ -58,8 +57,7 @@ public class OAuth2Attributes {
         return Member.builder()
                 .socialType(socialType)
                 .socialId(oAuth2MemberInfo.getId())
-                .email(UUID.randomUUID() + "@socialMember.com")
-                .nickname(oAuth2MemberInfo.getNickname())
+                .email(oAuth2MemberInfo.getEmail())
                 .role(Role.GUEST)
                 .build();
     }

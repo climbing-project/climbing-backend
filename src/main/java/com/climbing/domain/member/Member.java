@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Table(name = "MEMBER")
+@Table(name = "MEMBERS")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,6 +33,14 @@ public class Member {
     private String socialId;
 
     private String refreshToken;
+
+    private boolean isBlocked = false;
+
+//    @OneToMany(mappedBy = "member", orphanRemoval = true)
+//    private List<Question> qnaBoardList;
+//
+//    @OneToMany(mappedBy = "member", orphanRemoval = true)
+//    private List<Answer> answers;
 
     public void authorizeUser() {
         this.role = Role.USER;

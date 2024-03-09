@@ -17,5 +17,4 @@ public class MemberDto {
         this.email = member.getEmail();
         this.nickname = member.getNickname();
     }
-
 }

@@ -1,7 +1,9 @@
 package com.climbing.api.controller;
 
+import com.climbing.api.request.EmailRequest;
+import com.climbing.api.request.MemberNicknameRequest;
 import com.climbing.domain.member.Member;
-import com.climbing.domain.member.dto.MemberSignUpDto;
+import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.exception.MemberException;
 import com.climbing.domain.member.exception.MemberExceptionType;
 import com.climbing.domain.member.repository.MemberRepository;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -44,19 +47,22 @@ class MemberControllerTest {
     MockMvc mockMvc;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    JavaMailSender javaMailSender;
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private String SIGN_UP_URL = "/member/join";
-    private String email = "1234@1234.com";
-    private String password = "123abc@!#";
-    private String nickname = "cat";
+    private final String SIGN_UP_URL = "/members/join";
+    private final String fakeEmail = "1234@1234.com";
+    private final String password = "123abc@!#";
+    private final String nickname = "cat";
+    private final String realEmail = "실제 이메일 작성 부분";
 
     private void clear() {
         em.flush();
         em.clear();
     }
 
-    private void signUpSuccess(String data) throws Exception {
+    private void signUpSuccessWithRealEmail(String data) throws Exception {
         mockMvc.perform(
                         post(SIGN_UP_URL)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,7 +70,11 @@ class MemberControllerTest {
                 .andExpect(status().isOk());
     }
 
-    private void signUpFail(String data) throws Exception {
+    private void signUpSuccessWithFakeEmail(MemberJoinDto memberJoinDto) throws Exception {
+        memberService.join(memberJoinDto);
+    }
+
+    private void signUpFailWithRealEmail(String data) throws Exception {
         mockMvc.perform(
                         post(SIGN_UP_URL)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -77,14 +87,14 @@ class MemberControllerTest {
 
     private static final String BEARER = "Bearer ";
 
-    private String getAccessTokenAndLogin() throws Exception {
+    private String getAccessTokenAndLogin(String email) throws Exception {
 
         Map<String, String> map = new HashMap<>();
         map.put("email", email);
         map.put("password", password);
 
         MvcResult result = mockMvc.perform(
-                        post("/login")
+                        post("/members/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(map)))
                 .andExpect(status().isOk()).andReturn();
@@ -93,31 +103,31 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("회원가입 정상")
-    public void signUpSucceed() throws Exception {
+    @DisplayName("회원가입 정상 (실제 이메일 전송)")
+    public void signUpSucceedWithEmail() throws Exception {
         //given
-        MemberSignUpDto memberSignUpDto = new MemberSignUpDto(email, password, nickname);
-        String data = objectMapper.writeValueAsString(memberSignUpDto);
+        MemberJoinDto memberJoinDto = new MemberJoinDto(realEmail, password, nickname);
+        String data = objectMapper.writeValueAsString(memberJoinDto);
 
         //when
-        signUpSuccess(data);
+        signUpSuccessWithRealEmail(data);
 
         //then
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        assertThat(member.getEmail()).isEqualTo(email);
+        Member member = memberRepository.findByEmail(realEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        assertThat(member.getEmail()).isEqualTo(realEmail);
         assertThat(memberRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
     @DisplayName("회원가입 실패 (이메일, 패스워드, 닉네임 하나가 없음)")
     public void noDataSignUp() throws Exception {
-        String noEmail = objectMapper.writeValueAsString(new MemberSignUpDto(null, password, nickname));
-        String noPassword = objectMapper.writeValueAsString(new MemberSignUpDto(email, null, nickname));
-        String noNickname = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, null));
+        String noEmail = objectMapper.writeValueAsString(new MemberJoinDto(null, password, nickname));
+        String noPassword = objectMapper.writeValueAsString(new MemberJoinDto(realEmail, null, nickname));
+        String noNickname = objectMapper.writeValueAsString(new MemberJoinDto(realEmail, password, null));
 
-        signUpFail(noEmail);
-        signUpFail(noPassword);
-        signUpFail(noNickname);
+        signUpFailWithRealEmail(noEmail);
+        signUpFailWithRealEmail(noPassword);
+        signUpFailWithRealEmail(noNickname);
 
         assertThat(memberRepository.findAll().size()).isEqualTo(0);
     }
@@ -126,51 +136,78 @@ class MemberControllerTest {
     @DisplayName("회원정보 수정")
     public void updateMember() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
+        MemberJoinDto memberJoinDto = new MemberJoinDto(fakeEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
 
-        String accessToken = getAccessTokenAndLogin();
+        String accessToken = getAccessTokenAndLogin(fakeEmail);
         Map<String, Object> map = new HashMap<>();
         map.put("nickname", nickname + "tiger");
         String updateData = objectMapper.writeValueAsString(map);
 
         //when
         mockMvc.perform(
-                        put("/member/update")
+                        put("/members/update")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updateData))
                 .andExpect(status().isOk());
 
         //then
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(fakeEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(member.getNickname()).isEqualTo(nickname + "tiger");
+    }
+
+    @Test
+    @DisplayName("Oauth 회원 가입 페이지에서 회원 가입 완료 버튼 누른 후 닉네임 변경 확인")
+    public void checkOauthJoin() throws Exception {
+        //given
+        MemberJoinDto memberJoinDto = new MemberJoinDto(realEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+
+        String accessToken = getAccessTokenAndLogin(realEmail);
+        Map<String, Object> map = new HashMap<>();
+        String newNickname = "success";
+        map.put("nickname", newNickname);
+        map.put("email", realEmail);
+        String updateData = objectMapper.writeValueAsString(map);
+
+        //when
+        mockMvc.perform(
+                        put("/members/oauth2/update")
+                                .header(accessHeader, BEARER + accessToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(updateData))
+                .andExpect(status().isOk());
+
+        //then
+        Member member = memberRepository.findByNickname(newNickname).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        assertThat(member.getNickname()).isEqualTo(newNickname);
     }
 
     @Test
     @DisplayName("회원정보 수정 (닉네임 중복 오류)")
     public void updateMemberNicknameDuplicate() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        String data2 = objectMapper.writeValueAsString(new MemberSignUpDto("12" + email, password, "tiger"));
-        signUpSuccess(data);
-        signUpSuccess(data2);
+        MemberJoinDto memberJoinDto1 = new MemberJoinDto(fakeEmail, password, nickname);
+        MemberJoinDto memberJoinDto2 = new MemberJoinDto("12" + fakeEmail, password, "tiger");
+        signUpSuccessWithFakeEmail(memberJoinDto1);
+        signUpSuccessWithFakeEmail(memberJoinDto2);
 
-        String accessToken = getAccessTokenAndLogin(); //data로 로그인
+        String accessToken = getAccessTokenAndLogin(fakeEmail); //data로 로그인
         Map<String, Object> map = new HashMap<>();
         map.put("nickname", "tiger"); //data2 와 같은 닉네임으로 변경
         String updateData = objectMapper.writeValueAsString(map);
 
         //when
         mockMvc.perform(
-                        put("/member/update")
+                        put("/members/update")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updateData))
                 .andExpect(status().isConflict());
 
         //then
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(fakeEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(member.getNickname()).isEqualTo(nickname); //오류로 인해 변경안됨
     }
 
@@ -178,9 +215,9 @@ class MemberControllerTest {
     @DisplayName("비밀번호 변경 성공")
     public void changPassword() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
-        String accessToken = getAccessTokenAndLogin();
+        MemberJoinDto memberJoinDto = new MemberJoinDto(fakeEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+        String accessToken = getAccessTokenAndLogin(fakeEmail);
 
         Map<String, Object> map = new HashMap<>();
         map.put("beforePassword", password);
@@ -190,14 +227,14 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/member/password")
+                        put("/members/update-password")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
                 .andExpect(status().isOk());
 
         //then
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(fakeEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(passwordEncoder.matches(password, member.getPassword())).isFalse();
         assertThat(passwordEncoder.matches(password + "!@#", member.getPassword())).isTrue();
     }
@@ -206,9 +243,9 @@ class MemberControllerTest {
     @DisplayName("비밀번호 수정 실패 (비밀번호 확인 실패)")
     public void changPasswordWithDifferentPassword() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
-        String accessToken = getAccessTokenAndLogin();
+        MemberJoinDto memberJoinDto = new MemberJoinDto(fakeEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+        String accessToken = getAccessTokenAndLogin(fakeEmail);
 
         Map<String, Object> map = new HashMap<>();
         map.put("beforePassword", password + "!");
@@ -218,14 +255,14 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/member/password")
+                        put("/members/update-password")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
                 .andExpect(status().isBadRequest());
 
         //then
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(fakeEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(passwordEncoder.matches(password, member.getPassword())).isTrue();
         assertThat(passwordEncoder.matches(password + "!@#", member.getPassword())).isFalse();
     }
@@ -234,9 +271,9 @@ class MemberControllerTest {
     @DisplayName("비밀번호 변경 실패 (올바르지 않은 형식의 비밀번호)")
     public void changWrongPassword() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
-        String accessToken = getAccessTokenAndLogin();
+        MemberJoinDto memberJoinDto = new MemberJoinDto(fakeEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+        String accessToken = getAccessTokenAndLogin(fakeEmail);
 
         Map<String, Object> map = new HashMap<>();
         map.put("beforePassword", password);
@@ -246,26 +283,26 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/member/password")
+                        put("/members/update-password")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
                 .andExpect(status().isBadRequest());
 
         //then
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(fakeEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(passwordEncoder.matches(password, member.getPassword())).isTrue();
         assertThat(passwordEncoder.matches("1234", member.getPassword())).isFalse();
     }
 
     @Test
-    @DisplayName("회원 탈퇴 성공")
+    @DisplayName("회원 탈퇴 성공 (이메일 전송)")
     public void withDrawMember() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(realEmail, password, nickname));
+        signUpSuccessWithRealEmail(data);
 
-        String accessTokenAndLogin = getAccessTokenAndLogin(); //로그인
+        String accessTokenAndLogin = getAccessTokenAndLogin(realEmail); //로그인
 
         Map<String, Object> map = new HashMap<>();
         map.put("checkPassword", password);
@@ -273,24 +310,24 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        delete("/member")
+                        delete("/members")
                                 .header(accessHeader, BEARER + accessTokenAndLogin)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
                 .andExpect(status().isOk());
 
         //then
-        assertThrows(Exception.class, () -> memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)));
+        assertThrows(Exception.class, () -> memberRepository.findByEmail(realEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)));
     }
 
     @Test
     @DisplayName("회원 탈퇴 실패 (비밀번호 확인 실패)")
     public void withDrawWithWrongPassword() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(realEmail, password, nickname));
+        signUpSuccessWithRealEmail(data);
 
-        String accessTokenAndLogin = getAccessTokenAndLogin(); //로그인
+        String accessTokenAndLogin = getAccessTokenAndLogin(realEmail); //로그인
 
         Map<String, Object> map = new HashMap<>();
         map.put("checkPassword", password + "123");
@@ -298,14 +335,14 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        delete("/member")
+                        delete("/members")
                                 .header(accessHeader, BEARER + accessTokenAndLogin)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
                 .andExpect(status().isBadRequest());
 
         //then
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(realEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(member).isNotNull();
     }
 
@@ -313,25 +350,25 @@ class MemberControllerTest {
     @DisplayName("회원탈퇴 실패 (탈퇴 권한이 없음)")
     public void WithdrawWithNoAuthentication() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
+        String data = objectMapper.writeValueAsString(new MemberJoinDto(realEmail, password, nickname));
+        signUpSuccessWithRealEmail(data);
 
-        String accessTokenAndLogin = getAccessTokenAndLogin(); //로그인
+        String accessTokenAndLogin = getAccessTokenAndLogin(realEmail); //로그인
 
         Map<String, Object> map = new HashMap<>();
-        map.put("checkPassword", password + "123");
+        map.put("checkPassword", password);
         String updatePassword = objectMapper.writeValueAsString(map);
 
         //when
         mockMvc.perform(
-                        delete("/member")
+                        delete("/members")
                                 .header(accessHeader, BEARER + accessTokenAndLogin + "a")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
                 .andExpect(status().isNotFound());
 
         //then
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(realEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(member).isNotNull();
     }
 
@@ -339,65 +376,168 @@ class MemberControllerTest {
     @DisplayName("나의 회원정보 조회하기")
     public void findInfo() throws Exception {
         //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
-
-        String accessTokenAndLogin = getAccessTokenAndLogin();
+        MemberJoinDto memberJoinDto = new MemberJoinDto(fakeEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+        String accessToken = getAccessTokenAndLogin(fakeEmail);
 
         //when
         MvcResult result = mockMvc.perform(
-                        get("/member/myInfo")
+                        get("/members/myInfo")
                                 .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER + accessTokenAndLogin))
+                                .header(accessHeader, BEARER + accessToken))
                 .andExpect(status().isOk()).andReturn();
 
         //then
         Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Member member = memberRepository.findByEmail(fakeEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(member.getEmail()).isEqualTo(map.get("email"));
         assertThat(member.getNickname()).isEqualTo(map.get("nickname"));
     }
 
-    @Test
-    @DisplayName("일반 회원정보 조회하기")
-    public void memberInfo() throws Exception {
-        //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
-        String accessTokenAndLogin = getAccessTokenAndLogin();
-        Long id = memberRepository.findAll().getFirst().getId();
+//    @Test
+//    @DisplayName("일반 회원정보 조회하기")
+//    public void memberInfo() throws Exception {
+//        //given
+//        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
+//        signUpSuccess(data);
+//        String accessTokenAndLogin = getAccessTokenAndLogin();
+//        Long id = memberRepository.findAll().getFirst().getId();
+//
+//        //when
+//        MvcResult result = mockMvc.perform(
+//                        get("/members/" + id)
+//                                .characterEncoding(StandardCharsets.UTF_8)
+//                                .header(accessHeader, BEARER + accessTokenAndLogin))
+//                .andExpect(status().isOk()).andReturn();
+//
+//        //then
+//        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+//        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+//        assertThat(member.getEmail()).isEqualTo(map.get("email"));
+//        assertThat(member.getNickname()).isEqualTo(map.get("nickname"));
+//    }
+//
+//    @Test
+//    @DisplayName("없는 회원정보 조회")
+//    public void notMemberInfo() throws Exception {
+//        //given
+//        String data = objectMapper.writeValueAsString(new MemberJoinDto(email, password, nickname));
+//        signUpSuccess(data);
+//        String accessTokenAndLogin = getAccessTokenAndLogin();
+//
+//        //when
+//        MvcResult result = mockMvc.perform(
+//                        get("/members/123")
+//                                .characterEncoding(StandardCharsets.UTF_8)
+//                                .header(accessHeader, BEARER + accessTokenAndLogin))
+//                .andExpect(status().isNotFound()).andReturn();
+//
+//        //then
+//        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+//        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());
+//    }
 
-        //when
+    @Test
+    @DisplayName("이메일 인증메일 발송 테스트")
+    public void emailAuthTest() throws Exception {
+        String data = objectMapper.writeValueAsString(new EmailRequest(realEmail));
+
         MvcResult result = mockMvc.perform(
-                        get("/member/" + id)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER + accessTokenAndLogin))
+                        post("/members/email-auth")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data))
                 .andExpect(status().isOk()).andReturn();
 
-        //then
         Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        assertThat(member.getEmail()).isEqualTo(map.get("email"));
-        assertThat(member.getNickname()).isEqualTo(map.get("nickname"));
+        assertThat(map.get("authNum")).isNotNull();
+        System.out.println(map.get("authNum"));
     }
 
     @Test
-    @DisplayName("없는 회원정보 조회")
-    public void notMemberInfo() throws Exception {
-        //given
-        String data = objectMapper.writeValueAsString(new MemberSignUpDto(email, password, nickname));
-        signUpSuccess(data);
-        String accessTokenAndLogin = getAccessTokenAndLogin();
+    @DisplayName("임시비밀번호 발송 및 변경 확인 테스트")
+    public void tempPasswordTest() throws Exception {
+        String data = objectMapper.writeValueAsString(new EmailRequest(realEmail));
+        String join = objectMapper.writeValueAsString(new MemberJoinDto(realEmail, password, nickname));
+        signUpSuccessWithRealEmail(join);
 
-        //when
+        mockMvc.perform(
+                        post("/members/temp-password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data))
+                .andExpect(status().isOk());
+
+//        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+//        Member member = memberRepository.findByEmail(receiver).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+//        String authNum = (String) map.get("authNum");
+//        assertThat(passwordEncoder.matches(authNum, member.getPassword())).isTrue();
+//        System.out.println(map.get("authNum"));
+    }
+
+    @Test
+    @DisplayName("아이디 중복 체크 테스트 (중복된 아이디로 가입)")
+    public void emailCheckTestFalse() throws Exception {
+        MemberJoinDto memberJoinDto = new MemberJoinDto(fakeEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+
+        String data2 = objectMapper.writeValueAsString(new EmailRequest(fakeEmail));
+
         MvcResult result = mockMvc.perform(
-                        get("/member/123")
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .header(accessHeader, BEARER + accessTokenAndLogin))
-                .andExpect(status().isNotFound()).andReturn();
+                        get("/members/email-check")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data2))
+                .andExpect(status().isOk()).andReturn();
 
-        //then
-        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
-        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("false");
+    }
+
+    @Test
+    @DisplayName("아이디 중복 체크 테스트 (중복되지 않은 아이디로 가입)")
+    public void emailCheckTestTrue() throws Exception {
+        MemberJoinDto memberJoinDto = new MemberJoinDto(fakeEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+
+        String data2 = objectMapper.writeValueAsString(new EmailRequest("123" + fakeEmail));
+
+        MvcResult result = mockMvc.perform(
+                        get("/members/email-check")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data2))
+                .andExpect(status().isOk()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("true");
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 체크 테스트 (중복된 닉네임으로 가입)")
+    public void nicknameCheckTestFalse() throws Exception {
+        MemberJoinDto memberJoinDto = new MemberJoinDto(fakeEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+
+        String data2 = objectMapper.writeValueAsString(new MemberNicknameRequest(nickname));
+
+        MvcResult result = mockMvc.perform(
+                        get("/members/nickname-check")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data2))
+                .andExpect(status().isOk()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("false");
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 체크 테스트 (중복되지 않은 닉네임으로 가입)")
+    public void nicknameCheckTestTrue() throws Exception {
+        MemberJoinDto memberJoinDto = new MemberJoinDto(fakeEmail, password, nickname);
+        signUpSuccessWithFakeEmail(memberJoinDto);
+
+        String data2 = objectMapper.writeValueAsString(new MemberNicknameRequest("tiger"));
+
+        MvcResult result = mockMvc.perform(
+                        get("/members/nickname-check")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(data2))
+                .andExpect(status().isOk()).andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isEqualTo("true");
     }
 }

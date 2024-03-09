@@ -13,7 +13,7 @@ public class GoogleOAuth2MemberInfo extends OAuth2MemberInfo {
     }
 
     @Override
-    public String getNickname() {
-        return (String) attributes.get("name");
+    public String getEmail() {
+        return (String) attributes.get("email");
     }
 }

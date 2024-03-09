@@ -1,6 +1,8 @@
 package com.climbing.auth.oauth2;
 
 import com.climbing.domain.member.Member;
+import com.climbing.domain.member.exception.MemberException;
+import com.climbing.domain.member.exception.MemberExceptionType;
 import com.climbing.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +71,9 @@ public class CustomOAuth2MemberService implements OAuth2UserService<OAuth2UserRe
     }
 
     private Member saveMember(OAuth2Attributes oAuth2Attributes, SocialType socialType) {
+        if (memberRepository.findByEmail(oAuth2Attributes.getOAuth2MemberInfo().getEmail()).isPresent()) {
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_EMAIL);
+        }
         Member createdMember = oAuth2Attributes.toEntity(socialType, oAuth2Attributes.getOAuth2MemberInfo());
         return memberRepository.save(createdMember);
     }

@@ -1,9 +1,10 @@
 package com.climbing.domain.member.service;
 
+import com.climbing.api.request.OauthJoinRequest;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.dto.MemberDto;
-import com.climbing.domain.member.dto.MemberSignUpDto;
+import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.dto.MemberUpdateDto;
 import com.climbing.domain.member.exception.MemberException;
 import com.climbing.domain.member.exception.MemberExceptionType;
@@ -23,12 +24,12 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void signUp(MemberSignUpDto memberSignUpDto) throws BaseException {
-        Member member = memberSignUpDto.toEntity();
+    public void join(MemberJoinDto memberJoinDto) throws BaseException {
+        Member member = memberJoinDto.toEntity();
         member.authorizeUser();
         member.encodePassword(passwordEncoder);
 
-        if (memberRepository.findByEmail(memberSignUpDto.email()).isPresent()) {
+        if (memberRepository.findByEmail(memberJoinDto.email()).isPresent()) {
             throw new MemberException(MemberExceptionType.ALREADY_EXIST_EMAIL);
         }
 
@@ -45,6 +46,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public void oauthJoin(OauthJoinRequest oauthJoinRequest) throws BaseException {
+        Member member = memberRepository.findByEmail(oauthJoinRequest.email()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if (memberRepository.findByNickname(oauthJoinRequest.nickname()).isPresent()) {
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_NICKNAME);
+        }
+        member.updateNickname(oauthJoinRequest.nickname());
+    }
+
+    @Override
     public void updatePassword(String beforePassword, String afterPassword, String email) throws BaseException {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
@@ -53,6 +63,13 @@ public class MemberServiceImpl implements MemberService {
         }
 
         member.updatePassword(passwordEncoder, afterPassword);
+    }
+
+    @Override
+    public void setTempPassword(String email, String tempPassword) throws BaseException {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+        member.updatePassword(passwordEncoder, tempPassword);
     }
 
     @Override
@@ -76,5 +93,21 @@ public class MemberServiceImpl implements MemberService {
     public MemberDto getMyInfo() throws BaseException {
         Member member = memberRepository.findByEmail(GetLoginMember.getLoginMemberEmail()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberDto(member);
+    }
+
+    @Override
+    public boolean checkEmail(String email) throws BaseException {
+        return memberRepository.findByEmail(email).isPresent();
+    }
+
+    @Override
+    public boolean checkNickname(String nickname) throws BaseException {
+        return memberRepository.findByNickname(nickname).isPresent();
+    }
+
+    @Override
+    public String findMemberEmailToNickname(String email) throws BaseException {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        return member.getNickname();
     }
 }

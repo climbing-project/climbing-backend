@@ -26,6 +26,9 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -44,6 +47,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(Collections.singletonList("*"));
+                    config.setAllowedMethods(Collections.singletonList("*"));
+                    config.setAllowCredentials(true);
+                    config.setAllowedHeaders(Collections.singletonList("*"));
+                    config.setMaxAge(3600L); //1시간
+                    return config;
+                }))
                 .headers((headerConfig) ->
                         headerConfig.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .sessionManagement(session -> session
@@ -52,28 +64,26 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/", "/h2-console/**", "/member/**", "/gyms/**").permitAll()
+                                .requestMatchers("/members/jwt-test").authenticated()
+                                .requestMatchers("/", "/h2-console/**", "/members/**", "/gyms/**").permitAll()
                                 .anyRequest().authenticated())
+                .logout((logout) ->
+                        logout
+                                .deleteCookies("JSESSIONID"))
                 .oauth2Login((oauth2Login) ->
                         oauth2Login
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2MemberService))
                                 .successHandler(oAuth2LoginSuccessHandler)
                                 .failureHandler(oAuth2LoginFailureHandler)
+                )
+                .exceptionHandling((exceptionHandling) ->
+                        exceptionHandling.accessDeniedPage("/members/accessDenied")
                 );
-        http.addFilterAfter(jsonAuthenticationFilter(), LogoutFilter.class);
         http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
-        http.addFilterBefore(jwtAuthenticationFilter(), JsonAuthenticationFilter.class);
-
+        http.addFilterAfter(jsonAuthenticationFilter(), JwtAuthenticationFilter.class);
 
         return http.build();
     }
-
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//                .withUser("user").password(passwordEncoder().encode("1234")).roles("USER")
-//                .and()
-//                .withUser("admin").password(passwordEncoder().encode("1234")).roles("ADMIN");
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

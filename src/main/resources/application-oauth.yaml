@@ -21,7 +21,6 @@ spring:
             scope:
               - name
               - email
-              - nickname
             client-name: Naver
 
           kakao:
@@ -31,7 +30,7 @@ spring:
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             scope:
-              - profile_nickname
+              - account_email
             client-name: Kakao
 
         provider:

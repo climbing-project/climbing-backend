@@ -23,7 +23,7 @@ import java.security.SecureRandom;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private static final String IGNORE_URL = "/login";
+    private static final String IGNORE_URL = "/members/login";
 
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         memberRepository.findByRefreshToken(refreshToken)
                 .ifPresent(member -> {
                     String reissuedRefreshToken = reissueRefreshToken(member);
-                    jwtService.sendAccessTokenAndRefreshToken(response, jwtService.createAccessToken(member.getEmail()),
+                    jwtService.sendAccessTokenAndRefreshToken(response, jwtService.createAccessToken(member.getEmail(), String.valueOf(member.getRole())),
                             reissuedRefreshToken);
                 });
     }
