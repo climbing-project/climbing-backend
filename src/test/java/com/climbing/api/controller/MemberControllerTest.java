@@ -227,7 +227,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/members/updatePassword")
+                        put("/members/update-password")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -255,7 +255,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/members/password")
+                        put("/members/update-password")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -283,7 +283,7 @@ class MemberControllerTest {
 
         //when
         mockMvc.perform(
-                        put("/members/password")
+                        put("/members/update-password")
                                 .header(accessHeader, BEARER + accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
@@ -443,7 +443,7 @@ class MemberControllerTest {
         String data = objectMapper.writeValueAsString(new EmailRequest(realEmail));
 
         MvcResult result = mockMvc.perform(
-                        post("/members/emailAuth")
+                        post("/members/email-auth")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(data))
                 .andExpect(status().isOk()).andReturn();
@@ -461,7 +461,7 @@ class MemberControllerTest {
         signUpSuccessWithRealEmail(join);
 
         mockMvc.perform(
-                        post("/members/tempPassword")
+                        post("/members/temp-password")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(data))
                 .andExpect(status().isOk());
@@ -482,7 +482,7 @@ class MemberControllerTest {
         String data2 = objectMapper.writeValueAsString(new EmailRequest(fakeEmail));
 
         MvcResult result = mockMvc.perform(
-                        get("/members/emailCheck")
+                        get("/members/email-check")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(data2))
                 .andExpect(status().isOk()).andReturn();
@@ -499,7 +499,7 @@ class MemberControllerTest {
         String data2 = objectMapper.writeValueAsString(new EmailRequest("123" + fakeEmail));
 
         MvcResult result = mockMvc.perform(
-                        get("/members/emailCheck")
+                        get("/members/email-check")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(data2))
                 .andExpect(status().isOk()).andReturn();
@@ -516,7 +516,7 @@ class MemberControllerTest {
         String data2 = objectMapper.writeValueAsString(new MemberNicknameRequest(nickname));
 
         MvcResult result = mockMvc.perform(
-                        get("/members/nicknameCheck")
+                        get("/members/nickname-check")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(data2))
                 .andExpect(status().isOk()).andReturn();
@@ -533,7 +533,7 @@ class MemberControllerTest {
         String data2 = objectMapper.writeValueAsString(new MemberNicknameRequest("tiger"));
 
         MvcResult result = mockMvc.perform(
-                        get("/members/nicknameCheck")
+                        get("/members/nickname-check")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(data2))
                 .andExpect(status().isOk()).andReturn();
