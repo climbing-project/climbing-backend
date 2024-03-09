@@ -58,7 +58,7 @@ public class MemberController {
         emailService.sendJoinEmail(emailInfo);
     }
 
-    @PutMapping("/updatePassword")
+    @PutMapping("/update-password")
     @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
@@ -89,7 +89,7 @@ public class MemberController {
     public void oauthSignUp() {
     }
 
-    @PostMapping("/emailAuth")
+    @PostMapping("/email-auth")
     public ResponseEntity sendEmailAuthNum(@RequestBody EmailRequest request) {
         EmailInfo emailInfo = EmailInfo.builder()
                 .receiver(request.email())
@@ -104,7 +104,7 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/tempPassword")
+    @PostMapping("/temp-password")
     public ResponseEntity sendTempPassword(@RequestBody EmailRequest request) {
         EmailInfo emailInfo = EmailInfo.builder()
                 .receiver(request.email())
@@ -121,13 +121,13 @@ public class MemberController {
 //        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/emailCheck")
+    @GetMapping("/email-check")
     public ResponseEntity<Boolean> checkEmail(@RequestBody EmailRequest request) throws Exception {
         boolean result = !memberService.checkEmail(request.email());
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/nicknameCheck")
+    @GetMapping("/nickname-check")
     public ResponseEntity<Boolean> checkNickname(@RequestBody MemberNicknameRequest request) throws Exception {
         boolean result = !memberService.checkNickname(request.nickname());
         return ResponseEntity.ok(result);
@@ -139,7 +139,7 @@ public class MemberController {
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
     }
 
-    @GetMapping("/accessDenied")
+    @GetMapping("/access-denied")
     public String accessDenied() {
         return ("access-denied page");
     }
