@@ -55,7 +55,7 @@ class MemberControllerTest {
     private final String fakeEmail = "1234@1234.com";
     private final String password = "123abc@!#";
     private final String nickname = "cat";
-    private final String realEmail = "실제 이메일 작성 부분";
+    private final String realEmail = "oruri.6@gmail.com";
 
     private void clear() {
         em.flush();

@@ -26,7 +26,7 @@ spring:
       - oauth
 
   mail:
-    username: orliclimbing
+    username: oruri.6@gmail.com
     password: ${GOOGLE_MAIL_PASSWORD}
 
 logging:
