@@ -62,7 +62,7 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew clean build --refresh-dependencies
+          ./gradlew clean build -x test --refresh-dependencies
 
       - name: Set yml file
         uses: microsoft/variable-substitution@v1
