@@ -20,7 +20,7 @@ spring:
         use_sql_comments: true
 
   mail:
-    username: oruri.6@gmail.com
+    username: orliclimbing
     password: ${GOOGLE_MAIL_PASSWORD}
 
   security:

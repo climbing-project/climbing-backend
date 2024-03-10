@@ -37,6 +37,7 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: backend-dev
+  RESOURCE_PATH: ./src/main/resources/application.yaml
 
 permissions:
   contents: read
@@ -62,6 +63,20 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew clean build --refresh-dependencies
+
+      - name: Set yml file
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }}
+        env:
+          spring.mail.password: ${{ secrets.GOOGLE_MAIL_PASSWORD }}
+          spring.security.oauth2.client.registration.google.client-id: ${{ secrets.GOOGLE_ID }}
+          spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_SECRET }}
+          spring.security.oauth2.client.registration.naver.client-id: ${{ secrets.NAVER_ID }}
+          spring.security.oauth2.client.registration.naver.client-secret: ${{ secrets.NAVER_SECRET }}
+          spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_ID }}
+          spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_SECRET }}
+          jwt.secretKey: ${{ secrets.JWT_SECRET_KEY }}
 
   deploy:
     name: Deploy
