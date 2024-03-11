@@ -78,7 +78,7 @@ jobs:
           script_stop: true
           envs: IMAGE_TAG
           script: |
-            ./ssh-backend.sh -p "${{ secrets.AWS_PRIVATE_PORT }}" -t $IMAGE_TAG
+            ./ssh-backend.sh -p "${{ secrets.AWS_EC2_CONTAINER_PORT }}" -t $IMAGE_TAG
 
       - name: Remove Github Actions IP From Security Group
         run: |
