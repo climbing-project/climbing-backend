@@ -35,7 +35,6 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: backend-dev
-  RESOURCE_PATH: ./src/main/resources/application.yaml
 
 permissions:
   contents: read
