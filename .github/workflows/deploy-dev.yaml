@@ -69,6 +69,8 @@ jobs:
 
       - name: SSH Commands
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE_TAG: ${{ github.sha }}
         with:
           host: ${{ secrets.AWS_DEPLOY_SSH_HOST }}
           username: ${{ secrets.AWS_DEPLOY_SSH_USERNAME }}
