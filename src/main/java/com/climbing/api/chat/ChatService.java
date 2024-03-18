@@ -31,6 +31,7 @@ public class ChatService {
     }
 
     public ChatRoom createChatRoom(String name) {
+        log.info("채팅방이 생성되었습니다.");
         ChatRoom chatRoom = ChatRoom.create(name);
         chatRoomMap.put(chatRoom.getRoomId(), chatRoom);
         return chatRoom;
