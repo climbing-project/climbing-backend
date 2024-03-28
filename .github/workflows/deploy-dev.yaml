@@ -1,0 +1,85 @@
+name: Deploy to Amazon ECS
+
+on:
+  workflow_run:
+    workflows: [ Test on Github Instance ]
+    types: [ completed ]
+    branches: [ aws-deploy, main ]
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: backend-dev
+  RESOURCE_PATH: ./src/main/resources/application.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.push.head_branch }}
+
+      - name: Set yml file
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }}
+        env:
+          spring.mail.password: ${{ secrets.GOOGLE_MAIL_PASSWORD }}
+          spring.security.oauth2.client.registration.google.client-id: ${{ secrets.GOOGLE_ID }}
+          spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_SECRET }}
+          spring.security.oauth2.client.registration.naver.client-id: ${{ secrets.NAVER_ID }}
+          spring.security.oauth2.client.registration.naver.client-secret: ${{ secrets.NAVER_SECRET }}
+          spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_ID }}
+          spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_SECRET }}
+          jwt.secretKey: ${{ secrets.JWT_SECRET_KEY }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_DEPLOY_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_DEPLOY_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Get Github Actions IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: Add Github Actions IP to Security group
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_SSH }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: SSH Commands
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        with:
+          host: ${{ secrets.AWS_DEPLOY_SSH_HOST }}
+          username: ${{ secrets.AWS_DEPLOY_SSH_USERNAME }}
+          key: ${{ secrets.AWS_DEPLOY_SSH_KEY }}
+          script_stop: true
+          envs: IMAGE_TAG
+          script: |
+            ./ssh-backend.sh -p "${{ secrets.AWS_EC2_CONTAINER_PORT }}" -t $IMAGE_TAG
+
+      - name: Remove Github Actions IP From Security Group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_SSH }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32

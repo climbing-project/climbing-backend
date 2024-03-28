@@ -1,11 +1,11 @@
 package com.climbing.domain.member;
 
+import com.climbing.auth.oauth2.SocialType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Table(name = "MEMBER")
+@Table(name = "MEMBERS")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,20 +18,33 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(nullable = false, length = 30, unique = true)
-    @Email
+    @Column(nullable = false, unique = true)
     private String email;
-
     private String password;
 
-    @Column(nullable = false, length = 30, unique = true)
+    @Column(unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(length = 1000)
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType;
+    private String socialId;
+
     private String refreshToken;
+
+    private boolean isBlocked = false;
+
+//    @OneToMany(mappedBy = "member", orphanRemoval = true)
+//    private List<Question> qnaBoardList;
+//
+//    @OneToMany(mappedBy = "member", orphanRemoval = true)
+//    private List<Answer> answers;
+
+    public void authorizeUser() {
+        this.role = Role.USER;
+    }
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
@@ -41,8 +54,20 @@ public class Member {
         this.refreshToken = null;
     }
 
+    public void updatePassword(PasswordEncoder passwordEncoder, String password) {
+        this.password = passwordEncoder.encode(password);
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     // 비밀번호 암호화
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
+    }
+
+    public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword) {
+        return passwordEncoder.matches(checkPassword, getPassword());
     }
 }
