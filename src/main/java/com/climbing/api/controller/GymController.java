@@ -48,7 +48,7 @@ public class GymController {
     }
 
     @DeleteMapping("/{gymId}")
-    public ResponseEntity<Responsible> deleteGym(@PathVariable(value = "gymId") Long gymId) {
+    public ResponseEntity<BasicResponse> deleteGym(@PathVariable(value = "gymId") Long gymId) {
         try {
             gymService.deleteGym(gymId);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -68,5 +68,4 @@ public class GymController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
 }
