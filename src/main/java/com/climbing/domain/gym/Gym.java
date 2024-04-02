@@ -1,15 +1,24 @@
 package com.climbing.domain.gym;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Builder(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
+@AllArgsConstructor
 public class Gym {
     @Id
+    @GeneratedValue
     @Getter
     private Long id;
     @Getter
@@ -37,6 +46,15 @@ public class Gym {
 
     @Getter
     private String grades;
+
+    @Getter
+    private int hits;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime modifiedAt;
 
 //    @ManyToOne
 //    @JoinColumn(name = "member_id")
