@@ -1,7 +1,6 @@
 package com.climbing.api.controller;
 
 import com.climbing.api.request.EmailRequest;
-import com.climbing.api.request.MemberNicknameRequest;
 import com.climbing.api.request.OauthJoinRequest;
 import com.climbing.auth.email.EmailAuthResponse;
 import com.climbing.auth.email.EmailInfo;
@@ -121,15 +120,15 @@ public class MemberController {
 //        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/email-check")
-    public ResponseEntity<Boolean> checkEmail(@RequestBody EmailRequest request) throws Exception {
-        boolean result = !memberService.checkEmail(request.email());
+    @GetMapping("/email-check/{email}")
+    public ResponseEntity<Boolean> checkEmail(@PathVariable("email") String email) throws Exception {
+        boolean result = !memberService.checkEmail(email);
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/nickname-check")
-    public ResponseEntity<Boolean> checkNickname(@RequestBody MemberNicknameRequest request) throws Exception {
-        boolean result = !memberService.checkNickname(request.nickname());
+    @GetMapping("/nickname-check/{nickname}")
+    public ResponseEntity<Boolean> checkNickname(@PathVariable("nickname") String nickname) throws Exception {
+        boolean result = !memberService.checkNickname(nickname);
         return ResponseEntity.ok(result);
     }
 
