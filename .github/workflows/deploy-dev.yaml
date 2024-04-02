@@ -3,7 +3,7 @@ name: Deploy to Amazon ECS
 on:
   workflow_run:
     workflows: [ Test on Github Instance ]
-    types: [ requested ]
+    types: [ in_progress ]
     branches: [ aws-deploy, main ]
 
 env:
