@@ -5,6 +5,7 @@ on:
 #    workflows: [ Test on Github Instance ]
 #    types: [ in_progress ]
 #    branches: [ aws-deploy, main ]
+  push:
   pull_request:
     types: [ opened ]
     branches: [ main ]
