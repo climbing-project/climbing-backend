@@ -1,10 +1,14 @@
 name: Deploy to Amazon ECS
 
 on:
-  workflow_run:
-    workflows: [ Test on Github Instance ]
-    types: [ in_progress ]
-    branches: [ aws-deploy, main ]
+#  workflow_run:
+#    workflows: [ Test on Github Instance ]
+#    types: [ in_progress ]
+#    branches: [ aws-deploy, main ]
+  pull_request:
+    types: [ opened ]
+    branches: [ main ]
+
 
 env:
   AWS_REGION: ap-northeast-2
