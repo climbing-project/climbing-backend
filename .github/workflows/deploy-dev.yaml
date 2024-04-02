@@ -1,15 +1,10 @@
 name: Deploy to Amazon ECS
 
 on:
-#  workflow_run:
-#    workflows: [ Test on Github Instance ]
-#    types: [ in_progress ]
-#    branches: [ aws-deploy, main ]
-  push:
-  pull_request:
-    types: [ opened ]
-    branches: [ main ]
-
+  workflow_run:
+    workflows: [ Test on Github Instance ]
+    types: [ completed ]
+    branches: [ aws-deploy, main ]
 
 env:
   AWS_REGION: ap-northeast-2
@@ -22,7 +17,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+#    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment: production
     steps:
       - name: Checkout
