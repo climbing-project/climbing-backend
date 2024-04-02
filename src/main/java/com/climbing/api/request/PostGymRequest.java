@@ -1,7 +1,10 @@
 package com.climbing.api.request;
 
 import com.climbing.api.command.PostGymCommand;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
 public class PostGymRequest {
     private String name;
     private String address;

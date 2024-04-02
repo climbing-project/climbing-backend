@@ -1,3 +1,3 @@
 package com.climbing.api.response;
 
-public interface Responsible {}
+public interface BasicResponse {}

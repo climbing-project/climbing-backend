@@ -1,9 +1,6 @@
 package com.climbing.api.controller;
 
-import com.climbing.domain.gym.Gym;
-import com.climbing.domain.gym.GymException;
-import com.climbing.domain.gym.GymService;
-import com.climbing.domain.gym.MockGym;
+import com.climbing.domain.gym.*;
 import com.climbing.global.util.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -79,10 +76,10 @@ class GymControllerTest {
     @Test
     void fail_get_gym_with_not_exists_id() throws Exception {
         long id = 2L;
-        given(gymService.findGym(anyLong())).willThrow(GymException.GymNotFoundException.class);
+        given(gymService.findGym(anyLong())).willThrow(new GymException(GymExceptionType.GYM_NOT_FOUND));
 
         mockMvc.perform(get(BASE_ENDPOINT + "/" + id))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -113,10 +110,10 @@ class GymControllerTest {
     @Test
     void fail_delete_gym_with_not_exists_id() throws Exception {
         long id = 2L;
-        doThrow(GymException.GymNotFoundException.class).when(gymService).deleteGym(anyLong());
+        doThrow(new GymException(GymExceptionType.GYM_NOT_FOUND)).when(gymService).deleteGym(anyLong());
 
         mockMvc.perform(delete(BASE_ENDPOINT + "/" + id))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
 
@@ -149,13 +146,13 @@ class GymControllerTest {
         long id = 2L;
         Gym gym = MockGym.of(id);
 
-        given(gymService.updateGym(any())).willThrow(GymException.GymNotFoundException.class);
+        given(gymService.updateGym(any())).willThrow(new GymException(GymExceptionType.GYM_NOT_FOUND));
 
         String content = JsonUtil.toJson(gym);
         mockMvc.perform(
                         put(BASE_ENDPOINT + "/" + id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 }
