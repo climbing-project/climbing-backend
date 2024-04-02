@@ -55,7 +55,7 @@ class MemberControllerTest {
     private final String fakeEmail = "1234@1234.com";
     private final String password = "123abc@!#";
     private final String nickname = "cat";
-    private final String realEmail = "WriteYourRealEmail@orli.com";
+    private final String realEmail = "실제이메일작성";
 
     private void clear() {
         em.flush();
@@ -482,9 +482,7 @@ class MemberControllerTest {
         String data2 = objectMapper.writeValueAsString(new EmailRequest(fakeEmail));
 
         MvcResult result = mockMvc.perform(
-                        get("/members/email-check")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(data2))
+                        get("/members/email-check/{email}", fakeEmail))
                 .andExpect(status().isOk()).andReturn();
 
         assertThat(result.getResponse().getContentAsString()).isEqualTo("false");
@@ -499,9 +497,7 @@ class MemberControllerTest {
         String data2 = objectMapper.writeValueAsString(new EmailRequest("123" + fakeEmail));
 
         MvcResult result = mockMvc.perform(
-                        get("/members/email-check")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(data2))
+                        get("/members/email-check/{email}", "123" + fakeEmail))
                 .andExpect(status().isOk()).andReturn();
 
         assertThat(result.getResponse().getContentAsString()).isEqualTo("true");
@@ -516,9 +512,7 @@ class MemberControllerTest {
         String data2 = objectMapper.writeValueAsString(new MemberNicknameRequest(nickname));
 
         MvcResult result = mockMvc.perform(
-                        get("/members/nickname-check")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(data2))
+                        get("/members/nickname-check/{nickname}", nickname))
                 .andExpect(status().isOk()).andReturn();
 
         assertThat(result.getResponse().getContentAsString()).isEqualTo("false");
@@ -533,9 +527,7 @@ class MemberControllerTest {
         String data2 = objectMapper.writeValueAsString(new MemberNicknameRequest("tiger"));
 
         MvcResult result = mockMvc.perform(
-                        get("/members/nickname-check")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(data2))
+                        get("/members/nickname-check/{nickname}", "tiger"))
                 .andExpect(status().isOk()).andReturn();
 
         assertThat(result.getResponse().getContentAsString()).isEqualTo("true");
