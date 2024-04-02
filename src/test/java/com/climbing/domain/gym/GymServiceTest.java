@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.access.annotation.Secured;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ class GymServiceTest {
     }
 
     @Test
-    void success_find_gym_by_id() throws GymException.GymNotFoundException {
+    void success_find_gym_by_id() {
         long id = 2L;
         Gym mockGym = MockGym.of(id);
         given(gymRepository.findById(anyLong())).willReturn(Optional.of(mockGym));
@@ -76,11 +77,11 @@ class GymServiceTest {
         given(gymRepository.existsById(anyLong())).willReturn(false);
 
         assertThatException().isThrownBy(() -> gymService.deleteGym(mockId))
-                .isInstanceOf(GymException.GymNotFoundException.class);
+                .isEqualTo(new GymException(GymExceptionType.GYM_NOT_FOUND));
     }
 
     @Test
-    void success_update_gym() throws GymException.GymNotFoundException {
+    void success_update_gym() {
         Long id = 2L;
         Gym mockGym = MockGym.of(id);
         given(gymRepository.findById(any())).willReturn(Optional.of(mockGym));
