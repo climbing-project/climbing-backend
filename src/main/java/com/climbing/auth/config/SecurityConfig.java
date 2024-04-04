@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Collections.singletonList("*"));
+                    config.setAllowedOriginPatterns(Collections.singletonList("*"));
                     config.setAllowedMethods(Collections.singletonList("*"));
                     config.setAllowCredentials(false);
                     config.setAllowedHeaders(Collections.singletonList("*"));
@@ -65,7 +65,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/members/jwt-test").authenticated()
-                                .requestMatchers("/", "/h2-console/**", "/members/**", "/gyms/**").permitAll()
+                                .requestMatchers("/ws/**", "/h2-console/**", "/members/**", "/gyms/**").permitAll()
                                 .anyRequest().authenticated())
                 .logout((logout) ->
                         logout

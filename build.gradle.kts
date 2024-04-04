@@ -27,6 +27,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("com.auth0:java-jwt:4.2.1")
     implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+    implementation("org.webjars:sockjs-client:1.5.1")
+    implementation("org.webjars:stomp-websocket:2.3.4")
 
     runtimeOnly("com.h2database:h2")
 
