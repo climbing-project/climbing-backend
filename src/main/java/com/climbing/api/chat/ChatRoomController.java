@@ -14,7 +14,7 @@ public class ChatRoomController {
 
     private final ChatService chatService;
 
-    @GetMapping("/rooms")
+    @GetMapping("/room")
     //@PreAuthorize("hasRole('ADMIN')")
     @ResponseBody
     public List<ChatRoom> room() {

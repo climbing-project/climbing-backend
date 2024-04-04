@@ -20,10 +20,10 @@ public class ChatService {
     }
 
     public List<ChatRoom> findAllRoom() {
-        List<ChatRoom> result = new ArrayList<>(chatRoomMap.values());
-        Collections.reverse(result);
+        List<ChatRoom> rooms = new ArrayList<>(chatRoomMap.values());
+        Collections.reverse(rooms);
 
-        return result;
+        return rooms;
     }
 
     public ChatRoom findById(String roomId) {

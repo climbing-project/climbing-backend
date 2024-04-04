@@ -1,17 +1,15 @@
 package com.climbing.api.chat;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatMessage {
     public enum MessageType {
-        ENTER, TALK
+        ENTER, TALK, LEAVE
     }
 
     private MessageType type;
