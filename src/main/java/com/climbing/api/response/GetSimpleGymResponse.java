@@ -1,5 +1,6 @@
 package com.climbing.api.response;
 
+import com.climbing.domain.gym.Address;
 import com.climbing.domain.gym.Gym;
 import lombok.Getter;
 
@@ -12,19 +13,21 @@ public class GetSimpleGymResponse {
     @Getter
     private final String name;
     @Getter
-    private final String address;
+    private final Address address;
 
-    private GetSimpleGymResponse(Long id, String name, String address) {
+    public GetSimpleGymResponse(Long id, String name, String jibunAddress, String roadAddress, String unitAddress) {
         this.id = id;
         this.name = name;
-        this.address = address;
+        this.address = new Address(jibunAddress, roadAddress, unitAddress);
     }
 
     public static List<GetSimpleGymResponse> from(List<Gym> gyms) {
         return gyms.stream()
                 .map(gym -> new GetSimpleGymResponse(gym.getId(),
                                                      gym.getName(),
-                                                     gym.getAddress()))
+                                                     gym.getJibunAddress(),
+                                                     gym.getRoadAddress(),
+                                                     gym.getUnitAddress()))
                 .collect(Collectors.toList());
     }
 }

@@ -38,17 +38,20 @@ public class GymService {
 
     public Long createGym(PostGymCommand command) {
         Gym gym = Gym.of(command.getName(),
-                         command.getAddress(),
-                         command.getDescription(),
-                         command.getTags(),
-                         command.getPricings(),
-                         command.getOpenHours(),
-                         command.getAccommodations(),
-                         command.getContacts(),
-                         command.getGrades()
+                         command.getAddress().jibunAddress(),
+                         command.getAddress().roadAddress(),
+                         command.getAddress().unitAddress(),
+                         command.getCoordinates().latitude(),
+                         command.getCoordinates().longitude(),
+                         null,
+                         null,
+                         null,
+                         null,
+                         null,
+                         command.getContact(),
+                         null
         );
-        gymRepository.save(gym);
-        return 2L;
+        return gymRepository.save(gym).getId();
     }
 
     public void deleteGym(Long gymId) {
@@ -64,13 +67,17 @@ public class GymService {
         }
         Gym gym = optionalGym.get();
         gym.update(command.getName(),
-                   command.getAddress(),
+                   command.getAddress().jibunAddress(),
+                   command.getAddress().roadAddress(),
+                   command.getAddress().unitAddress(),
+                   command.getCoordinates().latitude(),
+                   command.getCoordinates().longitude(),
                    command.getDescription(),
                    command.getTags(),
-                   command.getPricings(),
+                   command.getPricing(),
                    command.getOpenHours(),
                    command.getAccommodations(),
-                   command.getContacts(),
+                   command.getContact(),
                    command.getGrades());
         return gymRepository.save(gym);
     }
