@@ -1,22 +1,19 @@
 package com.climbing.api.request;
 
 import com.climbing.api.command.PostGymCommand;
+import com.climbing.domain.gym.Address;
+import com.climbing.domain.gym.Coordinates;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 public class PostGymRequest {
     private String name;
-    private String address;
-    private String description;
-    private String tags;
-    private String pricings;
-    private String openHours;
-    private String accommodations;
-    private String contacts;
-    private String grades;
+    private Address address;
+    private Coordinates coordinates;
+    private String contact;
 
     public PostGymCommand toCommand() {
-        return new PostGymCommand(name, address, description, tags, pricings, openHours, accommodations, contacts, grades);
+        return new PostGymCommand(name, address, coordinates, contact);
     }
 }

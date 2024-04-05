@@ -1,39 +1,34 @@
 package com.climbing.api.command;
 
+import com.climbing.domain.gym.Address;
+import com.climbing.domain.gym.Coordinates;
 import lombok.Getter;
 
+@Getter
 public class UpdateGymCommand {
-    @Getter
     private Long id;
-    @Getter
     private String name;
-    @Getter
-    private String address;
-    @Getter
+    private Address address;
+    private Coordinates coordinates;
     private String description;
-    @Getter
     private String tags;
-    @Getter
-    private String pricings;
-    @Getter
+    private String pricing;
     private String openHours;
-    @Getter
     private String accommodations;
-    @Getter
-    private String contacts;
-    @Getter
+    private String contact;
     private String grades;
 
-    public UpdateGymCommand(Long id, String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grades) {
+    public UpdateGymCommand(Long id, String name, Address address, Coordinates coordinates, String description, String tags, String pricing, String openHours, String accommodations, String contact, String grades) {
         this.id = id;
         this.name = name;
         this.address = address;
+        this.coordinates = coordinates;
         this.description = description;
         this.tags = tags;
-        this.pricings = pricings;
+        this.pricing = pricing;
         this.openHours = openHours;
         this.accommodations = accommodations;
-        this.contacts = contacts;
+        this.contact = contact;
         this.grades = grades;
     }
 }

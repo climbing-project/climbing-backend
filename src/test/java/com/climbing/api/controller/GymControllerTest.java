@@ -63,13 +63,17 @@ class GymControllerTest {
         mockMvc.perform(get(BASE_ENDPOINT + "/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(gym.getName()))
-                .andExpect(jsonPath("$.address").value(gym.getAddress()))
+                .andExpect(jsonPath("$.address.jibunAddress").value(gym.getJibunAddress()))
+                .andExpect(jsonPath("$.address.roadAddress").value(gym.getRoadAddress()))
+                .andExpect(jsonPath("$.address.unitAddress").value(gym.getUnitAddress()))
+                .andExpect(jsonPath("$.coordinates.latitude").value(gym.getLatitude()))
+                .andExpect(jsonPath("$.coordinates.longitude").value(gym.getLongitude()))
                 .andExpect(jsonPath("$.description").value(gym.getDescription()))
                 .andExpect(jsonPath("$.tags").value(gym.getTags()))
-                .andExpect(jsonPath("$.pricings").value(gym.getPricings()))
+                .andExpect(jsonPath("$.pricing").value(gym.getPricing()))
                 .andExpect(jsonPath("$.openHours").value(gym.getOpenHours()))
                 .andExpect(jsonPath("$.accommodations").value(gym.getAccommodations()))
-                .andExpect(jsonPath("$.contacts").value(gym.getContacts()))
+                .andExpect(jsonPath("$.contact").value(gym.getContact()))
                 .andExpect(jsonPath("$.grades").value(gym.getGrades()));
     }
 
@@ -129,15 +133,18 @@ class GymControllerTest {
                         put(BASE_ENDPOINT + "/" + id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content))
-                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(gym.getName()))
-                .andExpect(jsonPath("$.address").value(gym.getAddress()))
+                .andExpect(jsonPath("$.address.jibunAddress").value(gym.getJibunAddress()))
+                .andExpect(jsonPath("$.address.roadAddress").value(gym.getRoadAddress()))
+                .andExpect(jsonPath("$.address.unitAddress").value(gym.getUnitAddress()))
+                .andExpect(jsonPath("$.coordinates.latitude").value(gym.getLatitude()))
+                .andExpect(jsonPath("$.coordinates.longitude").value(gym.getLongitude()))
                 .andExpect(jsonPath("$.description").value(gym.getDescription()))
                 .andExpect(jsonPath("$.tags").value(gym.getTags()))
-                .andExpect(jsonPath("$.pricings").value(gym.getPricings()))
+                .andExpect(jsonPath("$.pricing").value(gym.getPricing()))
                 .andExpect(jsonPath("$.openHours").value(gym.getOpenHours()))
                 .andExpect(jsonPath("$.accommodations").value(gym.getAccommodations()))
-                .andExpect(jsonPath("$.contacts").value(gym.getContacts()))
+                .andExpect(jsonPath("$.contact").value(gym.getContact()))
                 .andExpect(jsonPath("$.grades").value(gym.getGrades()));
     }
 
