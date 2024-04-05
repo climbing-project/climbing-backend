@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: [ Test on Github Instance ]
     types: [ completed ]
-    branches: [ aws-deploy, main ]
+    branches: [ aws-deploy ]
 
 env:
   AWS_REGION: ap-northeast-2
@@ -78,7 +78,7 @@ jobs:
           script_stop: true
           envs: IMAGE_TAG
           script: |
-            ./ssh-backend.sh -p "${{ secrets.AWS_EC2_CONTAINER_PORT }}" -t $IMAGE_TAG
+            ./docker-run.sh -p "${{ secrets.AWS_EC2_CONTAINER_PORT }}" -t $IMAGE_TAG
 
       - name: Remove Github Actions IP From Security Group
         run: |
