@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,67 +25,88 @@ public class Gym {
     @Getter
     private String name;
     @Getter
-    private String address;
-
+    private String jibunAddress;
+    @Getter
+    private String roadAddress;
+    @Getter
+    private String unitAddress;
+    @Getter
+    private float latitude;
+    @Getter
+    private float longitude;
     @Getter
     private String description;
-
+    @Getter
+    private LocalDate latestSettingDate;
+    @Getter
+    private String twitter;
+    @Getter
+    private String facebook;
+    @Getter
+    private String instagram;
+    @Getter
+    private String homepage;
+    @Getter
+    private String images;
     @Getter
     private String tags;
-
     @Getter
-    private String pricings;
-
+    private String pricing;
     @Getter
     private String openHours;
-
     @Getter
     private String accommodations;
-
     @Getter
-    private String contacts;
-
+    private String contact;
     @Getter
     private String grades;
-
+    @Getter
+    private String comments;
+    @Getter
+    private int likes;
     @Getter
     private int hits;
-
     @CreatedDate
     private LocalDateTime createdAt;
-
     @LastModifiedDate
     private LocalDateTime modifiedAt;
-
 //    @ManyToOne
 //    @JoinColumn(name = "member_id")
 //    @Getter
 //    private Member member;
 
-    public static Gym of(String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grades) {
+    public static Gym of(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude, float longitude, String description, String tags, String pricing, String openHours, String accommodations, String contact, String grades) {
         return Gym.builder()
                 .id(null)
                 .name(name)
-                .address(address)
+                .jibunAddress(jibunAddress)
+                .roadAddress(roadAddress)
+                .unitAddress(unitAddress)
+                .latitude(latitude)
+                .longitude(longitude)
                 .description(description)
                 .tags(tags)
-                .pricings(pricings)
+                .pricing(pricing)
                 .openHours(openHours)
                 .accommodations(accommodations)
-                .contacts(contacts)
+                .contact(contact)
                 .grades(grades)
                 .build();
     }
 
-    public void update(String name, String address, String description, String tags, String pricings, String openHours, String accommodations, String contacts, String grades) {
+    public void update(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude, float longitude,  String description, String tags, String pricing, String openHours, String accommodations, String contact, String grades) {
         this.name = name;
-        this.address = address;
+        this.jibunAddress = jibunAddress;
+        this.roadAddress = roadAddress;
+        this.unitAddress = unitAddress;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.description = description;
         this.tags = tags;
-        this.pricings = pricings;
+        this.pricing = pricing;
         this.openHours = openHours;
         this.accommodations = accommodations;
-        this.contacts = contacts;
+        this.contact = contact;
         this.grades = grades;
     }
 }

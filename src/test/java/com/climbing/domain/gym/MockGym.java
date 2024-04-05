@@ -6,13 +6,17 @@ public class MockGym {
     public static Gym of(Long id) {
         try {
             Gym gym = Gym.of("name",
-                             "address",
+                             "jibun",
+                             "road",
+                             "unit",
+                             1f,
+                             1f,
                              "description",
                              "tags",
-                             "pricings",
+                             "pricing",
                              "openHours",
                              "accommodations",
-                             "contacts",
+                             "contact",
                              "grades");
             Field idField = gym.getClass().getDeclaredField("id");
             idField.setAccessible(true);
