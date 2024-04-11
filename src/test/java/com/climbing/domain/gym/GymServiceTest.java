@@ -54,7 +54,7 @@ class GymServiceTest {
     @Test
     void success_create_gym() {
         Long mockId = 2L;
-        given(gymRepository.save(any())).willReturn(MockGym.of(null));
+        given(gymRepository.save(any())).willReturn(MockGym.of(mockId));
 
         PostGymCommand command = MockPostGymRequest.of().toCommand();
         Long id = gymService.createGym(command);
@@ -77,7 +77,8 @@ class GymServiceTest {
         given(gymRepository.existsById(anyLong())).willReturn(false);
 
         assertThatException().isThrownBy(() -> gymService.deleteGym(mockId))
-                .isEqualTo(new GymException(GymExceptionType.GYM_NOT_FOUND));
+                .isInstanceOfSatisfying(GymException.class,
+                                        (e) -> assertThat(e.getExceptionType()).isEqualTo(GymExceptionType.GYM_NOT_FOUND));
     }
 
     @Test

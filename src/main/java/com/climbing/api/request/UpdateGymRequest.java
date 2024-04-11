@@ -3,7 +3,9 @@ package com.climbing.api.request;
 import com.climbing.api.command.UpdateGymCommand;
 import com.climbing.domain.gym.Address;
 import com.climbing.domain.gym.Coordinates;
+import lombok.Getter;
 
+@Getter
 public class UpdateGymRequest {
     private String name;
     private Address address;

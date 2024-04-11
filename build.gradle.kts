@@ -30,6 +30,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.webjars:sockjs-client:1.5.1")
     implementation("org.webjars:stomp-websocket:2.3.4")
+//    implementation("de.codecentric:spring-boot-admin-starter-server:3.2.1")
 
     runtimeOnly("com.h2database:h2")
 
