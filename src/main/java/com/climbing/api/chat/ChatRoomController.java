@@ -1,5 +1,6 @@
 package com.climbing.api.chat;
 
+import com.climbing.auth.login.GetLoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,8 +25,9 @@ public class ChatRoomController {
     @PostMapping("/room")
     //@PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     @ResponseBody
-    public ChatRoom createChatRoom(@RequestParam String name) {
-        return chatService.createChatRoom(name);
+    public ChatRoom createChatRoom() {
+        String email = GetLoginMember.getLoginMemberEmail();
+        return chatService.createChatRoom(email);
     }
 
     @GetMapping("/room/enter/{roomId}") //채팅방 입장
