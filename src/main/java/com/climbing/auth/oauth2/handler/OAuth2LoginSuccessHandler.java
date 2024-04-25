@@ -47,6 +47,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             response.addHeader(accessHeader, "Bearer " + accessToken);
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/members/oauth2/join")
                     .queryParam("email", member.getEmail())
+                    .queryParam("nickname", member.getNickname())
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
