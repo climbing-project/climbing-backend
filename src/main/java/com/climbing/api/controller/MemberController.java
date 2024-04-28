@@ -2,12 +2,12 @@ package com.climbing.api.controller;
 
 import com.climbing.api.request.EmailRequest;
 import com.climbing.api.request.OauthJoinRequest;
-import com.climbing.auth.email.EmailAuthResponse;
 import com.climbing.auth.email.EmailInfo;
 import com.climbing.auth.email.service.EmailService;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.dto.*;
 import com.climbing.domain.member.service.MemberService;
+import com.climbing.redis.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,6 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final EmailService emailService;
+    private final RedisService redisService;
 
     @PostMapping("/join")
     @ResponseStatus(HttpStatus.OK)
@@ -97,10 +100,16 @@ public class MemberController {
 
         String authNum = emailService.sendEmail(emailInfo, "email");
 
-        EmailAuthResponse response = new EmailAuthResponse();
-        response.setAuthNum(authNum);
+        redisService.setValuesWithDuration("authNum", authNum, Duration.ofMinutes(5));
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/email-auth-check/{authNum}")
+    public ResponseEntity<Boolean> checkEmailAuthNumber(@PathVariable("authNum") String authNum) {
+        String storedAuthNum = redisService.getValues("authNum");
+        boolean result = authNum.equals(storedAuthNum);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/temp-password")
