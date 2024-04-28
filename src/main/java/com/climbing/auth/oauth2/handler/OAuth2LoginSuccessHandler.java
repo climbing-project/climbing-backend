@@ -45,9 +45,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             memberRepository.saveAndFlush(member);
             String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), Role.USER.getKey());
             response.addHeader(accessHeader, "Bearer " + accessToken);
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/members/oauth2/join")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/members/oauth2/join")
                     .queryParam("email", member.getEmail())
-                    .queryParam("nickname", member.getNickname())
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
@@ -74,7 +73,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
 
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/login")
+        String targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/")
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();

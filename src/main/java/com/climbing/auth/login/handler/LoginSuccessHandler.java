@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,11 +45,11 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         memberRepository.findByEmail(email)
                 .ifPresent(member -> {
-                    Map<String, String> map = new HashMap<>();
+                    Map<String, Object> map = new HashMap<>();
                     map.put("nickname", member.getNickname());
                     map.put("email", member.getEmail());
                     response.setStatus(HttpStatus.OK.value());
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    response.setContentType("application/json");
                     try {
                         objectMapper.writeValue(response.getWriter(), map);
                     } catch (IOException e) {
