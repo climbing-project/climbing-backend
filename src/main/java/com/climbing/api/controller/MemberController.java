@@ -105,7 +105,7 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/email-auth-check/{authNum}")
+    @GetMapping("/email-auth-check/{authNum}")
     public ResponseEntity<Boolean> checkEmailAuthNumber(@PathVariable("authNum") String authNum) {
         String storedAuthNum = redisService.getValues("authNum");
         boolean result = authNum.equals(storedAuthNum);
