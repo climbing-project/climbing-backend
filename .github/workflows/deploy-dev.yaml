@@ -35,6 +35,8 @@ jobs:
           spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_ID }}
           spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_SECRET }}
           jwt.secretKey: ${{ secrets.JWT_SECRET_KEY }}
+          spring.data.redis.host: ${{ secrets.AWS_REDIS_HOST }}
+          spring.data.redis.port: ${{ secrets.AWS_REDIS_PORT }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
