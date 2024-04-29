@@ -100,14 +100,14 @@ public class MemberController {
 
         String authNum = emailService.sendEmail(emailInfo, "email");
 
-        redisService.setValuesWithDuration("authNum", authNum, Duration.ofMinutes(5));
+        redisService.setValuesWithDuration(request.email() + "authNum", authNum, Duration.ofMinutes(5));
 
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/email-auth-check/{authNum}")
-    public ResponseEntity<Boolean> checkEmailAuthNumber(@PathVariable("authNum") String authNum) {
-        String storedAuthNum = redisService.getValues("authNum");
+    @GetMapping("/email-auth-check/{email}/{authNum}")
+    public ResponseEntity<Boolean> checkEmailAuthNumber(@PathVariable("authNum") String authNum, @PathVariable("email") String email) {
+        String storedAuthNum = redisService.getValues(email + "authNum");
         boolean result = authNum.equals(storedAuthNum);
         return ResponseEntity.ok(result);
     }
