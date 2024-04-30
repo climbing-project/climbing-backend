@@ -122,11 +122,6 @@ public class MemberController {
         emailService.sendEmail(emailInfo, "password");
 
         return ResponseEntity.ok().build();
-
-//        EmailAuthResponse response = new EmailAuthResponse();
-//        response.setAuthNum(authNum);
-//
-//        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/email-check/{email}")
