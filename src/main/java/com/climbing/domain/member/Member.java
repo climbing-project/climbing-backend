@@ -32,8 +32,6 @@ public class Member {
     private SocialType socialType;
     private String socialId;
 
-    private String refreshToken;
-
     private boolean isBlocked = false;
 
 //    @OneToMany(mappedBy = "member", orphanRemoval = true)
@@ -44,14 +42,6 @@ public class Member {
 
     public void authorizeUser() {
         this.role = Role.USER;
-    }
-
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public void destroyRefreshToken() {
-        this.refreshToken = null;
     }
 
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {

@@ -2,10 +2,8 @@ package com.climbing.auth.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.climbing.domain.member.Member;
-import com.climbing.domain.member.exception.MemberException;
-import com.climbing.domain.member.exception.MemberExceptionType;
 import com.climbing.domain.member.repository.MemberRepository;
+import com.climbing.redis.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -48,6 +46,7 @@ public class JwtServiceImpl implements JwtService {
     private static final String ROLE_CLAIM = "role";
 
     private final MemberRepository memberRepository;
+    private final RedisService redisService;
 
     @Override
     public String createAccessToken(String email, String role) {
@@ -61,11 +60,12 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String createRefreshToken() {
+    public String createRefreshToken(String email) {
         Date now = new Date();
         return JWT.create()
                 .withSubject(REFRESH_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(now.getTime() + refreshTokenExpirationPeriod))
+                .withClaim(EMAIL_CLAIM, email)
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
@@ -101,11 +101,11 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public Optional<String> extractEmail(String accessToken) {
+    public Optional<String> extractEmail(String token) {
         try {
             return Optional.ofNullable(JWT.require(Algorithm.HMAC512(secretKey))
                     .build()
-                    .verify(accessToken)
+                    .verify(token)
                     .getClaim(EMAIL_CLAIM)
                     .asString());
         } catch (Exception e) {
@@ -126,20 +126,9 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public void updateRefreshToken(String email, String refreshToken) {
-        memberRepository.findByEmail(email)
-                .ifPresentOrElse(
-                        member -> member.updateRefreshToken(refreshToken),
-                        () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
-                );
-    }
-
-    @Override
-    public void destroyRefreshToken(String email) {
-        memberRepository.findByEmail(email)
-                .ifPresentOrElse(
-                        Member::destroyRefreshToken,
-                        () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
-                );
+        if (memberRepository.findByEmail(email).isPresent()) {
+            redisService.setValues("RefreshToken" + email, refreshToken);
+        }
     }
 
     @Override

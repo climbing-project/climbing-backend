@@ -30,9 +30,9 @@ public class ChatService {
         return chatRoomMap.get(roomId);
     }
 
-    public ChatRoom createChatRoom(String name) {
+    public ChatRoom createChatRoom(String name, Long gymId) {
         log.info("채팅방이 생성되었습니다.");
-        ChatRoom chatRoom = ChatRoom.create(name);
+        ChatRoom chatRoom = ChatRoom.create(name, gymId);
         chatRoomMap.put(chatRoom.getRoomId(), chatRoom);
         return chatRoom;
     }

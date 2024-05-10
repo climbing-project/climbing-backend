@@ -2,6 +2,7 @@ package com.climbing.auth.login.handler;
 
 import com.climbing.auth.jwt.JwtService;
 import com.climbing.domain.member.repository.MemberRepository;
+import com.climbing.redis.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final RedisService redisService;
 
     @Value("${jwt.access.expiration}")
     private String accessTokenExpiration;
@@ -39,7 +41,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         });
         String role = roleList.getFirst();
         String accessToken = jwtService.createAccessToken(email, role);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
 
         jwtService.sendAccessTokenAndRefreshToken(response, accessToken, refreshToken);
 
@@ -55,8 +57,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    member.updateRefreshToken(refreshToken);
-                    memberRepository.saveAndFlush(member);
+                    redisService.setValues("RefreshToken" + member.getEmail(), refreshToken);
                     if (member.isBlocked()) {
                         throw new LockedException("비활성화된 계정. DB 확인 필요");
                     }

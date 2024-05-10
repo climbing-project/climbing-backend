@@ -13,11 +13,13 @@ public class ChatRoom {
 
     private String roomId;
     private String roomName;
+    private Long gymId;
 
-    public static ChatRoom create(String name) {
+    public static ChatRoom create(String email, Long gymId) {
         ChatRoom room = new ChatRoom();
         room.roomId = UUID.randomUUID().toString();
-        room.roomName = name;
+        room.roomName = email;
+        room.gymId = gymId;
         return room;
     }
 }

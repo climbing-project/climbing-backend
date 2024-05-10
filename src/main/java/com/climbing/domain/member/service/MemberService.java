@@ -4,6 +4,7 @@ import com.climbing.api.request.OauthJoinRequest;
 import com.climbing.domain.member.dto.MemberDto;
 import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.dto.MemberUpdateDto;
+import com.climbing.global.exception.BaseException;
 
 public interface MemberService {
     void join(MemberJoinDto memberJoinDto) throws Exception;
@@ -27,4 +28,6 @@ public interface MemberService {
     boolean checkNickname(String nickname) throws Exception;
 
     String findMemberEmailToNickname(String email) throws Exception;
+
+    String findSocialType(String email) throws BaseException;
 }

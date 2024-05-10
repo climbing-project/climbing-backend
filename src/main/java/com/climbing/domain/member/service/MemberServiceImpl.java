@@ -110,4 +110,13 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return member.getNickname();
     }
+
+    @Override
+    public String findSocialType(String email) throws BaseException {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if (member.getSocialType() == null) {
+            return "NORMAL";
+        }
+        return member.getSocialType().toString();
+    }
 }
