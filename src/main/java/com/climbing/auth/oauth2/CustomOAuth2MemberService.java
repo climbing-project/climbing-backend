@@ -39,12 +39,6 @@ public class CustomOAuth2MemberService implements OAuth2UserService<OAuth2UserRe
 
         OAuth2Attributes extractAttributes = OAuth2Attributes.of(socialType, userNameAttributeName, attributes);
 
-        if (memberRepository.findByEmail(extractAttributes.getOAuth2MemberInfo().getEmail()).isPresent()) {
-            Member existingMember = memberRepository.findByEmail(extractAttributes.getOAuth2MemberInfo().getEmail()).get();
-            SocialType existingSocialType = existingMember.getSocialType();
-            throw new BadCredentialsException(extractAttributes.getOAuth2MemberInfo().getEmail() + "/" + existingSocialType);
-        }
-
         Member createdMember = getMember(extractAttributes, socialType);
 
         return new CustomOAuth2Member(
@@ -76,6 +70,11 @@ public class CustomOAuth2MemberService implements OAuth2UserService<OAuth2UserRe
     }
 
     private Member saveMember(OAuth2Attributes oAuth2Attributes, SocialType socialType) {
+        if (memberRepository.findByEmail(oAuth2Attributes.getOAuth2MemberInfo().getEmail()).isPresent()) {
+            Member existingMember = memberRepository.findByEmail(oAuth2Attributes.getOAuth2MemberInfo().getEmail()).get();
+            SocialType existingSocialType = existingMember.getSocialType();
+            throw new BadCredentialsException(oAuth2Attributes.getOAuth2MemberInfo().getEmail() + "/" + existingSocialType);
+        }
         Member createdMember = oAuth2Attributes.toEntity(socialType, oAuth2Attributes.getOAuth2MemberInfo());
         return memberRepository.save(createdMember);
     }
