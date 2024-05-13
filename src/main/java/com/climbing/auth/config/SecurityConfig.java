@@ -74,12 +74,13 @@ public class SecurityConfig {
                                 .deleteCookies("JSESSIONID"))
                 .oauth2Login((oauth2Login) ->
                         oauth2Login
+                                .loginPage("/login")
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2MemberService))
                                 .successHandler(oAuth2LoginSuccessHandler)
                                 .failureHandler(oAuth2LoginFailureHandler)
                 )
                 .exceptionHandling((exceptionHandling) ->
-                        exceptionHandling.accessDeniedPage("/members/accessDenied")
+                        exceptionHandling.accessDeniedPage("/members/error")
                 );
         http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
         http.addFilterAfter(jsonAuthenticationFilter(), JwtAuthenticationFilter.class);
