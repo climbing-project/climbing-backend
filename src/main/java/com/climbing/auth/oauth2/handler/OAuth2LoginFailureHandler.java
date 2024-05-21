@@ -22,20 +22,19 @@ public class OAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHan
         String targetUrl;
         if (authenticationException instanceof BadCredentialsException) {
             response.getWriter().write("이미 가입된 이메일입니다.");
-            targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/members/error/already-exist")
-                    .queryParam("error", authenticationException.getMessage())
+            targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/error/already-exist")
+                    .queryParam("email", authenticationException.getMessage())
                     .build()
-                    .encode(StandardCharsets.UTF_8)
                     .toUriString();
         } else if (authenticationException instanceof LockedException) {
             response.getWriter().write("비활성화된 계정입니다. 관리자에 문의해주세요.");
-            targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/members/error/locked")
+            targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/error/locked")
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
         } else {
             response.getWriter().write("소셜 로그인에 실패하였습니다.");
-            targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/members/error")
+            targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/error")
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();

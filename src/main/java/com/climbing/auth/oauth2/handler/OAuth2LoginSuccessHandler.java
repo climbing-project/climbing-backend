@@ -49,6 +49,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             response.addHeader(accessHeader, "Bearer " + accessToken);
             String targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/members/oauth2/join")
                     .queryParam("email", member.getEmail())
+                    .queryParam("accessToken", accessToken)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
@@ -70,16 +71,16 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         if (redisService.getValues("RefreshToken" + oAuth2User.getEmail()) != null && jwtService.isTokenValid(refreshToken)) {
             refreshToken = redisService.getValues("RefreshToken" + oAuth2User.getEmail());
         }
-        response.addHeader(accessHeader, "Bearer " + accessToken);
-        response.addHeader(refreshHeader, "Bearer " + refreshToken);
 
         jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
 
         String targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/")
+                .queryParam("accessToken", accessToken)
+                .queryParam("refreshToken", refreshToken)
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
-        
+
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }
