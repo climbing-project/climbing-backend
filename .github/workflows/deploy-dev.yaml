@@ -37,6 +37,9 @@ jobs:
           jwt.secretKey: ${{ secrets.JWT_SECRET_KEY }}
           spring.data.redis.host: ${{ secrets.AWS_REDIS_HOST }}
           spring.data.redis.port: ${{ secrets.AWS_REDIS_PORT }}
+          spring.datasource.url: ${{ secrets.DATABASE_URL }}
+          spring.datasource.username: ${{ secrets.DATABASE_USERNAME }}
+          spring.datasource.password: ${{ secrets.DATABASE_PASSWORD }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
