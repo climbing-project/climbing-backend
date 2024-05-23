@@ -5,10 +5,10 @@ spring:
       path: /h2-console
 
   datasource:
-    url: jdbc:h2:mem:database
-    driver-class-name: org.h2.Driver
-    username: climb
-    password: climb
+    url: jdbc:mysql://localhost:3306/oruri
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: oruri
+    password: oruriproject
 
   flyway:
     enabled: true

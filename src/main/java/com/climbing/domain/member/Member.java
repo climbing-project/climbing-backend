@@ -32,6 +32,7 @@ public class Member {
     private SocialType socialType;
     private String socialId;
 
+    @Transient
     private String refreshToken;
 
     private boolean isBlocked = false;
