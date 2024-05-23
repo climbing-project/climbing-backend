@@ -27,6 +27,7 @@ jobs:
         with:
           files: ${{ env.RESOURCE_PATH }}
         env:
+          spring.mail.username: ${{ secrets.GOOGLE_MAIL_USERNAME }}
           spring.mail.password: ${{ secrets.GOOGLE_MAIL_PASSWORD }}
           spring.security.oauth2.client.registration.google.client-id: ${{ secrets.GOOGLE_ID }}
           spring.security.oauth2.client.registration.google.client-secret: ${{ secrets.GOOGLE_SECRET }}
