@@ -29,7 +29,7 @@ public class RedisService {
     public String getValues(String key) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
         if (values.get(key) == null) {
-            return "The redis value does not exist.";
+            return null;
         }
         return (String) values.get(key);
     }
@@ -37,6 +37,4 @@ public class RedisService {
     public void deleteValues(String key) {
         redisTemplate.delete(key);
     }
-
-    
 }

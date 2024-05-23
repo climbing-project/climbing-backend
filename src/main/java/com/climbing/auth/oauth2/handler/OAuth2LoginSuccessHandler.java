@@ -7,6 +7,7 @@ import com.climbing.domain.member.Role;
 import com.climbing.domain.member.exception.MemberException;
 import com.climbing.domain.member.exception.MemberExceptionType;
 import com.climbing.domain.member.repository.MemberRepository;
+import com.climbing.redis.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final RedisService redisService;
 
     @Value("${jwt.access.header}")
     private String accessHeader;
@@ -47,6 +49,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             response.addHeader(accessHeader, "Bearer " + accessToken);
             String targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/members/oauth2/join")
                     .queryParam("email", member.getEmail())
+                    .queryParam("accessToken", accessToken)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
@@ -63,22 +66,21 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             throw new LockedException("비활성화된 계정. DB 확인 필요");
         }
         String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), oAuth2User.getRole().getKey());
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(oAuth2User.getEmail());
 
-        if (member.getRefreshToken() != null && jwtService.isTokenValid(refreshToken)) {
-            refreshToken = member.getRefreshToken();
+        if (redisService.getValues("RefreshToken" + oAuth2User.getEmail()) != null && jwtService.isTokenValid(refreshToken)) {
+            refreshToken = redisService.getValues("RefreshToken" + oAuth2User.getEmail());
         }
-        response.addHeader(accessHeader, "Bearer " + accessToken);
-        response.addHeader(refreshHeader, "Bearer " + refreshToken);
 
         jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
 
         String targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/")
+                .queryParam("accessToken", accessToken)
+                .queryParam("refreshToken", refreshToken)
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
-//        jwtService.sendAccessTokenAndRefreshToken(response, accessToken, refreshToken);
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }

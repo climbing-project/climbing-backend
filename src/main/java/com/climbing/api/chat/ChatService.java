@@ -22,7 +22,6 @@ public class ChatService {
     public List<ChatRoom> findAllRoom() {
         List<ChatRoom> rooms = new ArrayList<>(chatRoomMap.values());
         Collections.reverse(rooms);
-
         return rooms;
     }
 
@@ -30,9 +29,9 @@ public class ChatService {
         return chatRoomMap.get(roomId);
     }
 
-    public ChatRoom createChatRoom(String name) {
+    public ChatRoom createChatRoom(String email, Long gymId) {
         log.info("채팅방이 생성되었습니다.");
-        ChatRoom chatRoom = ChatRoom.create(name);
+        ChatRoom chatRoom = ChatRoom.create(email, gymId);
         chatRoomMap.put(chatRoom.getRoomId(), chatRoom);
         return chatRoom;
     }

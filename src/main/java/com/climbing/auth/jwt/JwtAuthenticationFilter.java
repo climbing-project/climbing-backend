@@ -2,6 +2,7 @@ package com.climbing.auth.jwt;
 
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.repository.MemberRepository;
+import com.climbing.redis.service.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final RedisService redisService;
 
     private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
@@ -50,18 +52,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     public void checkRefreshTokenAndReissueAccessToken(HttpServletResponse response, String refreshToken) {
-        memberRepository.findByRefreshToken(refreshToken)
+        String email = String.valueOf(jwtService.extractEmail(refreshToken));
+        memberRepository.findByEmail(email)
                 .ifPresent(member -> {
-                    String reissuedRefreshToken = reissueRefreshToken(member);
+                    String reissuedRefreshToken = reissueRefreshToken(member.getEmail());
                     jwtService.sendAccessTokenAndRefreshToken(response, jwtService.createAccessToken(member.getEmail(), String.valueOf(member.getRole())),
                             reissuedRefreshToken);
                 });
     }
 
-    private String reissueRefreshToken(Member member) {
-        String reissuedRefreshToken = jwtService.createRefreshToken();
-        member.updateRefreshToken(reissuedRefreshToken);
-        memberRepository.saveAndFlush(member);
+    private String reissueRefreshToken(String email) {
+        String reissuedRefreshToken = jwtService.createRefreshToken(email);
+        redisService.setValues("RefreshToken" + email, reissuedRefreshToken);
         return reissuedRefreshToken;
     }
 

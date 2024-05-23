@@ -3,7 +3,6 @@ package com.climbing.api.chat;
 import com.climbing.auth.login.GetLoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,19 +21,12 @@ public class ChatRoomController {
         return chatService.findAllRoom();
     }
 
-    @PostMapping("/room")
+    @PostMapping("/room/{gymId}")
     //@PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
     @ResponseBody
-    public ChatRoom createChatRoom() {
+    public ChatRoom createChatRoom(@PathVariable Long gymId) {
         String email = GetLoginMember.getLoginMemberEmail();
-        return chatService.createChatRoom(email);
-    }
-
-    @GetMapping("/room/enter/{roomId}") //채팅방 입장
-    //@PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
-    public String enterRoom(Model model, @PathVariable String roomId) {
-        model.addAttribute("roomId", roomId);
-        return "/chat/enterRoom";
+        return chatService.createChatRoom(email, gymId);
     }
 
     @GetMapping("/room/{roomId}")

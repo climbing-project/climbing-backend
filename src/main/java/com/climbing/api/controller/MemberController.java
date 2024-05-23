@@ -20,6 +20,8 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/members")
@@ -122,17 +124,20 @@ public class MemberController {
         emailService.sendEmail(emailInfo, "password");
 
         return ResponseEntity.ok().build();
-
-//        EmailAuthResponse response = new EmailAuthResponse();
-//        response.setAuthNum(authNum);
-//
-//        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/email-check/{email}")
-    public ResponseEntity<Boolean> checkEmail(@PathVariable("email") String email) throws Exception {
-        boolean result = !memberService.checkEmail(email);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<Map<String, Object>> checkEmail(@PathVariable("email") String email) throws Exception {
+        boolean check = !memberService.checkEmail(email);
+        String socialType = null;
+        if (!check) {
+            socialType = memberService.findSocialType(email);
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("check", check);
+        result.put("socialType", socialType);
+
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("/nickname-check/{nickname}")
@@ -151,5 +156,4 @@ public class MemberController {
     public String accessDenied() {
         return ("access-denied page");
     }
-
 }

@@ -10,6 +10,7 @@ import com.climbing.auth.oauth2.CustomOAuth2MemberService;
 import com.climbing.auth.oauth2.handler.OAuth2LoginFailureHandler;
 import com.climbing.auth.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.climbing.domain.member.repository.MemberRepository;
+import com.climbing.redis.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,7 @@ public class SecurityConfig {
 
     private final LoginService loginService;
     private final JwtService jwtService;
+    private final RedisService redisService;
     private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
@@ -65,19 +67,20 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/members/jwt-test").authenticated()
-                                .requestMatchers("/ws/**", "/h2-console/**", "/members/**", "/gyms/**").permitAll()
+                                .requestMatchers("/ws/**", "/h2-console/**", "/members/**", "/gyms/**", "/home").permitAll()
                                 .anyRequest().authenticated())
                 .logout((logout) ->
                         logout
                                 .deleteCookies("JSESSIONID"))
                 .oauth2Login((oauth2Login) ->
                         oauth2Login
+                                .loginPage("/login")
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2MemberService))
                                 .successHandler(oAuth2LoginSuccessHandler)
                                 .failureHandler(oAuth2LoginFailureHandler)
                 )
                 .exceptionHandling((exceptionHandling) ->
-                        exceptionHandling.accessDeniedPage("/members/accessDenied")
+                        exceptionHandling.accessDeniedPage("/members/error")
                 );
         http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
         http.addFilterAfter(jsonAuthenticationFilter(), JwtAuthenticationFilter.class);
@@ -100,7 +103,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler(jwtService, memberRepository);
+        return new LoginSuccessHandler(jwtService, memberRepository, redisService);
     }
 
     @Bean
@@ -119,6 +122,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtService, memberRepository);
+        return new JwtAuthenticationFilter(jwtService, memberRepository, redisService);
     }
 }

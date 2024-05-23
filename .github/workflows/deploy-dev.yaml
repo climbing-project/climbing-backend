@@ -1,10 +1,8 @@
 name: Deploy to Amazon ECS
 
 on:
-  workflow_run:
-    workflows: [ Test on Github Instance ]
-    types: [ completed ]
-    branches: [ aws-deploy ]
+  push:
+    branches: [ aws-deploy-force ]
 
 env:
   AWS_REGION: ap-northeast-2
@@ -17,7 +15,6 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment: production
     steps:
       - name: Checkout
@@ -38,6 +35,8 @@ jobs:
           spring.security.oauth2.client.registration.kakao.client-id: ${{ secrets.KAKAO_ID }}
           spring.security.oauth2.client.registration.kakao.client-secret: ${{ secrets.KAKAO_SECRET }}
           jwt.secretKey: ${{ secrets.JWT_SECRET_KEY }}
+          spring.data.redis.host: ${{ secrets.AWS_REDIS_HOST }}
+          spring.data.redis.port: ${{ secrets.AWS_REDIS_PORT }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -83,3 +82,5 @@ jobs:
       - name: Remove Github Actions IP From Security Group
         run: |
           aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_SSH }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+
