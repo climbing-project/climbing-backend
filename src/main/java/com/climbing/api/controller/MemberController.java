@@ -55,6 +55,7 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     public void oauthJoin(@Valid @RequestBody OauthJoinRequest oauthJoinRequest) throws Exception {
         memberService.oauthJoin(oauthJoinRequest);
+        memberService.authorizeUser(oauthJoinRequest);
         EmailInfo emailInfo = EmailInfo.builder()
                 .receiver(oauthJoinRequest.email())
                 .title("[오르리]" + oauthJoinRequest.nickname() + "님 가입을 진심으로 환영합니다.")

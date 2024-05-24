@@ -13,6 +13,8 @@ public interface MemberService {
 
     void oauthJoin(OauthJoinRequest oauthJoinRequest) throws Exception;
 
+    void authorizeUser(OauthJoinRequest oauthJoinRequest) throws Exception;
+
     void updatePassword(String beforePassword, String afterPassword, String email) throws Exception;
 
     void setTempPassword(String email, String tempPassword);
