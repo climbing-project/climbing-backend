@@ -93,3 +93,4 @@ logging:
 
       hibernate:
         SQL: debug
+
