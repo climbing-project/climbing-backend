@@ -53,7 +53,7 @@ public class MemberController {
 
     @PutMapping("/oauth2/update")
     @ResponseStatus(HttpStatus.OK)
-    public void oauthJoin(@Valid @RequestBody OauthJoinRequest oauthJoinRequest) throws Exception {
+    public ResponseEntity<Map<String, Object>> oauthJoin(@Valid @RequestBody OauthJoinRequest oauthJoinRequest) throws Exception {
         memberService.oauthJoin(oauthJoinRequest);
         memberService.authorizeUser(oauthJoinRequest);
         EmailInfo emailInfo = EmailInfo.builder()
@@ -61,6 +61,10 @@ public class MemberController {
                 .title("[오르리]" + oauthJoinRequest.nickname() + "님 가입을 진심으로 환영합니다.")
                 .build();
         emailService.sendJoinEmail(emailInfo);
+        Map<String, Object> map = new HashMap<>();
+        map.put("nickname", oauthJoinRequest.nickname());
+        map.put("email", oauthJoinRequest.email());
+        return ResponseEntity.ok(map);
     }
 
     @PutMapping("/update-password")
