@@ -91,10 +91,6 @@ public class MemberController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/oauth2/join") //oauth redirect url
-    public void oauthSignUp() {
-    }
-
     @PostMapping("/email-auth")
     public ResponseEntity sendEmailAuthNum(@RequestBody EmailRequest request) {
         EmailInfo emailInfo = EmailInfo.builder()
@@ -156,6 +152,6 @@ public class MemberController {
 
     @GetMapping("/access-denied")
     public String accessDenied() {
-        return ("access-denied page");
+        return ("/error");
     }
 }
