@@ -77,6 +77,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
 
         String targetUrl = UriComponentsBuilder.fromUriString("http://13.125.164.197:443/login")
+                .queryParam("email", member.getEmail())
+                .queryParam("nickname", member.getNickname())
                 .queryParam("accessToken", accessToken)
                 .queryParam("refreshToken", refreshToken)
                 .build()
