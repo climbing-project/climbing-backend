@@ -43,6 +43,8 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String accessToken = jwtService.createAccessToken(email, role);
         String refreshToken = jwtService.createRefreshToken(email);
 
+        response.setHeader("Access-Control-Allow-Headers", "Authorization");
+
         jwtService.sendAccessTokenAndRefreshToken(response, accessToken, refreshToken);
 
         memberRepository.findByEmail(email)
