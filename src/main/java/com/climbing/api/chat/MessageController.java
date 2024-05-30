@@ -12,7 +12,7 @@ public class MessageController {
     private final SimpMessageSendingOperations sendingOperations;
 
     @MessageMapping("/chat/message")
-    public void enterAndLeave(ChatMessage message) {
+    public void sendMessage(ChatMessage message) {
         sendingOperations.convertAndSend("/queue/chat/room/" + message.getRoomId(), message);
     }
 }

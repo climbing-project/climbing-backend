@@ -25,6 +25,18 @@ public class ChatService {
         return rooms;
     }
 
+    public boolean isRoomExistByNicknameAndGymId(String name, Long gymId) {
+        List<ChatRoom> rooms = new ArrayList<>(chatRoomMap.values());
+        boolean found = false;
+        for (ChatRoom room : rooms) {
+            if (Objects.equals(room.getRoomName(), name) && Objects.equals(room.getGymId(), gymId)) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
+
     public ChatRoom findById(String roomId) {
         return chatRoomMap.get(roomId);
     }

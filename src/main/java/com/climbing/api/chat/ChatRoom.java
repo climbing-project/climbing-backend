@@ -15,10 +15,10 @@ public class ChatRoom {
     private String roomName;
     private Long gymId;
 
-    public static ChatRoom create(String email, Long gymId) {
+    public static ChatRoom create(String nickname, Long gymId) {
         ChatRoom room = new ChatRoom();
         room.roomId = UUID.randomUUID().toString();
-        room.roomName = email;
+        room.roomName = nickname;
         room.gymId = gymId;
         return room;
     }
