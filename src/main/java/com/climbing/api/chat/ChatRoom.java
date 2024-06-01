@@ -1,25 +1,31 @@
 package com.climbing.api.chat;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.UUID;
-
+@Entity
+@Table(name = "CHATROOMS")
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class ChatRoom {
 
-    private String roomId;
-    private String roomName;
-    private Long gymId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public static ChatRoom create(String nickname, Long gymId) {
-        ChatRoom room = new ChatRoom();
-        room.roomId = UUID.randomUUID().toString();
-        room.roomName = nickname;
-        room.gymId = gymId;
-        return room;
+    @Column(nullable = false)
+    private String roomName; // 사용자 닉네임
+
+    @Column(nullable = false)
+    private String createDate; // 생성 날짜
+
+    @Column(nullable = false)
+    private Long gymId; //짐 아이디
+
+    public static ChatRoom of(String roomName, Long gymId, String createDate) {
+        return ChatRoom.builder().roomName(roomName).gymId(gymId).createDate(createDate).build();
     }
+
 }

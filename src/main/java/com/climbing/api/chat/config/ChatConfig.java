@@ -1,5 +1,7 @@
-package com.climbing.api.chat;
+package com.climbing.api.chat.config;
 
+import com.climbing.api.chat.ChatExceptionHandler;
+import com.climbing.api.chat.ChatInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -26,8 +28,8 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/queue", "/topic");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/queue", "/topic"); // sub
+        registry.setApplicationDestinationPrefixes("/app"); // pub
     }
 
     @Override
