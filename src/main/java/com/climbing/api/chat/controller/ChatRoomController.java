@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -35,8 +34,7 @@ public class ChatRoomController {
     public ChatRoom createChatRoom(@PathVariable Long gymId) throws Exception {
         String email = GetLoginMember.getLoginMemberEmail();
         String nickname = memberService.findMemberEmailToNickname(email);
-        String createDate = String.valueOf(LocalDateTime.now());
-        return chatService.createChatRoom(nickname, gymId, createDate);
+        return chatService.createChatRoom(nickname, gymId);
     }
 
     @GetMapping("/room/{roomId}")

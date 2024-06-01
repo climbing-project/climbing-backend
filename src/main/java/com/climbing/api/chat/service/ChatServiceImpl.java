@@ -16,8 +16,8 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRoomRepository chatRoomRepository;
 
     @Override
-    public ChatRoom createChatRoom(String nickname, Long gymId, String createDate) { //채팅방 생성
-        ChatRoom chatRoom = ChatRoom.of(nickname, gymId, createDate);
+    public ChatRoom createChatRoom(String nickname, Long gymId) { //채팅방 생성
+        ChatRoom chatRoom = ChatRoom.of(nickname, gymId);
         chatRoomRepository.save(chatRoom);
         return chatRoom;
     }

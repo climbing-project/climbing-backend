@@ -5,7 +5,7 @@ import com.climbing.api.chat.ChatRoom;
 import java.util.List;
 
 public interface ChatService {
-    ChatRoom createChatRoom(String nickname, Long gymId, String createDate);
+    ChatRoom createChatRoom(String nickname, Long gymId);
 
     boolean isRoomExistsByNicknameAndGymId(String nickname, Long gymId);
 
