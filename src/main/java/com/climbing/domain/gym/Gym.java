@@ -13,7 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity(name = "gyms")
+@Entity(name = "gym")
 @EntityListeners(AuditingEntityListener.class)
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
