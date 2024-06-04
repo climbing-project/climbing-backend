@@ -1,15 +1,17 @@
 package com.climbing.api.chat.controller;
 
-import com.climbing.api.chat.ChatRoom;
+import com.climbing.api.chat.ChatRoomResponse;
 import com.climbing.api.chat.service.ChatService;
 import com.climbing.auth.login.GetLoginMember;
-import com.climbing.domain.gym.Gym;
-import com.climbing.domain.gym.GymService;
 import com.climbing.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -22,35 +24,28 @@ public class ChatRoomController {
     private final MemberService memberService;
 
     @GetMapping("/room")
-    @ResponseStatus(HttpStatus.OK)
     //@PreAuthorize("hasRole('ADMIN')")
-    @ResponseBody
-    public List<ChatRoom> room() {
-        return chatService.findAllChatRooms();
+    public ResponseEntity<List<ChatRoomResponse>> getChatRoomList() {
+        List<ChatRoomResponse> responses = chatService.findAllChatRooms();
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/room/{gymId}")
-    @ResponseStatus(HttpStatus.OK)
     //@PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
-    @ResponseBody
-    public ChatRoom createChatRoom(@PathVariable Long gymId) throws Exception {
+    public ResponseEntity<ChatRoomResponse> createChatRoom(@PathVariable Long gymId) throws Exception {
         String email = GetLoginMember.getLoginMemberEmail();
         String nickname = memberService.findMemberEmailToNickname(email);
-        return chatService.createChatRoom(nickname, gymId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(chatService.createChatRoom(nickname, gymId));
     }
 
     @GetMapping("/room/{roomId}")
-    @ResponseStatus(HttpStatus.OK)
     //@PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
-    @ResponseBody
-    public ChatRoom roomInfo(@PathVariable Long roomId) {
-        return chatService.findChatRoomById(roomId);
+    public ResponseEntity<ChatRoomResponse> roomInfo(@PathVariable Long roomId) {
+        return ResponseEntity.ok(chatService.findChatRoomById(roomId));
     }
 
     @GetMapping("/room-check/{nickname}/{gymId}")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public boolean isRoomExists(@PathVariable String nickname, @PathVariable Long gymId) {
-        return chatService.isRoomExistsByNicknameAndGymId(nickname, gymId);
+    public ResponseEntity<Boolean> isRoomExists(@PathVariable String nickname, @PathVariable Long gymId) {
+        return ResponseEntity.ok(chatService.isRoomExistsByNicknameAndGymId(nickname, gymId));
     }
 }

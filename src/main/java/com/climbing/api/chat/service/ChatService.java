@@ -1,15 +1,15 @@
 package com.climbing.api.chat.service;
 
-import com.climbing.api.chat.ChatRoom;
+import com.climbing.api.chat.ChatRoomResponse;
 
 import java.util.List;
 
 public interface ChatService {
-    ChatRoom createChatRoom(String nickname, Long gymId);
+    ChatRoomResponse createChatRoom(String nickname, Long gymId);
 
     boolean isRoomExistsByNicknameAndGymId(String nickname, Long gymId);
 
-    ChatRoom findChatRoomById(Long id);
+    ChatRoomResponse findChatRoomById(Long id);
 
-    List<ChatRoom> findAllChatRooms();
+    List<ChatRoomResponse> findAllChatRooms();
 }
