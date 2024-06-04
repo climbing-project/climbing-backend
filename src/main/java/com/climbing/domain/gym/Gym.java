@@ -1,10 +1,14 @@
 package com.climbing.domain.gym;
 
+import com.climbing.api.chat.ChatRoom;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -75,6 +79,10 @@ public class Gym {
 //    @JoinColumn(name = "member_id")
 //    @Getter
 //    private Member member;
+
+    @Getter
+    @OneToMany(mappedBy = "gym")
+    private List<ChatRoom> chatRooms;
 
     public static Gym of(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude, float longitude, String description, String tags, String pricing, String openHours, String accommodations, String contact, String grades) {
         return Gym.builder()

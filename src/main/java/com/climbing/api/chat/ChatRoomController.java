@@ -1,6 +1,8 @@
 package com.climbing.api.chat;
 
 import com.climbing.auth.login.GetLoginMember;
+import com.climbing.domain.gym.Gym;
+import com.climbing.domain.gym.GymService;
 import com.climbing.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ public class ChatRoomController {
 
     private final ChatService chatService;
     private final MemberService memberService;
+    private final GymService gymService;
 
     @GetMapping("/room")
     //@PreAuthorize("hasRole('ADMIN')")
@@ -29,7 +32,8 @@ public class ChatRoomController {
     public ChatRoom createChatRoom(@PathVariable Long gymId) throws Exception {
         String email = GetLoginMember.getLoginMemberEmail();
         String nickname = memberService.findMemberEmailToNickname(email);
-        return chatService.createChatRoom(nickname, gymId);
+        Gym gym = gymService.findGym(gymId);
+        return chatService.createChatRoom(nickname, gym);
     }
 
     @GetMapping("/room/{roomId}")

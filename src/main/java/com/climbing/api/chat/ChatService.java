@@ -1,5 +1,6 @@
 package com.climbing.api.chat;
 
+import com.climbing.domain.gym.Gym;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class ChatService {
         List<ChatRoom> rooms = new ArrayList<>(chatRoomMap.values());
         boolean found = false;
         for (ChatRoom room : rooms) {
-            if (Objects.equals(room.getRoomName(), name) && Objects.equals(room.getGymId(), gymId)) {
+            if (Objects.equals(room.getRoomName(), name) && Objects.equals(room.getGym().getId(), gymId)) {
                 found = true;
                 break;
             }
@@ -41,10 +42,10 @@ public class ChatService {
         return chatRoomMap.get(roomId);
     }
 
-    public ChatRoom createChatRoom(String email, Long gymId) {
+    public ChatRoom createChatRoom(String email, Gym gym) {
         log.info("채팅방이 생성되었습니다.");
-        ChatRoom chatRoom = ChatRoom.create(email, gymId);
-        chatRoomMap.put(chatRoom.getRoomId(), chatRoom);
+        ChatRoom chatRoom = ChatRoom.create(email, gym);
+        chatRoomMap.put(chatRoom.getId(), chatRoom);
         return chatRoom;
     }
 }

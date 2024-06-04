@@ -1,6 +1,6 @@
 package com.climbing.api.chat;
 
-import jakarta.persistence.Column;
+import com.climbing.domain.gym.Gym;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,19 +23,19 @@ public class ChatRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String roomId;
+    private String id;
     private String roomName;
-//    @ManyToOne
-//    @JoinColumn(name = "gym_id")
-    private Long gymId;
+    @ManyToOne
+    @JoinColumn(name = "gym_id")
+    private Gym gym;
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public static ChatRoom create(String nickname, Long gymId) {
+    public static ChatRoom create(String nickname, Gym gym) {
         ChatRoom room = new ChatRoom();
-        room.roomId = UUID.randomUUID().toString();
+        room.id = UUID.randomUUID().toString();
         room.roomName = nickname;
-        room.gymId = gymId;
+        room.gym = gym;
         return room;
     }
 }

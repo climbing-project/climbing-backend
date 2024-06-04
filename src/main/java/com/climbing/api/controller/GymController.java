@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/gyms")
 public class GymController {
-    private GymService gymService;
+    private final GymService gymService;
 
     public GymController(GymService gymService) {
         this.gymService = gymService;
