@@ -1,6 +1,7 @@
 package com.climbing.api.chat.controller;
 
-import com.climbing.api.chat.ChatRoomResponse;
+import com.climbing.api.chat.response.ChatMessageResponse;
+import com.climbing.api.chat.response.ChatRoomResponse;
 import com.climbing.api.chat.service.ChatService;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.service.MemberService;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -47,5 +50,11 @@ public class ChatRoomController {
     @GetMapping("/room-check/{nickname}/{gymId}")
     public ResponseEntity<Boolean> isRoomExists(@PathVariable String nickname, @PathVariable Long gymId) {
         return ResponseEntity.ok(chatService.isRoomExistsByNicknameAndGymId(nickname, gymId));
+    }
+
+    @GetMapping("/find/message/{roomId}")
+    public Mono<ResponseEntity<List<ChatMessageResponse>>> findMessages(@PathVariable Long roomId) {
+        Flux<ChatMessageResponse> responseFlux = chatService.findChatMessages(roomId);
+        return responseFlux.collectList().map(ResponseEntity::ok);
     }
 }

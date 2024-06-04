@@ -1,5 +1,6 @@
-package com.climbing.api.chat;
+package com.climbing.api.chat.response;
 
+import com.climbing.api.chat.ChatRoom;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

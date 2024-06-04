@@ -31,9 +31,6 @@ public class ChatRoom {
     private LocalDateTime createdAt;
 
     public static ChatRoom of(String roomName, Gym gym) {
-        return ChatRoom.builder()
-                .roomName(roomName)
-                .gym(gym)
-                .build();
+        return ChatRoom.builder().roomName(roomName).gym(gym).build();
     }
 }
