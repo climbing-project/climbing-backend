@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,8 +66,9 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Mono<ChatMessage> saveChatMessages(ChatMessageRequest chat) {
+        LocalDateTime dateTime = LocalDateTime.now();
         return chatMessageRepository.save(
-                new ChatMessage(chat.getRoomId(), chat.getSender(), chat.getMessage())
+                new ChatMessage(chat.getRoomId(), chat.getSender(), chat.getMessage(), dateTime)
         );
     }
 }

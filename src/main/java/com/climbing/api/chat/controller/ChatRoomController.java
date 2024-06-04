@@ -35,7 +35,7 @@ public class ChatRoomController {
 
     @PostMapping("/room/{gymId}")
     //@PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
-    public ResponseEntity<ChatRoomResponse> createChatRoom(@PathVariable Long gymId) throws Exception {
+    public ResponseEntity<ChatRoomResponse> createChatRoom(@PathVariable("gymId") Long gymId) throws Exception {
         String email = GetLoginMember.getLoginMemberEmail();
         String nickname = memberService.findMemberEmailToNickname(email);
         return ResponseEntity.status(HttpStatus.CREATED).body(chatService.createChatRoom(nickname, gymId));
@@ -43,17 +43,17 @@ public class ChatRoomController {
 
     @GetMapping("/room/{roomId}")
     //@PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
-    public ResponseEntity<ChatRoomResponse> roomInfo(@PathVariable Long roomId) {
+    public ResponseEntity<ChatRoomResponse> roomInfo(@PathVariable("roomId") Long roomId) {
         return ResponseEntity.ok(chatService.findChatRoomById(roomId));
     }
 
     @GetMapping("/room-check/{nickname}/{gymId}")
-    public ResponseEntity<Boolean> isRoomExists(@PathVariable String nickname, @PathVariable Long gymId) {
+    public ResponseEntity<Boolean> isRoomExists(@PathVariable("nickname") String nickname, @PathVariable("gymId") Long gymId) {
         return ResponseEntity.ok(chatService.isRoomExistsByNicknameAndGymId(nickname, gymId));
     }
 
     @GetMapping("/find/message/{roomId}")
-    public Mono<ResponseEntity<List<ChatMessageResponse>>> findMessages(@PathVariable Long roomId) {
+    public Mono<ResponseEntity<List<ChatMessageResponse>>> findMessages(@PathVariable("roomId") Long roomId) {
         Flux<ChatMessageResponse> responseFlux = chatService.findChatMessages(roomId);
         return responseFlux.collectList().map(ResponseEntity::ok);
     }

@@ -68,8 +68,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/members/jwt-test").authenticated()
-                                .requestMatchers("/ws/**", "/h2-console/**", "/members/**", "/gyms/**", "/home").permitAll()
+                                .requestMatchers("/ws/**", "/h2-console/**", "/members/**", "/gyms/**", "/home", "/chat/**").permitAll()
                                 .anyRequest().authenticated())
                 .logout((logout) ->
                         logout

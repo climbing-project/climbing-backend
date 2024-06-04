@@ -100,4 +100,3 @@ logging:
 
       hibernate:
         SQL: debug
-
