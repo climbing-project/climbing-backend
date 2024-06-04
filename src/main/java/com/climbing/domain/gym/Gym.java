@@ -117,6 +117,7 @@ public class Gym {
         this.accommodations = accommodations;
         this.contact = contact;
         this.grades = grades;
+
     }
 }
 
