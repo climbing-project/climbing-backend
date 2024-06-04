@@ -31,4 +31,5 @@ public class ChatRoom {
                 .gym(gym)
                 .build();
     }
+    
 }
