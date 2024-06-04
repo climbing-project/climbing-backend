@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/members/jwt-test").authenticated()
-                                .requestMatchers("/ws/**", "/h2-console/**", "/members/**", "/gyms/**", "/home", "chat/**").permitAll()
+                                .requestMatchers("/ws/**", "/h2-console/**", "/members/**", "/gyms/**", "/home").permitAll()
                                 .anyRequest().authenticated())
                 .logout((logout) ->
                         logout
