@@ -1,20 +1,11 @@
 package com.climbing.api.chat;
 
 import com.climbing.domain.gym.Gym;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity(name = "chat_room")
@@ -25,14 +16,14 @@ public class ChatRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
-    @CreatedDate
-    private LocalDateTime createdAt;
+    private Long id;
     @Column(nullable = false)
     private String roomName; // 사용자 닉네임
     @ManyToOne
     @JoinColumn(name = "gym_id")
     private Gym gym;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public static ChatRoom of(String roomName, Gym gym) {
         return ChatRoom.builder()

@@ -20,7 +20,6 @@ public class ChatRoomController {
 
     private final ChatService chatService;
     private final MemberService memberService;
-    private final GymService gymService;
 
     @GetMapping("/room")
     @ResponseStatus(HttpStatus.OK)
@@ -37,8 +36,7 @@ public class ChatRoomController {
     public ChatRoom createChatRoom(@PathVariable Long gymId) throws Exception {
         String email = GetLoginMember.getLoginMemberEmail();
         String nickname = memberService.findMemberEmailToNickname(email);
-        Gym gym = gymService.findGym(gymId);
-        return chatService.createChatRoom(nickname, gym);
+        return chatService.createChatRoom(nickname, gymId);
     }
 
     @GetMapping("/room/{roomId}")
