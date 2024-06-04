@@ -1,5 +1,7 @@
 package com.climbing.domain.gym;
 
+import com.climbing.api.chat.ChatRoom;
+import com.climbing.api.chat.repository.ChatRoomRepository;
 import com.climbing.api.command.PostGymCommand;
 import com.climbing.api.command.UpdateGymCommand;
 import com.climbing.api.request.MockPostGymRequest;

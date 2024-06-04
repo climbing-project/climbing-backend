@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Table(name = "MEMBERS")
+@Table(name = "member")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

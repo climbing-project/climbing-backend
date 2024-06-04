@@ -3,6 +3,8 @@ package com.climbing.api.chat.controller;
 import com.climbing.api.chat.ChatRoom;
 import com.climbing.api.chat.service.ChatService;
 import com.climbing.auth.login.GetLoginMember;
+import com.climbing.domain.gym.Gym;
+import com.climbing.domain.gym.GymService;
 import com.climbing.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,7 +50,7 @@ public class ChatRoomController {
     @GetMapping("/room-check/{nickname}/{gymId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public boolean isRoomExits(@PathVariable String nickname, @PathVariable Long gymId) {
+    public boolean isRoomExists(@PathVariable String nickname, @PathVariable Long gymId) {
         return chatService.isRoomExistsByNicknameAndGymId(nickname, gymId);
     }
 }
