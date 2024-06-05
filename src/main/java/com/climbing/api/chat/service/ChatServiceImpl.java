@@ -37,11 +37,12 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatRoomResponse createChatRoom(String nickname, Long gymId) { //채팅방 생성
         Gym gym = gymRepository.findById(gymId).orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
-        ChatRoom chatRoom = ChatRoom.of(nickname, gym);
         if (chatRoomRepository.findByRoomNameAndGymId(nickname, gymId).isEmpty()) {
-            chatRoomRepository.save(chatRoom);
+            ChatRoom chatRoom = ChatRoom.of(nickname, gym);
+            return ChatRoomResponse.of(chatRoomRepository.save(chatRoom));
         }
-        return ChatRoomResponse.of(chatRoom);
+        ChatRoom existChatRoom = chatRoomRepository.findByRoomNameAndGymId(nickname, gymId).orElseThrow(() -> new ChatRoomException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
+        return ChatRoomResponse.of(existChatRoom);
     }
 
     @Override
