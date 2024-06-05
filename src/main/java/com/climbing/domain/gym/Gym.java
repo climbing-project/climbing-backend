@@ -1,19 +1,25 @@
 package com.climbing.domain.gym;
 
+import com.climbing.api.chat.ChatRoom;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.*;
+import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-@Entity(name = "gyms")
+@Entity(name = "gym")
 @EntityListeners(AuditingEntityListener.class)
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
@@ -76,6 +82,10 @@ public class Gym {
 //    @Getter
 //    private Member member;
 
+    @Getter
+    @OneToMany(mappedBy = "gym")
+    private List<ChatRoom> chatRooms;
+
     public static Gym of(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude, float longitude, String description, String tags, String pricing, String openHours, String accommodations, String contact, String grades) {
         return Gym.builder()
                 .id(null)
@@ -111,4 +121,3 @@ public class Gym {
         this.grades = grades;
     }
 }
-
