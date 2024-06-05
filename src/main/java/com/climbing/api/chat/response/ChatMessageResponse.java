@@ -3,11 +3,13 @@ package com.climbing.api.chat.response;
 import com.climbing.api.chat.ChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class ChatMessageResponse {
 
     private Long roomId;

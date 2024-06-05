@@ -9,6 +9,7 @@ import com.climbing.api.chat.repository.ChatRoomRepository;
 import com.climbing.api.chat.request.ChatMessageRequest;
 import com.climbing.api.chat.response.ChatMessageResponse;
 import com.climbing.api.chat.response.ChatRoomResponse;
+import com.climbing.api.chat.response.RoomExistResponse;
 import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.GymException;
 import com.climbing.domain.gym.GymExceptionType;
@@ -41,9 +42,17 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public boolean isRoomExistsByNicknameAndGymId(String nickname, Long gymId) {
-        ChatRoom chatRoom = chatRoomRepository.findByRoomName(nickname).orElseThrow(() -> new ChatRoomException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
-        return chatRoom != null && chatRoom.getGym().getId().equals(gymId);
+    public RoomExistResponse isRoomExistsByNicknameAndGymId(String nickname, Long gymId) {
+        ChatRoom chatRoom = chatRoomRepository.findByRoomName(nickname).orElse(null);
+        boolean exist = false;
+        Long roomId = null;
+        if (chatRoom != null) {
+            exist = chatRoom.getGym().getId().equals(gymId);
+        }
+        if (exist) {
+            roomId = chatRoom.getId();
+        }
+        return RoomExistResponse.of(exist, roomId);
     }
 
     @Override

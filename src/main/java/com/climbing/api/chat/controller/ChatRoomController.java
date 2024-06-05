@@ -2,6 +2,7 @@ package com.climbing.api.chat.controller;
 
 import com.climbing.api.chat.response.ChatMessageResponse;
 import com.climbing.api.chat.response.ChatRoomResponse;
+import com.climbing.api.chat.response.RoomExistResponse;
 import com.climbing.api.chat.service.ChatService;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.service.MemberService;
@@ -48,7 +49,7 @@ public class ChatRoomController {
     }
 
     @GetMapping("/room-check/{nickname}/{gymId}")
-    public ResponseEntity<Boolean> isRoomExists(@PathVariable("nickname") String nickname, @PathVariable("gymId") Long gymId) {
+    public ResponseEntity<RoomExistResponse> isRoomExists(@PathVariable("nickname") String nickname, @PathVariable("gymId") Long gymId) {
         return ResponseEntity.ok(chatService.isRoomExistsByNicknameAndGymId(nickname, gymId));
     }
 
