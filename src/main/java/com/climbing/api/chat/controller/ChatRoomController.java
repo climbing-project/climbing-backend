@@ -4,8 +4,6 @@ import com.climbing.api.chat.response.ChatMessageResponse;
 import com.climbing.api.chat.response.ChatRoomResponse;
 import com.climbing.api.chat.response.RoomExistResponse;
 import com.climbing.api.chat.service.ChatService;
-import com.climbing.auth.login.GetLoginMember;
-import com.climbing.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +23,6 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatService chatService;
-    private final MemberService memberService;
 
     @GetMapping("/room")
     //@PreAuthorize("hasRole('ADMIN')")
@@ -34,11 +31,9 @@ public class ChatRoomController {
         return ResponseEntity.ok(responses);
     }
 
-    @PostMapping("/room/{gymId}")
+    @PostMapping("/room/{nickname}/{gymId}")
     //@PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
-    public ResponseEntity<ChatRoomResponse> createChatRoom(@PathVariable("gymId") Long gymId) throws Exception {
-        String email = GetLoginMember.getLoginMemberEmail();
-        String nickname = memberService.findMemberEmailToNickname(email);
+    public ResponseEntity<ChatRoomResponse> createChatRoom(@PathVariable("nickname") String nickname, @PathVariable("gymId") Long gymId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(chatService.createChatRoom(nickname, gymId));
     }
 
