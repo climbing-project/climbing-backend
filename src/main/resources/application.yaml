@@ -74,7 +74,7 @@ spring:
       port: ${AWS_REDIS_PORT}
 
     mongodb:
-      host: 3.37.207.190
+      host: localhost
       port: 27017
       authentication-database: admin
       username: ${DATABASE_USERNAME}
