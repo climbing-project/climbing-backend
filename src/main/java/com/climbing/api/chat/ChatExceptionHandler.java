@@ -32,7 +32,7 @@ public class ChatExceptionHandler extends StompSubProtocolErrorHandler {
     private Message<byte[]> chatMessageException(Message<byte[]> clientMessage, Throwable ex) {
         return errorMessage(ChatErrorCode.INVALID_MESSAGE);
     }
-    
+
     private Message<byte[]> jwtException(Message<byte[]> clientMessage, Throwable ex) {
         return errorMessage(ChatErrorCode.INVALID_JWT);
     }

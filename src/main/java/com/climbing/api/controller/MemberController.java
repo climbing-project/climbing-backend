@@ -2,12 +2,12 @@ package com.climbing.api.controller;
 
 import com.climbing.api.request.EmailRequest;
 import com.climbing.api.request.OauthJoinRequest;
-import com.climbing.auth.email.EmailAuthResponse;
 import com.climbing.auth.email.EmailInfo;
 import com.climbing.auth.email.service.EmailService;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.dto.*;
 import com.climbing.domain.member.service.MemberService;
+import com.climbing.redis.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,6 +19,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final EmailService emailService;
+    private final RedisService redisService;
 
     @PostMapping("/join")
     @ResponseStatus(HttpStatus.OK)
@@ -48,13 +53,15 @@ public class MemberController {
 
     @PutMapping("/oauth2/update")
     @ResponseStatus(HttpStatus.OK)
-    public void oauthJoin(@Valid @RequestBody OauthJoinRequest oauthJoinRequest) throws Exception {
+    public ResponseEntity oauthJoin(@Valid @RequestBody OauthJoinRequest oauthJoinRequest) throws Exception {
         memberService.oauthJoin(oauthJoinRequest);
+        memberService.authorizeUser(oauthJoinRequest);
         EmailInfo emailInfo = EmailInfo.builder()
                 .receiver(oauthJoinRequest.email())
                 .title("[오르리]" + oauthJoinRequest.nickname() + "님 가입을 진심으로 환영합니다.")
                 .build();
         emailService.sendJoinEmail(emailInfo);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/update-password")
@@ -84,10 +91,6 @@ public class MemberController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/oauth2/join") //oauth redirect url
-    public void oauthSignUp() {
-    }
-
     @PostMapping("/email-auth")
     public ResponseEntity sendEmailAuthNum(@RequestBody EmailRequest request) {
         EmailInfo emailInfo = EmailInfo.builder()
@@ -97,10 +100,16 @@ public class MemberController {
 
         String authNum = emailService.sendEmail(emailInfo, "email");
 
-        EmailAuthResponse response = new EmailAuthResponse();
-        response.setAuthNum(authNum);
+        redisService.setValuesWithDuration(request.email() + "authNum", authNum, Duration.ofMinutes(5));
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/email-auth-check/{email}/{authNum}")
+    public ResponseEntity<Boolean> checkEmailAuthNumber(@PathVariable("authNum") String authNum, @PathVariable("email") String email) {
+        String storedAuthNum = redisService.getValues(email + "authNum");
+        boolean result = authNum.equals(storedAuthNum);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/temp-password")
@@ -113,17 +122,20 @@ public class MemberController {
         emailService.sendEmail(emailInfo, "password");
 
         return ResponseEntity.ok().build();
-
-//        EmailAuthResponse response = new EmailAuthResponse();
-//        response.setAuthNum(authNum);
-//
-//        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/email-check/{email}")
-    public ResponseEntity<Boolean> checkEmail(@PathVariable("email") String email) throws Exception {
-        boolean result = !memberService.checkEmail(email);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<Map<String, Object>> checkEmail(@PathVariable("email") String email) throws Exception {
+        boolean check = !memberService.checkEmail(email);
+        String socialType = null;
+        if (!check) {
+            socialType = memberService.findSocialType(email);
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("check", check);
+        result.put("socialType", socialType);
+
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("/nickname-check/{nickname}")
@@ -140,7 +152,6 @@ public class MemberController {
 
     @GetMapping("/access-denied")
     public String accessDenied() {
-        return ("access-denied page");
+        return ("/error");
     }
-
 }

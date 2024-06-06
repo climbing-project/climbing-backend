@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Table(name = "MEMBERS")
+@Table(name = "member")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,7 +15,6 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -32,8 +31,6 @@ public class Member {
     private SocialType socialType;
     private String socialId;
 
-    private String refreshToken;
-
     private boolean isBlocked = false;
 
 //    @OneToMany(mappedBy = "member", orphanRemoval = true)
@@ -44,14 +41,6 @@ public class Member {
 
     public void authorizeUser() {
         this.role = Role.USER;
-    }
-
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public void destroyRefreshToken() {
-        this.refreshToken = null;
     }
 
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {

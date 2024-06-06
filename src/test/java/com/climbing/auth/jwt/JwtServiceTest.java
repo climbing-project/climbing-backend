@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.Role;
 import com.climbing.domain.member.repository.MemberRepository;
+import com.climbing.redis.service.RedisService;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -21,13 +22,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
 public class JwtServiceTest {
     @Autowired
     JwtService jwtService;
+    @Autowired
+    RedisService redisService;
     @Autowired
     MemberRepository memberRepository;
     @Autowired
@@ -84,7 +86,7 @@ public class JwtServiceTest {
     @DisplayName("리프레시 토큰 발급 테스트")
     public void createRefreshToken() throws Exception {
         //given, when
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
         DecodedJWT verify = getVerify(refreshToken);
         String subject = verify.getSubject();
         String email = verify.getClaim(EMAIL_CLAIM).asString();
@@ -100,19 +102,19 @@ public class JwtServiceTest {
     @DisplayName("리프레시 토큰 업데이트 테스트")
     public void updateRefreshToken() throws Exception {
         //given
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
         jwtService.updateRefreshToken(email, refreshToken);
         clear();
         Thread.sleep(4000);
 
         //when
-        String reCreateRefreshToken = jwtService.createRefreshToken();
+        String reCreateRefreshToken = jwtService.createRefreshToken(email);
         jwtService.updateRefreshToken(email, reCreateRefreshToken);
         clear();
 
         //then
-        assertThrows(Exception.class, () -> memberRepository.findByRefreshToken(refreshToken).get());
-        assertThat(memberRepository.findByRefreshToken(reCreateRefreshToken).get().getEmail()).isEqualTo(email);
+        assertThat(redisService.getValues("RefreshToken" + email)).isNotEmpty();
+        assertThat(redisService.getValues("RefreshToken" + email)).isEqualTo(reCreateRefreshToken);
         assertThat(refreshToken).isNotEqualTo(reCreateRefreshToken);
     }
 
@@ -122,7 +124,7 @@ public class JwtServiceTest {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
 
         String accessToken = jwtService.createAccessToken(email, role);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
 
         jwtService.setAccessTokenHeader(mockHttpServletResponse, accessToken);
 
@@ -141,7 +143,7 @@ public class JwtServiceTest {
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
 
         String accessToken = jwtService.createAccessToken(email, role);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
 
         jwtService.setRefreshTokenHeader(mockHttpServletResponse, refreshToken);
 
@@ -176,7 +178,7 @@ public class JwtServiceTest {
     public void extractAccessToken() throws Exception {
         //given
         String accessToken = jwtService.createAccessToken(email, role);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
         HttpServletRequest httpServletRequest = setRequest(accessToken, refreshToken);
 
         //when
@@ -193,7 +195,7 @@ public class JwtServiceTest {
     public void extractRefreshToken() throws Exception {
         //given
         String accessToken = jwtService.createAccessToken(email, role);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
         HttpServletRequest httpServletRequest = setRequest(accessToken, refreshToken);
 
         //when
@@ -209,7 +211,7 @@ public class JwtServiceTest {
     public void extractEmail() throws Exception {
         //given
         String accessToken = jwtService.createAccessToken(email, role);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
         HttpServletRequest httpServletRequest = setRequest(accessToken, refreshToken);
         String requestAccessToken = jwtService.extractAccessToken(httpServletRequest).get();
 

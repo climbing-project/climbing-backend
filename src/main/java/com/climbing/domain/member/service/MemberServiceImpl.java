@@ -55,6 +55,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public void authorizeUser(OauthJoinRequest oauthJoinRequest) throws BaseException {
+        Member member = memberRepository.findByEmail(oauthJoinRequest.email()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        member.authorizeUser();
+    }
+
+    @Override
     public void updatePassword(String beforePassword, String afterPassword, String email) throws BaseException {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
@@ -109,5 +115,14 @@ public class MemberServiceImpl implements MemberService {
     public String findMemberEmailToNickname(String email) throws BaseException {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return member.getNickname();
+    }
+
+    @Override
+    public String findSocialType(String email) throws BaseException {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if (member.getSocialType() == null) {
+            return "NORMAL";
+        }
+        return member.getSocialType().toString();
     }
 }

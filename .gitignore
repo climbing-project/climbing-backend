@@ -3,3 +3,4 @@ out/
 ### intellij settings ###
 .gradle
 .idea
+.env
