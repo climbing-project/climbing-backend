@@ -74,7 +74,7 @@ spring:
       port: ${AWS_REDIS_PORT}
 
     mongodb:
-      uri: mongodb://${spring.datasource.username}:${spring.datasource.password}@localhost:27017/oruri
+      uri: mongodb://${spring.datasource.username}:${spring.datasource.password}@localhost:27017/oruri?authSource=admin
 #      authentication-database: admin
 #      host: localhost
 #      port: 27017
