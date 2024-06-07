@@ -81,7 +81,7 @@ jobs:
           script_stop: true
           envs: IMAGE_TAG
           script: |
-            ./docker-run.sh -p "${{ secrets.AWS_EC2_CONTAINER_PORT }}" -t $IMAGE_TAG
+            IMAGE_TAG=$IMAGE_TAG ./docker-compose.sh
 
       - name: Remove Github Actions IP From Security Group
         run: |
