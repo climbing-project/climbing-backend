@@ -36,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
             content = "<h2>오르리에 방문해주셔서 감사합니다.</h2>" +
                     "<h3> 임시 비밀번호는 아래와 같습니다 </h3>" +
                     "<h2>" + authNum + "</h2>" +
-                    "<h3> 위의 비밀번호로 사용자의 비밀번호가 변경되었습니다.</h3>";
+                    "<h3> 위의 비밀번호를 입력하여 변경하시기 바랍니다.</h3>";
         }
         return content;
     }
