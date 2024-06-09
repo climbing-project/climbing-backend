@@ -22,6 +22,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,7 +81,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Mono<ChatMessage> saveChatMessages(ChatMessageRequest chat) {
-        LocalDateTime dateTime = LocalDateTime.now();
+        LocalDateTime dateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         String localDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         return chatMessageRepository.save(
                 new ChatMessage(chat.getRoomId(), chat.getSender(), chat.getMessage(), localDateTime)
