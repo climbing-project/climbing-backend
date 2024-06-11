@@ -1,8 +1,7 @@
 package com.climbing.auth.email.service;
 
 import com.climbing.auth.email.EmailInfo;
-import com.climbing.domain.member.repository.MemberRepository;
-import com.climbing.domain.member.service.MemberService;
+import com.climbing.redis.service.RedisService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -21,8 +21,7 @@ import java.util.regex.Pattern;
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
-    private final MemberRepository memberRepository;
-    private final MemberService memberService;
+    private final RedisService redisService;
 
     @Override
     public String writeContent(String authNum, String type) {
@@ -37,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
             content = "<h2>오르리에 방문해주셔서 감사합니다.</h2>" +
                     "<h3> 임시 비밀번호는 아래와 같습니다 </h3>" +
                     "<h2>" + authNum + "</h2>" +
-                    "<h3> 위의 비밀번호로 사용자의 비밀번호가 변경되었습니다.</h3>";
+                    "<h3> 위의 비밀번호를 입력하여 변경하시기 바랍니다.</h3>";
         }
         return content;
     }
@@ -74,7 +73,7 @@ public class EmailServiceImpl implements EmailService {
 
         if (type.equals("password")) {
             authNum = makeTempPassword();
-            memberService.setTempPassword(emailInfo.getReceiver(), authNum);
+            redisService.setValuesWithDuration(emailInfo.getReceiver() + "tempPW", authNum, Duration.ofMinutes(5));
         }
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();

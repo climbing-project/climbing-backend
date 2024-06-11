@@ -53,4 +53,10 @@ public class ChatRoomController {
         Flux<ChatMessageResponse> responseFlux = chatService.findChatMessages(roomId);
         return responseFlux.collectList().map(ResponseEntity::ok);
     }
+
+    @GetMapping("/room/gym/{gymId}")
+    public ResponseEntity<List<ChatRoomResponse>> getChatRoomByGymId(@PathVariable("gymId") Long gymId) {
+        List<ChatRoomResponse> responses = chatService.findChatRoomByGymId(gymId);
+        return ResponseEntity.ok(responses);
+    }
 }

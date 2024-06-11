@@ -22,6 +22,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +37,7 @@ public class ChatServiceImpl implements ChatService {
     private final GymRepository gymRepository;
 
     @Override
-    public ChatRoomResponse createChatRoom(String nickname, Long gymId) { //채팅방 생성
+    public ChatRoomResponse createChatRoom(String nickname, Long gymId) throws BaseException { //채팅방 생성
         Gym gym = gymRepository.findById(gymId).orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
         if (chatRoomRepository.findByRoomNameAndGymId(nickname, gymId).isEmpty()) {
             ChatRoom chatRoom = ChatRoom.of(nickname, gym);
@@ -66,6 +68,12 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public List<ChatRoomResponse> findChatRoomByGymId(Long gymId) throws BaseException {
+        List<ChatRoom> rooms = chatRoomRepository.findByGymId(gymId);
+        return rooms.stream().map(ChatRoomResponse::of).collect(Collectors.toList());
+    }
+
+    @Override
     public List<ChatRoomResponse> findAllChatRooms() {
         List<ChatRoom> rooms = chatRoomRepository.findAll();
         return rooms.stream().map(ChatRoomResponse::of).collect(Collectors.toList());
@@ -79,9 +87,10 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Mono<ChatMessage> saveChatMessages(ChatMessageRequest chat) {
-        LocalDateTime dateTime = LocalDateTime.now();
+        LocalDateTime dateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        String localDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         return chatMessageRepository.save(
-                new ChatMessage(chat.getRoomId(), chat.getSender(), chat.getMessage(), dateTime)
+                new ChatMessage(chat.getRoomId(), chat.getSender(), chat.getMessage(), localDateTime)
         );
     }
 }

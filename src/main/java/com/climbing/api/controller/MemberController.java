@@ -124,6 +124,17 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/temp-password-check/{email}/{tempPW}")
+    public ResponseEntity<Boolean> checkTempPassword(@PathVariable("email") String email, @PathVariable("tempPW") String tempPW) throws Exception {
+        String storedTempPW = redisService.getValues(email + "tempPW");
+        boolean result = tempPW.equals(storedTempPW);
+        if (result) {
+            memberService.setTempPassword(email, tempPW);
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
+    }
+
     @GetMapping("/email-check/{email}")
     public ResponseEntity<Map<String, Object>> checkEmail(@PathVariable("email") String email) throws Exception {
         boolean check = !memberService.checkEmail(email);
