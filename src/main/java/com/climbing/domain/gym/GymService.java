@@ -8,7 +8,6 @@ import com.climbing.domain.gym.repository.GymTagRepository;
 import com.climbing.domain.gym.repository.TagRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,8 +65,22 @@ public class GymService {
         Gym gym = gymRepository.findById(command.id())
                 .orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
 
-        gymTagRepository.deleteAllByGym(gym);
-        List<Tag> newTags = tagRepository.findByValueIn(command.tags()); //TODO
+        List<GymTag> gymTags = gym.getGymTags();
+        List<GymTag> gymTagsToDelete = gymTags.stream()
+                .filter(o -> !command.tags().contains(o.getTag().getValue()))
+                .toList();
+        gymTagRepository.deleteAll(gymTagsToDelete);
+
+        List<String> currentTagValues = gymTags.stream()
+                .map(o -> o.getTag().getValue())
+                .toList();
+        List<String> values = command.tags().stream()
+                .filter(o -> !currentTagValues.contains(o))
+                .toList();
+        List<GymTag> gymTagsToAdd = tagRepository.findByValueIn(values).stream()
+                .map(tag -> new GymTag(gym, tag))
+                .toList();
+        List<GymTag> newGymTags = gymTagRepository.saveAll(gymTagsToAdd);
 
         gym.update(command.name(),
                 command.address().jibunAddress(),
@@ -80,7 +93,8 @@ public class GymService {
                 command.openHours(),
                 command.accommodations(),
                 command.contact(),
-                command.grades()
+                command.grades(),
+                newGymTags
         );
         return gymRepository.save(gym);
     }

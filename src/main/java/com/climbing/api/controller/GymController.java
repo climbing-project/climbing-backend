@@ -66,4 +66,6 @@ public class GymController {
         List<Gym> gymList = gymService.findQueriedGymList(address, sortType, nextIndex);
         return new ResponseEntity<>(GetSimpleGymResponse.from(gymList), HttpStatus.OK);
     }
+
+
 }

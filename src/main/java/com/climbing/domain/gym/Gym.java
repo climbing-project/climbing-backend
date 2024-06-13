@@ -72,7 +72,7 @@ public class Gym {
 
     public void update(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude,
                        float longitude, String description, List<Pricing> pricing, List<OpenHour> openHours,
-                       String accommodations, String contact, List<String> grades) {
+                       String accommodations, String contact, List<String> grades, List<GymTag> gymTags) {
         this.name = name;
         this.jibunAddress = jibunAddress;
         this.roadAddress = roadAddress;
@@ -85,5 +85,6 @@ public class Gym {
         this.accommodations = accommodations;
         this.contact = contact;
         this.grades = grades;
+        this.gymTags = gymTags;
     }
 }
