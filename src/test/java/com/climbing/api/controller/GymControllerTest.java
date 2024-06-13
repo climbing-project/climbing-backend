@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -126,7 +127,7 @@ class GymControllerTest {
         long id = 2L;
         Gym gym = MockGym.of(id);
 
-        given(gymService.updateGym(any())).willReturn(gym);
+        doNothing().when(gymService).updateGym(any());
 
         String content = JsonUtil.toJson(gym);
         mockMvc.perform(
@@ -152,8 +153,7 @@ class GymControllerTest {
     void fail_update_gym_with_not_exists_id() throws Exception {
         long id = 2L;
         Gym gym = MockGym.of(id);
-
-        given(gymService.updateGym(any())).willThrow(new GymException(GymExceptionType.GYM_NOT_FOUND));
+        willThrow(new GymException(GymExceptionType.GYM_NOT_FOUND)).given(gymService).updateGym(any());
 
         String content = JsonUtil.toJson(gym);
         mockMvc.perform(

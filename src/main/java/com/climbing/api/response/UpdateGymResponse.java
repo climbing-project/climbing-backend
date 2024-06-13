@@ -5,9 +5,7 @@ import com.climbing.domain.gym.Coordinates;
 import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.OpenHour;
 import com.climbing.domain.gym.Pricing;
-import com.climbing.domain.gym.Tag;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Getter;
 
 @Getter
@@ -15,15 +13,17 @@ public class UpdateGymResponse {
     private String name;
     private Address address;
     private Coordinates coordinates;
+    private String contact;
     private String description;
     private List<String> tags;
     private List<Pricing> pricing;
     private List<OpenHour> openHours;
-    private String accommodations;
-    private String contact;
+    private List<String> accommodations;
     private List<String> grades;
 
-    private UpdateGymResponse(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude, float longitude, String description, List<String> tags, List<Pricing> pricing, List<OpenHour> openHours, String accommodations, String contact, List<String> grades) {
+    private UpdateGymResponse(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude,
+                              float longitude, String description, List<String> tags, List<Pricing> pricing,
+                              List<OpenHour> openHours, List<String> accommodations, String contact, List<String> grades) {
         this.name = name;
         this.address = new Address(jibunAddress, roadAddress, unitAddress);
         this.coordinates = new Coordinates(latitude, longitude);
@@ -39,17 +39,17 @@ public class UpdateGymResponse {
 
     public static UpdateGymResponse from(Gym gym) {
         return new UpdateGymResponse(gym.getName(),
-                                     gym.getJibunAddress(),
-                                     gym.getRoadAddress(),
-                                     gym.getUnitAddress(),
-                                     gym.getLatitude(),
-                                     gym.getLongitude(),
-                                     gym.getDescription(),
-                                     gym.getGymTags().stream().map(o -> o.getTag().getValue()).toList(),
-                                     gym.getPricing(),
-                                     gym.getOpenHours(),
-                                     gym.getAccommodations(),
-                                     gym.getContact(),
-                                     gym.getGrades());
+                gym.getJibunAddress(),
+                gym.getRoadAddress(),
+                gym.getUnitAddress(),
+                gym.getLatitude(),
+                gym.getLongitude(),
+                gym.getDescription(),
+                gym.getGymTags().stream().map(o -> o.getTag().getValue()).toList(),
+                gym.getPricing(),
+                gym.getOpenHours(),
+                gym.getAccommodations(),
+                gym.getContact(),
+                gym.getGrades());
     }
 }

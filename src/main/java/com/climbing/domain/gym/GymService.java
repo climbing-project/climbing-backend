@@ -61,7 +61,7 @@ public class GymService {
         gymRepository.deleteById(gymId);
     }
 
-    public Gym updateGym(UpdateGymCommand command) {
+    public void updateGym(UpdateGymCommand command) {
         Gym gym = gymRepository.findById(command.id())
                 .orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
 
@@ -88,15 +88,23 @@ public class GymService {
                 command.address().unitAddress(),
                 command.coordinates().latitude(),
                 command.coordinates().longitude(),
-                command.description(),
-                command.pricing(),
-                command.openHours(),
-                command.accommodations(),
                 command.contact(),
+                command.latestSettingDate(),
+                command.sns().twitter(),
+                command.sns().facebook(),
+                command.sns().instagram(),
+                command.homepage(),
+                command.images(),
+                command.defaultImage(),
+                command.openHours(),
+                command.pricing(),
+                newGymTags,
+                command.description(),
                 command.grades(),
-                newGymTags
+                command.accommodations(),
+                command.comments()
         );
-        return gymRepository.save(gym);
+        gymRepository.save(gym);
     }
 
     public List<Gym> findQueriedGymList(String address, SortType sortType, int nextIndex) {

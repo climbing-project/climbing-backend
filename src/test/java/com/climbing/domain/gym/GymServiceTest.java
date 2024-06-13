@@ -89,8 +89,7 @@ class GymServiceTest {
         given(gymRepository.save(any())).willReturn(mockGym);
 
         UpdateGymCommand command = MockUpdateGymRequest.of().toCommand(id);
-        Gym gym = gymService.updateGym(command);
 
-        assertThat(gym).isEqualTo(mockGym);
+        verify(gymService).updateGym(command);
     }
 }

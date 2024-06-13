@@ -38,12 +38,14 @@ public class Gym {
     private String facebook;
     private String instagram;
     private String homepage;
-    private String images;
+    @Convert(converter = JsonConverter.class)
+    private List<String> images;
     @Convert(converter = JsonConverter.class)
     private List<Pricing> pricing;
     @Convert(converter = JsonConverter.class)
     private List<OpenHour> openHours;
-    private String accommodations;
+    @Convert(converter = JsonConverter.class)
+    private List<String> accommodations;
     private String contact;
     @Convert(converter = JsonConverter.class)
     private List<String> grades;
@@ -71,19 +73,29 @@ public class Gym {
     }
 
     public void update(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude,
-                       float longitude, String description, List<Pricing> pricing, List<OpenHour> openHours,
-                       String accommodations, String contact, List<String> grades, List<GymTag> gymTags) {
+                       float longitude, String contact, LocalDate latestSettingDate, String twitter, String facebook,
+                       String instagram, String homepage, List<String> images, String defaultImage,
+                       List<OpenHour> openHours, List<Pricing> pricing, List<GymTag> gymTags, String description,
+                       List<String> grades, List<String> accommodations, List<Comment> comments) {
         this.name = name;
         this.jibunAddress = jibunAddress;
         this.roadAddress = roadAddress;
         this.unitAddress = unitAddress;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.contact = contact;
+        this.latestSettingDate = latestSettingDate;
+        this.twitter = twitter;
+        this.facebook = facebook;
+        this.instagram = instagram;
+        this.homepage = homepage;
+        this.images = null;
+//        this.defaultImage = "TODO";
+
         this.description = description;
         this.pricing = pricing;
         this.openHours = openHours;
         this.accommodations = accommodations;
-        this.contact = contact;
         this.grades = grades;
         this.gymTags = gymTags;
     }

@@ -1,5 +1,5 @@
-//package com.climbing.domain.gym;
-//
+package com.climbing.domain.gym;
+
 //import com.climbing.domain.member.Member;
 //import jakarta.persistence.Entity;
 //import jakarta.persistence.GeneratedValue;
@@ -19,3 +19,14 @@
 //    private Member member;
 //    private String value;
 //}
+
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
+
+public record Comment(String user,
+                      @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yy-MM-dd", timezone = "Asia/Seoul")
+                      LocalDateTime createdAt,
+                      String text) {
+
+}

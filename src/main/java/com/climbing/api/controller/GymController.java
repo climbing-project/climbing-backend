@@ -35,7 +35,8 @@ public class GymController {
     @GetMapping("/{gymId}")
     public ResponseEntity<GetGymResponse> getGym(@PathVariable(name = "gymId") Long gymId) {
         Gym gym = gymService.findGym(gymId);
-        return new ResponseEntity<>(GetGymResponse.from(gym), HttpStatus.OK);
+        GetGymResponse from = GetGymResponse.from(gym);
+        return new ResponseEntity<>(from, HttpStatus.OK);
     }
 
     @PostMapping
@@ -55,8 +56,9 @@ public class GymController {
     public ResponseEntity<UpdateGymResponse> updateGym(@PathVariable(value = "gymId") Long gymId,
                                                        @RequestBody UpdateGymRequest request) {
         UpdateGymCommand command = request.toCommand(gymId);
-        Gym gym = gymService.updateGym(command);
-        return new ResponseEntity<>(UpdateGymResponse.from(gym), HttpStatus.OK);
+        gymService.updateGym(command);
+//        return new ResponseEntity<>(UpdateGymResponse.from(gym), HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @GetMapping("/search")
