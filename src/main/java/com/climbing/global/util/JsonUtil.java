@@ -10,7 +10,15 @@ public class JsonUtil {
         try {
             return mapper.writeValueAsString(o);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed: json processing");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T toObject(String json, Class<T> type){
+        try {
+            return mapper.readValue(json, type);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

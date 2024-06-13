@@ -1,5 +1,6 @@
-package com.climbing.domain.gym;
+package com.climbing.domain.gym.repository;
 
+import com.climbing.domain.gym.Gym;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

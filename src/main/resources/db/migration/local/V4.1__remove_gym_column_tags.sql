@@ -1,0 +1,1 @@
+ALTER TABLE gym DROP COLUMN tags;

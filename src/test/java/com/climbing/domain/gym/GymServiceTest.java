@@ -1,16 +1,14 @@
 package com.climbing.domain.gym;
 
-import com.climbing.api.chat.ChatRoom;
-import com.climbing.api.chat.repository.ChatRoomRepository;
 import com.climbing.api.command.PostGymCommand;
 import com.climbing.api.command.UpdateGymCommand;
 import com.climbing.api.request.MockPostGymRequest;
 import com.climbing.api.request.MockUpdateGymRequest;
+import com.climbing.domain.gym.repository.GymRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.access.annotation.Secured;
 
 import java.util.ArrayList;
 import java.util.List;

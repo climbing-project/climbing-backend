@@ -13,7 +13,7 @@ import com.climbing.api.chat.response.RoomExistResponse;
 import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.GymException;
 import com.climbing.domain.gym.GymExceptionType;
-import com.climbing.domain.gym.GymRepository;
+import com.climbing.domain.gym.repository.GymRepository;
 import com.climbing.global.exception.BaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
