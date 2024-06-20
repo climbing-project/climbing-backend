@@ -12,6 +12,5 @@ import java.util.List;
 public record UpdateGymCommand(Long id, String name, Address address, Coordinates coordinates, String contact,
                                LocalDate latestSettingDate, SNS sns, String homepage, List<String> images,
                                String defaultImage, List<OpenHour> openHours, List<Pricing> pricing, List<String> tags,
-                               String description, List<String> accommodations, List<String> grades,
-                               List<Comment> comments) {
+                               String description, List<String> accommodations, List<String> grades) {
 }

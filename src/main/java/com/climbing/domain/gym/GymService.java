@@ -101,8 +101,7 @@ public class GymService {
                 newGymTags,
                 command.description(),
                 command.grades(),
-                command.accommodations(),
-                command.comments()
+                command.accommodations()
         );
         gymRepository.save(gym);
     }

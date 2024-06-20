@@ -1,7 +1,10 @@
 package com.climbing.domain.gym;
 
 import com.climbing.api.chat.ChatRoom;
-import com.climbing.domain.gym.converter.JsonConverter;
+import com.climbing.domain.gym.converter.OpenHoursConverter;
+import com.climbing.domain.gym.converter.PricingConverter;
+import com.climbing.global.converter.ListConverter;
+import com.climbing.global.converter.StringListConverter;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -38,16 +41,16 @@ public class Gym {
     private String facebook;
     private String instagram;
     private String homepage;
-    @Convert(converter = JsonConverter.class)
+    @Convert(converter = StringListConverter.class)
     private List<String> images;
-    @Convert(converter = JsonConverter.class)
+    @Convert(converter = PricingConverter.class)
     private List<Pricing> pricing;
-    @Convert(converter = JsonConverter.class)
+    @Convert(converter = OpenHoursConverter.class)
     private List<OpenHour> openHours;
-    @Convert(converter = JsonConverter.class)
+    @Convert(converter = StringListConverter.class)
     private List<String> accommodations;
     private String contact;
-    @Convert(converter = JsonConverter.class)
+    @Convert(converter = StringListConverter.class)
     private List<String> grades;
     private String comments;
     private int likes;
@@ -76,7 +79,7 @@ public class Gym {
                        float longitude, String contact, LocalDate latestSettingDate, String twitter, String facebook,
                        String instagram, String homepage, List<String> images, String defaultImage,
                        List<OpenHour> openHours, List<Pricing> pricing, List<GymTag> gymTags, String description,
-                       List<String> grades, List<String> accommodations, List<Comment> comments) {
+                       List<String> grades, List<String> accommodations) {
         this.name = name;
         this.jibunAddress = jibunAddress;
         this.roadAddress = roadAddress;
