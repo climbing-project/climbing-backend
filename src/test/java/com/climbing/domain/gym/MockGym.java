@@ -29,8 +29,7 @@ public class MockGym {
                     null,
                     "description",
                     singletonList("grades"),
-                    singletonList("accommodations"),
-                    singletonList(new Comment("user", LocalDateTime.now(), "text"))
+                    singletonList("accommodations")
             );
 
             Field idField = gym.getClass().getDeclaredField("id");

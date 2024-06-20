@@ -29,8 +29,7 @@ public class MockUpdateGymRequest {
                     null,
                     "description",
                     singletonList("grades"),
-                    singletonList("accommodations"),
-                    singletonList(new Comment("user", LocalDateTime.now(), "text"))
+                    singletonList("accommodations")
             );
             Field[] fields = request.getClass().getDeclaredFields();
             for (Field field : fields) {

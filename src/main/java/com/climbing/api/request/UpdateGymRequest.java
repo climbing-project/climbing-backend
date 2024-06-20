@@ -13,10 +13,9 @@ import java.util.List;
 public record UpdateGymRequest(String name, Address address, Coordinates coordinates, String contact,
                                LocalDate latestSettingDate, SNS sns, String homepage, List<String> Images,
                                String defaultImage, List<OpenHour> openHours, List<Pricing> pricing,
-                               List<String> tags, String description, List<String> grades, List<String> accommodations,
-                               List<Comment> comments) {
+                               List<String> tags, String description, List<String> grades, List<String> accommodations) {
     public UpdateGymCommand toCommand(Long gymId) {
         return new UpdateGymCommand(gymId, name, address, coordinates, contact, latestSettingDate, sns, homepage,
-                Images, defaultImage, openHours, pricing, tags, description, grades, accommodations, comments);
+                Images, defaultImage, openHours, pricing, tags, description, grades, accommodations);
     }
 }
