@@ -3,6 +3,7 @@ package com.climbing.domain.gym;
 import com.climbing.api.chat.ChatRoom;
 import com.climbing.domain.gym.converter.OpenHoursConverter;
 import com.climbing.domain.gym.converter.PricingConverter;
+import com.climbing.domain.member.Member;
 import com.climbing.global.converter.ListConverter;
 import com.climbing.global.converter.StringListConverter;
 import jakarta.persistence.Convert;
@@ -11,6 +12,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -63,9 +66,12 @@ public class Gym {
     private List<ChatRoom> chatRooms;
     @OneToMany(mappedBy = "gym")
     private List<GymTag> gymTags;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     public Gym(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude,
-               float longitude, String contact) {
+               float longitude, String contact, Member member) {
         this.name = name;
         this.jibunAddress = jibunAddress;
         this.roadAddress = roadAddress;
@@ -73,6 +79,7 @@ public class Gym {
         this.latitude = latitude;
         this.longitude = longitude;
         this.contact = contact;
+        this.member = member;
     }
 
     public void update(String name, String jibunAddress, String roadAddress, String unitAddress, float latitude,
@@ -94,7 +101,6 @@ public class Gym {
         this.homepage = homepage;
         this.images = null;
 //        this.defaultImage = "TODO";
-
         this.description = description;
         this.pricing = pricing;
         this.openHours = openHours;

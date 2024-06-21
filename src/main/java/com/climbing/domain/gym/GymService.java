@@ -2,13 +2,22 @@ package com.climbing.domain.gym;
 
 import com.climbing.api.command.PostGymCommand;
 import com.climbing.api.command.UpdateGymCommand;
+import com.climbing.auth.login.GetLoginMember;
 import com.climbing.constant.SortType;
 import com.climbing.domain.gym.repository.GymRepository;
 import com.climbing.domain.gym.repository.GymTagRepository;
 import com.climbing.domain.gym.repository.TagRepository;
+import com.climbing.domain.member.Member;
+import com.climbing.domain.member.exception.MemberException;
+import com.climbing.domain.member.exception.MemberExceptionType;
+import com.climbing.domain.member.repository.MemberRepository;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.LongStream;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +30,14 @@ public class GymService {
     private final GymRepository gymRepository;
     private final TagRepository tagRepository;
     private final GymTagRepository gymTagRepository;
+    private final MemberRepository memberRepository;
 
-    public GymService(GymRepository gymRepository, TagRepository tagRepository, GymTagRepository gymTagRepository) {
+    public GymService(GymRepository gymRepository, TagRepository tagRepository, GymTagRepository gymTagRepository,
+                      MemberRepository memberRepository) {
         this.gymRepository = gymRepository;
         this.tagRepository = tagRepository;
         this.gymTagRepository = gymTagRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<Gym> findGymList() {
@@ -43,13 +55,16 @@ public class GymService {
     }
 
     public Long createGym(PostGymCommand command) {
+        Member member = memberRepository.findByEmail(GetLoginMember.getLoginMemberEmail()).orElseThrow(
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Gym gym = new Gym(command.getName(),
                 command.getAddress().jibunAddress(),
                 command.getAddress().roadAddress(),
                 command.getAddress().roadAddress(),
                 command.getCoordinates().latitude(),
                 command.getCoordinates().longitude(),
-                command.getContact()
+                command.getContact(),
+                member
         );
         return gymRepository.save(gym).getId();
     }
@@ -106,24 +121,31 @@ public class GymService {
         gymRepository.save(gym);
     }
 
-    public List<Gym> findQueriedGymList(String address, SortType sortType, int nextIndex) {
-        // TODO: address에 따른 쿼리 구현 필요
-
-        List<Long> range = LongStream.range(nextIndex, nextIndex + pageSize).boxed().toList();
-        switch (sortType) {
-            case POPULAR -> {
-                return gymRepository.findByIdInOrderByHitsDesc(range);
-            }
-            case LATEST -> {
-                return gymRepository.findByIdInOrderByCreatedAtDesc(range);
-            }
-            case DISTANCE -> {
-                return gymRepository.findByIdIn(range); // TODO: distance 이용 쿼리 구현 필요
-            }
-            case NAME -> {
-                return gymRepository.findByIdInOrderByNameAsc(range);
-            }
-            default -> throw new GymException(GymExceptionType.SORT_TYPE_NOT_FOUND);
+    public List<Gym> findGymByAddress(String address, SortType sortType, int pageNum) {
+        Pageable pageRequest = getPageRequest(pageNum, pageSize, sortType);
+        Page<Gym> page = gymRepository.findAllByJibunAddressStartsWith(address, pageRequest);
+        if (page == null || !page.hasContent()) {
+            return Collections.emptyList();
         }
+        return page.getContent();
+    }
+
+    public List<Gym> findGymByName(String name, SortType sortType, int pageNum) {
+        Pageable pageRequest = getPageRequest(pageNum, pageSize, sortType);
+        Page<Gym> page = gymRepository.findAllByNameContains(name, pageRequest);
+        if (page == null || !page.hasContent()) {
+            return Collections.emptyList();
+        }
+        return page.getContent();
+    }
+
+    public PageRequest getPageRequest(int pageNum, int pageSize, SortType sortType) {
+        Sort sort = switch (sortType) {
+            case POPULAR -> Sort.by("hits").descending();
+            case LATEST -> Sort.by("latestSettingDate").descending();
+            case DISTANCE -> Sort.by("name");
+            case NAME -> Sort.by("name");
+        };
+        return PageRequest.of(pageNum, pageSize, sort);
     }
 }

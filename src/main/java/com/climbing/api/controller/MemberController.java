@@ -44,7 +44,7 @@ public class MemberController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
+    @PreAuthorize("hasRole('USER'||'ADMIN'||'MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     public void updateMemberInfo(@Valid @RequestBody MemberUpdateDto memberUpdateDto) throws Exception {
         String email = GetLoginMember.getLoginMemberEmail();

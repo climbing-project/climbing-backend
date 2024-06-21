@@ -1,22 +1,18 @@
 package com.climbing.domain.gym.repository;
 
 import com.climbing.domain.gym.Gym;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface GymRepository extends JpaRepository<Gym, Long> {
 //    List<Gym> findByIdIn(List<Long> ids);
-    List<Gym> findByIdInOrderByHitsDesc(List<Long> range);
+    Page<Gym> findAllByJibunAddressStartsWith(String address, Pageable pageable);
 
-    List<Gym> findByIdInOrderByCreatedAtDesc(List<Long> range);
-
-    List<Gym> findByIdIn(List<Long> range);
-
-    List<Gym> findByIdInOrderByNameAsc(List<Long> range);
-
+    Page<Gym> findAllByNameContains(String name, Pageable pageable);
 
 //    List<Gym> findAllByOrderByCreatedAtDesc(String address);
 //    List<Gym> findAllByAddressOrderByCreatedAtDesc(String address);

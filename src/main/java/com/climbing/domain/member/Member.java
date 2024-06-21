@@ -1,7 +1,9 @@
 package com.climbing.domain.member;
 
 import com.climbing.auth.oauth2.SocialType;
+import com.climbing.domain.gym.Gym;
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -38,6 +40,9 @@ public class Member {
 //
 //    @OneToMany(mappedBy = "member", orphanRemoval = true)
 //    private List<Answer> answers;
+
+    @OneToMany(mappedBy = "member")
+    private List<Gym> gyms;
 
     public void authorizeUser() {
         this.role = Role.USER;
