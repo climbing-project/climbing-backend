@@ -41,6 +41,24 @@ public class GymController {
         return new ResponseEntity<>(GetSimpleGymResponse.from(gyms), HttpStatus.OK);
     }
 
+    @GetMapping(path = "/search", params = {"name"})
+    public ResponseEntity<List<GetSimpleGymResponse>> searchGymByName(
+            @RequestParam(name = "name") String gymName,
+            @RequestParam(name = "s", required = false, defaultValue = "POPU") SortType sortType,
+            @RequestParam(name = "p", required = false, defaultValue = "0") int pageNum) {
+        List<Gym> gymList = gymService.findGymByName(gymName, sortType, pageNum);
+        return new ResponseEntity<>(GetSimpleGymResponse.from(gymList), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/search", params = {"address"})
+    public ResponseEntity<List<GetSimpleGymResponse>> searchGymByAddress(
+            @RequestParam(name = "address") String address,
+            @RequestParam(name = "s", required = false, defaultValue = "POPU") SortType sortType,
+            @RequestParam(name = "p", required = false, defaultValue = "0") int pageNum) {
+        List<Gym> gymList = gymService.findGymByAddress(address, sortType, pageNum);
+        return new ResponseEntity<>(GetSimpleGymResponse.from(gymList), HttpStatus.OK);
+    }
+
     @GetMapping("/{gymId}")
     public ResponseEntity<GetGymResponse> getGym(@PathVariable(name = "gymId") Long gymId) {
         Gym gym = gymService.findGym(gymId);
@@ -49,7 +67,7 @@ public class GymController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN'||'MANAGER')")
+//    @PreAuthorize("hasRole('ADMIN'||'MANAGER')")
     public ResponseEntity<PostGymResponse> postGym(@RequestBody PostGymRequest request) {
         PostGymCommand command = request.toCommand();
         Long gymId = gymService.createGym(command);
@@ -71,21 +89,4 @@ public class GymController {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/search", params = {"gym_name", "s", "p"})
-    public ResponseEntity<List<GetSimpleGymResponse>> searchGymByName(
-            @RequestParam(name = "gym_name") String gymName,
-            @RequestParam(name = "s", required = false) SortType sortType,
-            @RequestParam(name = "p", defaultValue = "0") int pageNum) {
-        List<Gym> gymList = gymService.findGymByName(gymName, sortType, pageNum);
-        return new ResponseEntity<>(GetSimpleGymResponse.from(gymList), HttpStatus.OK);
-    }
-
-    @GetMapping(path = "/search", params = {"q", "s", "p"})
-    public ResponseEntity<List<GetSimpleGymResponse>> searchGymByAddress(
-            @RequestParam(name = "q") String address,
-            @RequestParam(name = "s", required = false) SortType sortType,
-            @RequestParam(name = "p", defaultValue = "0") int pageNum) {
-        List<Gym> gymList = gymService.findGymByAddress(address, sortType, pageNum);
-        return new ResponseEntity<>(GetSimpleGymResponse.from(gymList), HttpStatus.OK);
-    }
 }

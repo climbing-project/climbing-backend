@@ -55,8 +55,9 @@ public class GymService {
     }
 
     public Long createGym(PostGymCommand command) {
-        Member member = memberRepository.findByEmail(GetLoginMember.getLoginMemberEmail()).orElseThrow(
-                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        String email = GetLoginMember.getLoginMemberEmail();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Gym gym = new Gym(command.getName(),
                 command.getAddress().jibunAddress(),
                 command.getAddress().roadAddress(),
@@ -141,9 +142,9 @@ public class GymService {
 
     public PageRequest getPageRequest(int pageNum, int pageSize, SortType sortType) {
         Sort sort = switch (sortType) {
-            case POPULAR -> Sort.by("hits").descending();
-            case LATEST -> Sort.by("latestSettingDate").descending();
-            case DISTANCE -> Sort.by("name");
+            case POPU -> Sort.by("hits").descending();
+            case LATE -> Sort.by("latestSettingDate").descending();
+            case DIST -> Sort.by("name");//TODO
             case NAME -> Sort.by("name");
         };
         return PageRequest.of(pageNum, pageSize, sort);
