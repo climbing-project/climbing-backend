@@ -49,13 +49,11 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public RoomExistResponse isRoomExistsByNicknameAndGymId(String nickname, Long gymId) {
-        ChatRoom chatRoom = chatRoomRepository.findByRoomName(nickname).orElse(null);
+        ChatRoom chatRoom = chatRoomRepository.findByRoomNameAndGymId(nickname, gymId).orElse(null);
         boolean exist = false;
         Long roomId = null;
         if (chatRoom != null) {
-            exist = chatRoom.getGym().getId().equals(gymId);
-        }
-        if (exist) {
+            exist = true;
             roomId = chatRoom.getId();
         }
         return RoomExistResponse.of(exist, roomId);
