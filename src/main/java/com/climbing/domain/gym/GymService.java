@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class GymService {
 
-    private static final int pageSize = 20;
+    private final int PAGE_SIZE = 12;
 
     private final GymRepository gymRepository;
     private final TagRepository tagRepository;
@@ -45,6 +45,11 @@ public class GymService {
         return gyms;
     }
 
+    public List<Gym> findLatestGym() {
+        Pageable pageRequest = getPageRequest(0, 6, SortType.LATE);
+        return gymRepository.findAllBy(pageRequest);
+    }
+
     public Gym findGym(Long gymId) {
 
         Optional<Gym> optionalGym = gymRepository.findById(gymId);
@@ -61,7 +66,7 @@ public class GymService {
         Gym gym = new Gym(command.getName(),
                 command.getAddress().jibunAddress(),
                 command.getAddress().roadAddress(),
-                command.getAddress().roadAddress(),
+                command.getAddress().unitAddress(),
                 command.getCoordinates().latitude(),
                 command.getCoordinates().longitude(),
                 command.getContact(),
@@ -123,7 +128,7 @@ public class GymService {
     }
 
     public List<Gym> findGymByAddress(String address, SortType sortType, int pageNum) {
-        Pageable pageRequest = getPageRequest(pageNum, pageSize, sortType);
+        Pageable pageRequest = getPageRequest(pageNum, PAGE_SIZE, sortType);
         Page<Gym> page = gymRepository.findAllByJibunAddressStartsWith(address, pageRequest);
         if (page == null || !page.hasContent()) {
             return Collections.emptyList();
@@ -132,7 +137,7 @@ public class GymService {
     }
 
     public List<Gym> findGymByName(String name, SortType sortType, int pageNum) {
-        Pageable pageRequest = getPageRequest(pageNum, pageSize, sortType);
+        Pageable pageRequest = getPageRequest(pageNum, PAGE_SIZE, sortType);
         Page<Gym> page = gymRepository.findAllByNameContains(name, pageRequest);
         if (page == null || !page.hasContent()) {
             return Collections.emptyList();
