@@ -1,5 +1,6 @@
 package com.climbing.domain.member;
 
+import com.climbing.api.chat.ChatRoom;
 import com.climbing.auth.oauth2.SocialType;
 import com.climbing.domain.gym.Gym;
 import jakarta.persistence.*;
@@ -40,6 +41,9 @@ public class Member {
 //
 //    @OneToMany(mappedBy = "member", orphanRemoval = true)
 //    private List<Answer> answers;
+
+    @OneToMany(mappedBy = "member")
+    private List<ChatRoom> chatRooms;
 
     @OneToMany(mappedBy = "member")
     private List<Gym> gyms;
