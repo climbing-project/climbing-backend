@@ -16,6 +16,6 @@ public record UpdateGymRequest(String name, Address address, Coordinates coordin
                                List<String> tags, String description, List<String> grades, List<String> accommodations) {
     public UpdateGymCommand toCommand(Long gymId) {
         return new UpdateGymCommand(gymId, name, address, coordinates, contact, latestSettingDate, sns, homepage,
-                Images, defaultImage, openHours, pricing, tags, description, grades, accommodations);
+                Images, defaultImage, openHours, pricing, tags, description, accommodations, grades);
     }
 }

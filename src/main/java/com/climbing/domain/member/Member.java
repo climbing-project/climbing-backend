@@ -1,11 +1,13 @@
 package com.climbing.domain.member;
 
+import com.climbing.api.chat.ChatRoom;
 import com.climbing.auth.oauth2.SocialType;
 import com.climbing.domain.gym.Gym;
 import jakarta.persistence.*;
-import java.util.List;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
 
 @Table(name = "member")
 @Entity
@@ -35,11 +37,8 @@ public class Member {
 
     private boolean isBlocked = false;
 
-//    @OneToMany(mappedBy = "member", orphanRemoval = true)
-//    private List<Question> qnaBoardList;
-//
-//    @OneToMany(mappedBy = "member", orphanRemoval = true)
-//    private List<Answer> answers;
+    @OneToMany(mappedBy = "member")
+    private List<ChatRoom> chatRooms;
 
     @OneToMany(mappedBy = "member")
     private List<Gym> gyms;

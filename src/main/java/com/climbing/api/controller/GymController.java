@@ -15,7 +15,6 @@ import com.climbing.domain.gym.GymService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,14 +36,14 @@ public class GymController {
 
     @GetMapping
     public ResponseEntity<List<GetSimpleGymResponse>> getGymList() {
-        List<Gym> gyms = gymService.findGymList();
+        List<Gym> gyms = gymService.findLatestGym();
         return new ResponseEntity<>(GetSimpleGymResponse.from(gyms), HttpStatus.OK);
     }
 
     @GetMapping(path = "/search", params = {"name"})
     public ResponseEntity<List<GetSimpleGymResponse>> searchGymByName(
             @RequestParam(name = "name") String gymName,
-            @RequestParam(name = "s", required = false, defaultValue = "POPU") SortType sortType,
+            @RequestParam(name = "s", required = false, defaultValue = "NAME") SortType sortType,
             @RequestParam(name = "p", required = false, defaultValue = "0") int pageNum) {
         List<Gym> gymList = gymService.findGymByName(gymName, sortType, pageNum);
         return new ResponseEntity<>(GetSimpleGymResponse.from(gymList), HttpStatus.OK);
@@ -53,7 +52,7 @@ public class GymController {
     @GetMapping(path = "/search", params = {"address"})
     public ResponseEntity<List<GetSimpleGymResponse>> searchGymByAddress(
             @RequestParam(name = "address") String address,
-            @RequestParam(name = "s", required = false, defaultValue = "POPU") SortType sortType,
+            @RequestParam(name = "s", required = false, defaultValue = "NAME") SortType sortType,
             @RequestParam(name = "p", required = false, defaultValue = "0") int pageNum) {
         List<Gym> gymList = gymService.findGymByAddress(address, sortType, pageNum);
         return new ResponseEntity<>(GetSimpleGymResponse.from(gymList), HttpStatus.OK);
