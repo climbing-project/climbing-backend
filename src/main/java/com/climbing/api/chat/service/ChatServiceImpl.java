@@ -10,6 +10,7 @@ import com.climbing.api.chat.request.ChatMessageRequest;
 import com.climbing.api.chat.response.ChatMessageResponse;
 import com.climbing.api.chat.response.ChatRoomResponse;
 import com.climbing.api.chat.response.RoomExistResponse;
+import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.GymException;
 import com.climbing.domain.gym.GymExceptionType;
@@ -29,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +45,11 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatRoomResponse createChatRoom(String nickname, Long gymId) throws BaseException { //채팅방 생성
-        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        String loginMemberEmail = GetLoginMember.getLoginMemberEmail();
+        Member member = memberRepository.findByEmail(loginMemberEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if (!Objects.equals(member.getNickname(), nickname)) {
+            throw new MemberException(MemberExceptionType.NOT_FOUND_MEMBER);
+        }
         Gym gym = gymRepository.findById(gymId).orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
         Long memberId = member.getId();
         if (chatRoomRepository.findByMemberIdAndGymId(memberId, gymId).isEmpty()) {
@@ -55,8 +61,12 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public RoomExistResponse isRoomExistsByNicknameAndGymId(String nickname, Long gymId) {
-        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public RoomExistResponse isRoomExistsByNicknameAndGymId(String nickname, Long gymId) throws BaseException {
+        String loginMemberEmail = GetLoginMember.getLoginMemberEmail();
+        Member member = memberRepository.findByEmail(loginMemberEmail).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        if (!Objects.equals(member.getNickname(), nickname)) {
+            throw new MemberException(MemberExceptionType.NOT_FOUND_MEMBER);
+        }
         ChatRoom chatRoom = chatRoomRepository.findByMemberId(member.getId()).orElse(null);
         boolean exist = false;
         Long roomId = null;
