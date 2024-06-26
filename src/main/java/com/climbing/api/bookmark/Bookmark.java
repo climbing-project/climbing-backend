@@ -40,4 +40,8 @@ public class Bookmark {
     public static Bookmark of(Member member, Gym gym) {
         return Bookmark.builder().member(member).gym(gym).status(true).build();
     }
+
+    public void deleteBookmark(Gym gym) {
+        this.status = false;
+    }
 }
