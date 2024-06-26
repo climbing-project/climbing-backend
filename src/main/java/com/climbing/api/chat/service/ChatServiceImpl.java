@@ -14,6 +14,10 @@ import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.GymException;
 import com.climbing.domain.gym.GymExceptionType;
 import com.climbing.domain.gym.repository.GymRepository;
+import com.climbing.domain.member.Member;
+import com.climbing.domain.member.exception.MemberException;
+import com.climbing.domain.member.exception.MemberExceptionType;
+import com.climbing.domain.member.repository.MemberRepository;
 import com.climbing.global.exception.BaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,21 +39,25 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final GymRepository gymRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public ChatRoomResponse createChatRoom(String nickname, Long gymId) throws BaseException { //채팅방 생성
+        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         Gym gym = gymRepository.findById(gymId).orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
-        if (chatRoomRepository.findByRoomNameAndGymId(nickname, gymId).isEmpty()) {
-            ChatRoom chatRoom = ChatRoom.of(nickname, gym);
+        Long memberId = member.getId();
+        if (chatRoomRepository.findByMemberIdAndGymId(memberId, gymId).isEmpty()) {
+            ChatRoom chatRoom = ChatRoom.of(member, gym);
             return ChatRoomResponse.of(chatRoomRepository.save(chatRoom));
         }
-        ChatRoom existChatRoom = chatRoomRepository.findByRoomNameAndGymId(nickname, gymId).orElseThrow(() -> new ChatRoomException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
+        ChatRoom existChatRoom = chatRoomRepository.findByMemberIdAndGymId(memberId, gymId).orElseThrow(() -> new ChatRoomException(ChatRoomExceptionType.NOT_FOUND_CHATROOM));
         return ChatRoomResponse.of(existChatRoom);
     }
 
     @Override
     public RoomExistResponse isRoomExistsByNicknameAndGymId(String nickname, Long gymId) {
-        ChatRoom chatRoom = chatRoomRepository.findByRoomName(nickname).orElse(null);
+        Member member = memberRepository.findByNickname(nickname).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        ChatRoom chatRoom = chatRoomRepository.findByMemberId(member.getId()).orElse(null);
         boolean exist = false;
         Long roomId = null;
         if (chatRoom != null) {

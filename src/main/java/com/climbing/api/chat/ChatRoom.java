@@ -21,9 +21,6 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String roomName; // 사용자 닉네임
-
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -35,7 +32,7 @@ public class ChatRoom {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public static ChatRoom of(String roomName, Gym gym) {
-        return ChatRoom.builder().roomName(roomName).gym(gym).build();
+    public static ChatRoom of(Member member, Gym gym) {
+        return ChatRoom.builder().member(member).gym(gym).build();
     }
 }
