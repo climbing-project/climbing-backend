@@ -41,8 +41,8 @@ public class BookmarkServiceImpl implements BookmarkService {
             return BookmarkResponse.of("북마크가 설정되었습니다.", bookmark);
         } else {
             Bookmark bookmark = bookmarkRepository.findByMemberIdAndGymId(memberId, gymId);
-            bookmark.deleteBookmark(gym);
-            bookmarkRepository.deleteByMemberIdAndGymId(memberId, gymId);
+            bookmark.deleteBookmark();
+//            bookmarkRepository.deleteByMemberIdAndGymId(memberId, gymId);
             return BookmarkResponse.of("북마크가 취소되었습니다.", bookmark);
         }
     }

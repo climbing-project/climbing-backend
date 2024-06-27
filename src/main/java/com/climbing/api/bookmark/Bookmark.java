@@ -44,7 +44,7 @@ public class Bookmark {
         return Bookmark.builder().member(member).gym(gym).status(true).build();
     }
 
-    public void deleteBookmark(Gym gym) {
+    public void deleteBookmark() {
         this.status = false;
     }
 }
