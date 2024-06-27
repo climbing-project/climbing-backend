@@ -42,7 +42,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         } else {
             Bookmark bookmark = bookmarkRepository.findByMemberIdAndGymId(memberId, gymId);
             bookmark.deleteBookmark();
-//            bookmarkRepository.deleteByMemberIdAndGymId(memberId, gymId);
+            bookmarkRepository.deleteByMemberIdAndGymId(memberId, gymId);
             return BookmarkResponse.of("북마크가 취소되었습니다.", bookmark);
         }
     }
