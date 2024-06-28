@@ -1,5 +1,6 @@
 package com.climbing.domain.gym;
 
+import com.climbing.api.command.PostCommentCommand;
 import com.climbing.api.command.PostGymCommand;
 import com.climbing.api.command.UpdateGymCommand;
 import com.climbing.auth.login.GetLoginMember;
@@ -185,12 +186,12 @@ public class GymService {
         }
     }
 
-    public void addComment(Long gymId, String text) {
+    public void addComment(PostCommentCommand command) {
         String email = GetLoginMember.getLoginMemberEmail();
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        Gym gym = gymRepository.findById(gymId).orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
-        Comment comment = new Comment(gym, member, text);
+        Gym gym = gymRepository.findById(command.gymId()).orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
+        Comment comment = new Comment(gym, member, command.text());
         commentRepository.save(comment);
     }
 }

@@ -2,6 +2,7 @@ package com.climbing.api.controller;
 
 import com.climbing.api.command.PostGymCommand;
 import com.climbing.api.command.UpdateGymCommand;
+import com.climbing.api.request.PostCommentRequest;
 import com.climbing.api.request.PostGymRequest;
 import com.climbing.api.request.UpdateGymRequest;
 import com.climbing.api.response.BasicResponse;
@@ -89,8 +90,8 @@ public class GymController {
 
     @PostMapping("/{gymId}/comments")
     public ResponseEntity<?> postComment(@PathVariable(value = "gymId") Long gymId,
-                                         @RequestBody String text) {
-        gymService.addComment(gymId, text);
+                                         @RequestBody PostCommentRequest request) {
+        gymService.addComment(request.toCommand(gymId));
         return ResponseEntity.ok().build();
     }
 }
