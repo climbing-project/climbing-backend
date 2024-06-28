@@ -83,4 +83,12 @@ public class GymController {
         gymService.addComment(request.toCommand(gymId));
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{gymId}/comments/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable(value = "gymId") Long gymId,
+                                           @PathVariable(value = "commentId") Long commentId) {
+        gymService.validateCommentWriter(commentId);
+        gymService.deleteComment(commentId);
+        return ResponseEntity.ok().build();
+    }
 }

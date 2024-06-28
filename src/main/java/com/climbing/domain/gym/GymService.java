@@ -185,4 +185,13 @@ public class GymService {
         Comment comment = new Comment(gym, member, command.text());
         commentRepository.save(comment);
     }
+
+    public void validateCommentWriter(Long commentId) {
+        Object email = GetLoginMember.getLoginMemberEmail();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new GymException(GymExceptionType.COMMENT_NOT_FOUND));
+        if (!comment.getMember().getEmail().equals(email)) {
+            throw new GymException(GymExceptionType.UNAUTHORIZED);
+        }
+    }
 }
