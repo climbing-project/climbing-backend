@@ -5,11 +5,9 @@ import com.climbing.api.command.UpdateGymCommand;
 import com.climbing.api.request.PostCommentRequest;
 import com.climbing.api.request.PostGymRequest;
 import com.climbing.api.request.UpdateGymRequest;
-import com.climbing.api.response.BasicResponse;
 import com.climbing.api.response.GetGymResponse;
 import com.climbing.api.response.GetSimpleGymResponse;
 import com.climbing.api.response.PostGymResponse;
-import com.climbing.api.response.UpdateGymResponse;
 import com.climbing.constant.SortType;
 import com.climbing.domain.gym.Gym;
 import com.climbing.domain.gym.GymService;
@@ -41,21 +39,12 @@ public class GymController {
         return new ResponseEntity<>(GetSimpleGymResponse.from(gyms), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/search", params = {"name"})
+    @GetMapping(path = "/search")
     public ResponseEntity<List<GetSimpleGymResponse>> searchGymByName(
-            @RequestParam(name = "name") String gymName,
+            @RequestParam(name = "q") String keyword,
             @RequestParam(name = "s", required = false, defaultValue = "NAME") SortType sortType,
             @RequestParam(name = "p", required = false, defaultValue = "0") int pageNum) {
-        List<Gym> gymList = gymService.findGymByName(gymName, sortType, pageNum);
-        return new ResponseEntity<>(GetSimpleGymResponse.from(gymList), HttpStatus.OK);
-    }
-
-    @GetMapping(path = "/search", params = {"address"})
-    public ResponseEntity<List<GetSimpleGymResponse>> searchGymByAddress(
-            @RequestParam(name = "address") String address,
-            @RequestParam(name = "s", required = false, defaultValue = "NAME") SortType sortType,
-            @RequestParam(name = "p", required = false, defaultValue = "0") int pageNum) {
-        List<Gym> gymList = gymService.findGymByAddress(address, sortType, pageNum);
+        List<Gym> gymList = gymService.findGymByNameOrAddress(keyword, sortType, pageNum);
         return new ResponseEntity<>(GetSimpleGymResponse.from(gymList), HttpStatus.OK);
     }
 
@@ -82,7 +71,7 @@ public class GymController {
 
     @PutMapping("/{gymId}")
     public ResponseEntity<?> updateGym(@PathVariable(value = "gymId") Long gymId,
-                                                       @RequestBody UpdateGymRequest request) {
+                                       @RequestBody UpdateGymRequest request) {
         UpdateGymCommand command = request.toCommand(gymId);
         gymService.updateGym(command);
         return ResponseEntity.ok().build();

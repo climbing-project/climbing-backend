@@ -15,7 +15,7 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
 //    List<Gym> findByIdIn(List<Long> ids);
     Page<Gym> findAllByJibunAddressStartsWith(String address, Pageable pageable);
 
-    Page<Gym> findAllByNameContains(String name, Pageable pageable);
+    Page<Gym> findAllByNameContainsOrJibunAddressContains(String k1, String k2, Pageable pageable);
 
     List<Gym> findAllBy(Pageable pageable);
 

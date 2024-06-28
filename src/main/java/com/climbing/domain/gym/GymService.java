@@ -131,18 +131,9 @@ public class GymService {
         gymRepository.save(gym);
     }
 
-    public List<Gym> findGymByAddress(String address, SortType sortType, int pageNum) {
+    public List<Gym> findGymByNameOrAddress(String keyword, SortType sortType, int pageNum) {
         Pageable pageRequest = getPageRequest(pageNum, PAGE_SIZE, sortType);
-        Page<Gym> page = gymRepository.findAllByJibunAddressStartsWith(address, pageRequest);
-        if (page == null || !page.hasContent()) {
-            return Collections.emptyList();
-        }
-        return page.getContent();
-    }
-
-    public List<Gym> findGymByName(String name, SortType sortType, int pageNum) {
-        Pageable pageRequest = getPageRequest(pageNum, PAGE_SIZE, sortType);
-        Page<Gym> page = gymRepository.findAllByNameContains(name, pageRequest);
+        Page<Gym> page = gymRepository.findAllByNameContainsOrJibunAddressContains(keyword, keyword, pageRequest);
         if (page == null || !page.hasContent()) {
             return Collections.emptyList();
         }
