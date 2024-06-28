@@ -74,18 +74,23 @@ public class GymController {
     }
 
     @DeleteMapping("/{gymId}")
-    public ResponseEntity<BasicResponse> deleteGym(@PathVariable(value = "gymId") Long gymId) {
+    public ResponseEntity<?> deleteGym(@PathVariable(value = "gymId") Long gymId) {
         gymService.deleteGym(gymId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{gymId}")
-    public ResponseEntity<UpdateGymResponse> updateGym(@PathVariable(value = "gymId") Long gymId,
+    public ResponseEntity<?> updateGym(@PathVariable(value = "gymId") Long gymId,
                                                        @RequestBody UpdateGymRequest request) {
         UpdateGymCommand command = request.toCommand(gymId);
         gymService.updateGym(command);
-//        return new ResponseEntity<>(UpdateGymResponse.from(gym), HttpStatus.OK);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{gymId}/comments")
+    public ResponseEntity<?> postComment(@PathVariable(value = "gymId") Long gymId,
+                                         @RequestBody String text) {
+        gymService.addComment(gymId, text);
+        return ResponseEntity.ok().build();
+    }
 }

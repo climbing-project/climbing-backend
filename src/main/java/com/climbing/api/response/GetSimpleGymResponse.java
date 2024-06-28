@@ -15,19 +15,19 @@ public class GetSimpleGymResponse {
     @Getter
     private final Address address;
 
-    public GetSimpleGymResponse(Long id, String name, String jibunAddress, String roadAddress, String unitAddress) {
+    public GetSimpleGymResponse(Long id, String name, Address address) {
         this.id = id;
         this.name = name;
-        this.address = new Address(jibunAddress, roadAddress, unitAddress);
+        this.address = address;
     }
 
     public static List<GetSimpleGymResponse> from(List<Gym> gyms) {
         return gyms.stream()
                 .map(gym -> new GetSimpleGymResponse(gym.getId(),
                                                      gym.getName(),
-                                                     gym.getJibunAddress(),
-                                                     gym.getRoadAddress(),
-                                                     gym.getUnitAddress()))
+                                                     new Address(gym.getJibunAddress(),
+                                                             gym.getRoadAddress(),
+                                                             gym.getUnitAddress())))
                 .collect(Collectors.toList());
     }
 }

@@ -6,7 +6,9 @@ import org.springframework.http.HttpStatus;
 public enum GymExceptionType implements BaseExceptionType {
 
     GYM_NOT_FOUND(700, HttpStatus.NOT_FOUND, "일치하는 암장이 존재하지 않습니다."),
-    SORT_TYPE_NOT_FOUND(701, HttpStatus.NOT_FOUND, "잘못된 정렬 방식입니다.");
+    SORT_TYPE_NOT_FOUND(701, HttpStatus.NOT_FOUND, "잘못된 정렬 방식입니다."),
+    COMMENT_NOT_FOUND(702, HttpStatus.NOT_FOUND, "일치하는 댓글이 존재하지 않습니다."),
+    UNAUTHORIZED(703, HttpStatus.FORBIDDEN, "권한이 없습니다.");
 
     private final int errorCode;
     private final HttpStatus httpStatus;

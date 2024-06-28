@@ -37,7 +37,7 @@ public record GetGymResponse(String name, Address address, Coordinates coordinat
                 .description(gym.getDescription())
                 .grades(gym.getGrades())
                 .accommodations(gym.getAccommodations())
-                .comments(Collections.singletonList(new Comment("TODO", LocalDateTime.now(), "TODO")))
+                .comments(gym.getComments())
                 .likeNumber(gym.getLikes())
                 .build();
     }

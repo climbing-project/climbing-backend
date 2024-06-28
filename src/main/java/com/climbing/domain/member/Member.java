@@ -2,6 +2,7 @@ package com.climbing.domain.member;
 
 import com.climbing.api.chat.ChatRoom;
 import com.climbing.auth.oauth2.SocialType;
+import com.climbing.domain.gym.Comment;
 import com.climbing.domain.gym.Gym;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,6 +43,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Gym> gyms;
+
+    @OneToMany(mappedBy = "member")
+    private List<Comment> comments;
 
     public void authorizeUser() {
         this.role = Role.USER;

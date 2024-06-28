@@ -46,6 +46,7 @@ public class Gym {
     private String homepage;
     @Convert(converter = StringListConverter.class)
     private List<String> images;
+    private String defaultImage;
     @Convert(converter = PricingConverter.class)
     private List<Pricing> pricing;
     @Convert(converter = OpenHoursConverter.class)
@@ -55,7 +56,8 @@ public class Gym {
     private String contact;
     @Convert(converter = StringListConverter.class)
     private List<String> grades;
-    private String comments;
+    @OneToMany(mappedBy = "gym")
+    private List<Comment> comments;
     private int likes;
     private int hits;
     @CreatedDate
@@ -99,8 +101,8 @@ public class Gym {
         this.facebook = facebook;
         this.instagram = instagram;
         this.homepage = homepage;
-        this.images = null;
-//        this.defaultImage = "TODO";
+        this.images = images;
+        this.defaultImage = defaultImage;
         this.description = description;
         this.pricing = pricing;
         this.openHours = openHours;

@@ -4,6 +4,7 @@ import com.climbing.api.command.PostGymCommand;
 import com.climbing.api.command.UpdateGymCommand;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.constant.SortType;
+import com.climbing.domain.gym.repository.CommentRepository;
 import com.climbing.domain.gym.repository.GymRepository;
 import com.climbing.domain.gym.repository.GymTagRepository;
 import com.climbing.domain.gym.repository.TagRepository;
@@ -31,13 +32,15 @@ public class GymService {
     private final TagRepository tagRepository;
     private final GymTagRepository gymTagRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
 
     public GymService(GymRepository gymRepository, TagRepository tagRepository, GymTagRepository gymTagRepository,
-                      MemberRepository memberRepository) {
+                      MemberRepository memberRepository, CommentRepository commentRepository) {
         this.gymRepository = gymRepository;
         this.tagRepository = tagRepository;
         this.gymTagRepository = gymTagRepository;
         this.memberRepository = memberRepository;
+        this.commentRepository = commentRepository;
     }
 
     public List<Gym> findGymList() {
@@ -153,5 +156,41 @@ public class GymService {
             case NAME -> Sort.by("name");
         };
         return PageRequest.of(pageNum, pageSize, sort);
+    }
+
+    public List<Gym> findMyGym() {
+        String email = GetLoginMember.getLoginMemberEmail();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        return gymRepository.findAllByMember(member);
+    }
+
+    public List<Comment> findComments(Long gymId) {
+        return commentRepository.findAllByGymId(gymId);
+    }
+
+    public void deleteComment(Long commentId) {
+        if (!commentRepository.existsById(commentId)) {
+            throw new GymException(GymExceptionType.COMMENT_NOT_FOUND);
+        }
+        commentRepository.deleteById(commentId);
+    }
+
+    public void validateManageable(Long gymId) {
+        String email = GetLoginMember.getLoginMemberEmail();
+        Gym gym = gymRepository.findById(gymId)
+                .orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
+        if(!gym.getMember().getEmail().equals(email)) {
+            throw new GymException(GymExceptionType.UNAUTHORIZED);
+        }
+    }
+
+    public void addComment(Long gymId, String text) {
+        String email = GetLoginMember.getLoginMemberEmail();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        Gym gym = gymRepository.findById(gymId).orElseThrow(() -> new GymException(GymExceptionType.GYM_NOT_FOUND));
+        Comment comment = new Comment(gym, member, text);
+        commentRepository.save(comment);
     }
 }
