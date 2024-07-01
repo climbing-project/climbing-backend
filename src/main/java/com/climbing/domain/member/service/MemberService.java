@@ -1,6 +1,8 @@
 package com.climbing.domain.member.service;
 
+import com.climbing.api.request.AuthorizeRoleRequest;
 import com.climbing.api.request.OauthJoinRequest;
+import com.climbing.api.response.AuthorizeRoleResponse;
 import com.climbing.domain.member.dto.MemberDto;
 import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.dto.MemberUpdateDto;
@@ -32,4 +34,6 @@ public interface MemberService {
     String findMemberEmailToNickname(String email) throws Exception;
 
     String findSocialType(String email) throws BaseException;
+
+    AuthorizeRoleResponse authorizeRole(AuthorizeRoleRequest authorizeRoleRequest, Long id) throws BaseException;
 }

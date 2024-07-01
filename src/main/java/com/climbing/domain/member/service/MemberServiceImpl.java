@@ -1,6 +1,8 @@
 package com.climbing.domain.member.service;
 
+import com.climbing.api.request.AuthorizeRoleRequest;
 import com.climbing.api.request.OauthJoinRequest;
+import com.climbing.api.response.AuthorizeRoleResponse;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.dto.MemberDto;
@@ -124,5 +126,17 @@ public class MemberServiceImpl implements MemberService {
             return "NORMAL";
         }
         return member.getSocialType().toString();
+    }
+
+    @Override
+    public AuthorizeRoleResponse authorizeRole(AuthorizeRoleRequest authorizeRoleRequest, Long id) throws BaseException {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        switch (authorizeRoleRequest.role()) {
+            case "MANAGER" -> member.authorizeManager();
+            case "ADMIN" -> member.authorizeAdmin();
+            case "USER" -> member.authorizeUser();
+            default -> throw new MemberException(MemberExceptionType.WRONG_ROLE);
+        }
+        return AuthorizeRoleResponse.of("권한 변경이 완료되었습니다.", member.getId(), String.valueOf(member.getRole()));
     }
 }
