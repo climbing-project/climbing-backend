@@ -3,6 +3,7 @@ package com.climbing.api.controller;
 import com.climbing.api.request.AuthorizeRoleRequest;
 import com.climbing.api.response.AuthorizeRoleResponse;
 import com.climbing.api.response.GetMemberListResponse;
+import com.climbing.domain.member.Role;
 import com.climbing.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,14 +37,14 @@ public class AdminController {
 
     @GetMapping("/members")
     public ResponseEntity<Page<GetMemberListResponse>> getMemberListPage(
-            @RequestParam(defaultValue = "null") String r,
-            @RequestParam(defaultValue = "0") int p,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "ASC") String s) {
-        Sort sort = s.equalsIgnoreCase("DESC") ? Sort.by("id").descending() : Sort.by("id").ascending();
+            @RequestParam(value = "r", defaultValue = "null") Role r,
+            @RequestParam(value = "p", defaultValue = "1") int p,
+            @RequestParam(value = "size", defaultValue = "20") int size,
+            @RequestParam(value = "s", defaultValue = "ASC") String s) {
+        Sort sort = s.equalsIgnoreCase("DESC") ? Sort.by("nickname").descending() : Sort.by("id").ascending();
         Pageable pageable = PageRequest.of(p - 1, size, sort);
         Page<GetMemberListResponse> responses = memberService.findAllMembersPage(pageable);
-        if (!r.equals("null")) {
+        if (r == null) {
             responses = memberService.findMembersByRole(r, pageable);
         }
         return ResponseEntity.ok(responses);

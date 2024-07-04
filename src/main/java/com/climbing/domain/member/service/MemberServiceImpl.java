@@ -6,6 +6,7 @@ import com.climbing.api.response.AuthorizeRoleResponse;
 import com.climbing.api.response.GetMemberListResponse;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.Member;
+import com.climbing.domain.member.Role;
 import com.climbing.domain.member.dto.MemberDto;
 import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.dto.MemberUpdateDto;
@@ -159,7 +160,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Page<GetMemberListResponse> findMembersByRole(String role, Pageable pageable) {
+    public Page<GetMemberListResponse> findMembersByRole(Role role, Pageable pageable) {
         Page<Member> members = memberRepository.findByRole(role, pageable);
         return members.map(GetMemberListResponse::of);
     }

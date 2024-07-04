@@ -4,6 +4,7 @@ import com.climbing.api.request.AuthorizeRoleRequest;
 import com.climbing.api.request.OauthJoinRequest;
 import com.climbing.api.response.AuthorizeRoleResponse;
 import com.climbing.api.response.GetMemberListResponse;
+import com.climbing.domain.member.Role;
 import com.climbing.domain.member.dto.MemberDto;
 import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.dto.MemberUpdateDto;
@@ -46,5 +47,5 @@ public interface MemberService {
 
     Page<GetMemberListResponse> findAllMembersPage(Pageable pageable);
 
-    Page<GetMemberListResponse> findMembersByRole(String role, Pageable pageable);
+    Page<GetMemberListResponse> findMembersByRole(Role role, Pageable pageable);
 }
