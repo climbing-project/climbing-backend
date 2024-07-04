@@ -8,6 +8,8 @@ import com.climbing.domain.member.dto.MemberDto;
 import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.dto.MemberUpdateDto;
 import com.climbing.global.exception.BaseException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -41,4 +43,8 @@ public interface MemberService {
     AuthorizeRoleResponse authorizeRole(AuthorizeRoleRequest authorizeRoleRequest, Long id) throws BaseException;
 
     List<GetMemberListResponse> findAllMembers();
+
+    Page<GetMemberListResponse> findAllMembersPage(Pageable pageable);
+
+    Page<GetMemberListResponse> findMembersByRole(String role, Pageable pageable);
 }

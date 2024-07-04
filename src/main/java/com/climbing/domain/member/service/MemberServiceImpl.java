@@ -15,6 +15,8 @@ import com.climbing.domain.member.repository.MemberRepository;
 import com.climbing.global.exception.BaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -148,5 +150,17 @@ public class MemberServiceImpl implements MemberService {
     public List<GetMemberListResponse> findAllMembers() {
         List<Member> members = memberRepository.findAll();
         return members.stream().map(GetMemberListResponse::of).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<GetMemberListResponse> findAllMembersPage(Pageable pageable) {
+        Page<Member> members = memberRepository.findAll(pageable);
+        return members.map(GetMemberListResponse::of);
+    }
+
+    @Override
+    public Page<GetMemberListResponse> findMembersByRole(String role, Pageable pageable) {
+        Page<Member> members = memberRepository.findByRole(role, pageable);
+        return members.map(GetMemberListResponse::of);
     }
 }
