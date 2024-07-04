@@ -3,6 +3,7 @@ package com.climbing.domain.member.service;
 import com.climbing.api.request.AuthorizeRoleRequest;
 import com.climbing.api.request.OauthJoinRequest;
 import com.climbing.api.response.AuthorizeRoleResponse;
+import com.climbing.api.response.GetMemberListResponse;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.Member;
 import com.climbing.domain.member.dto.MemberDto;
@@ -16,6 +17,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -138,5 +142,11 @@ public class MemberServiceImpl implements MemberService {
             default -> throw new MemberException(MemberExceptionType.WRONG_ROLE);
         }
         return AuthorizeRoleResponse.of("권한 변경이 완료되었습니다.", member.getId(), String.valueOf(member.getRole()));
+    }
+
+    @Override
+    public List<GetMemberListResponse> findAllMembers() {
+        List<Member> members = memberRepository.findAll();
+        return members.stream().map(GetMemberListResponse::of).collect(Collectors.toList());
     }
 }
