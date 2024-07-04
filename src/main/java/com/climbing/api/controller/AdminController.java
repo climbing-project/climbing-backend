@@ -37,7 +37,7 @@ public class AdminController {
 
     @GetMapping("/members")
     public ResponseEntity<Page<GetMemberListResponse>> getMemberListPage(
-            @RequestParam(value = "r", defaultValue = "null") Role r,
+            @RequestParam(value = "r", required = false) Role r,
             @RequestParam(value = "p", defaultValue = "1") int p,
             @RequestParam(value = "size", defaultValue = "20") int size,
             @RequestParam(value = "s", defaultValue = "ASC") String s) {
@@ -45,7 +45,7 @@ public class AdminController {
         Pageable pageable = PageRequest.of(p - 1, size, sort);
         Page<GetMemberListResponse> responses = memberService.findAllMembersPage(pageable);
         if (r == null) {
-            responses = memberService.findMembersByRole(r, pageable);
+            responses = memberService.findMembersByRole(null, pageable);
         }
         return ResponseEntity.ok(responses);
     }
