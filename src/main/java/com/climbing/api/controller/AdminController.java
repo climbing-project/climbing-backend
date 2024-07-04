@@ -25,7 +25,7 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/members/allList")
+    @GetMapping("/members")
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<GetMemberListResponse>> getMemberList() {
         List<GetMemberListResponse> responses = memberService.findAllMembers();
