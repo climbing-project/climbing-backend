@@ -41,11 +41,11 @@ public class AdminController {
             @RequestParam(value = "p", defaultValue = "1") int p,
             @RequestParam(value = "size", defaultValue = "20") int size,
             @RequestParam(value = "s", defaultValue = "ASC") String s) {
-        Sort sort = s.equalsIgnoreCase("DESC") ? Sort.by("nickname").descending() : Sort.by("id").ascending();
+        Sort sort = s.equalsIgnoreCase("DESC") ? Sort.by("nickname").descending() : Sort.by("nickname").ascending();
         Pageable pageable = PageRequest.of(p - 1, size, sort);
-        Page<GetMemberListResponse> responses = memberService.findAllMembersPage(pageable);
+        Page<GetMemberListResponse> responses = memberService.findMembersByRole(r, pageable);
         if (r == null) {
-            responses = memberService.findMembersByRole(null, pageable);
+            responses = memberService.findAllMembersPage(pageable);
         }
         return ResponseEntity.ok(responses);
     }
