@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -53,6 +54,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public void checkRefreshTokenAndReissueAccessToken(HttpServletResponse response, String refreshToken) {
         String email = String.valueOf(jwtService.extractEmail(refreshToken));
+        String storedRefreshToken = redisService.getValues("RefreshToken" + email);
+        if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
+            throw new BadCredentialsException("Invalid refresh token");
+        }
         memberRepository.findByEmail(email)
                 .ifPresent(member -> {
                     String reissuedRefreshToken = reissueRefreshToken(member.getEmail());

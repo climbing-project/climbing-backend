@@ -1,8 +1,12 @@
 package com.climbing.domain.member.service;
 
+import com.climbing.api.request.AuthorizeRoleRequest;
 import com.climbing.api.request.OauthJoinRequest;
+import com.climbing.api.response.AuthorizeRoleResponse;
+import com.climbing.api.response.GetMemberListResponse;
 import com.climbing.auth.login.GetLoginMember;
 import com.climbing.domain.member.Member;
+import com.climbing.domain.member.Role;
 import com.climbing.domain.member.dto.MemberDto;
 import com.climbing.domain.member.dto.MemberJoinDto;
 import com.climbing.domain.member.dto.MemberUpdateDto;
@@ -12,8 +16,13 @@ import com.climbing.domain.member.repository.MemberRepository;
 import com.climbing.global.exception.BaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -124,5 +133,35 @@ public class MemberServiceImpl implements MemberService {
             return "NORMAL";
         }
         return member.getSocialType().toString();
+    }
+
+    @Override
+    public AuthorizeRoleResponse authorizeRole(AuthorizeRoleRequest authorizeRoleRequest, Long id) throws BaseException {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        switch (authorizeRoleRequest.role()) {
+            case "MANAGER" -> member.authorizeManager();
+            case "ADMIN" -> member.authorizeAdmin();
+            case "USER" -> member.authorizeUser();
+            default -> throw new MemberException(MemberExceptionType.WRONG_ROLE);
+        }
+        return AuthorizeRoleResponse.of("권한 변경이 완료되었습니다.", member.getId(), String.valueOf(member.getRole()));
+    }
+
+    @Override
+    public List<GetMemberListResponse> findAllMembers() {
+        List<Member> members = memberRepository.findAll();
+        return members.stream().map(GetMemberListResponse::of).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<GetMemberListResponse> findAllMembersPage(Pageable pageable) {
+        Page<Member> members = memberRepository.findAll(pageable);
+        return members.map(GetMemberListResponse::of);
+    }
+
+    @Override
+    public Page<GetMemberListResponse> findMembersByRole(Role role, Pageable pageable) {
+        Page<Member> members = memberRepository.findByRole(role, pageable);
+        return members.map(GetMemberListResponse::of);
     }
 }

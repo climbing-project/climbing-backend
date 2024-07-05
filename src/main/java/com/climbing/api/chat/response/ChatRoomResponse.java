@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 public class ChatRoomResponse {
 
     private Long id;
+    private String nickName;
     private Long memberId;
     private Long gymId;
 
     public static ChatRoomResponse of(ChatRoom room) {
-        return new ChatRoomResponse(room.getId(), room.getMember().getId(), room.getGym().getId());
+        return new ChatRoomResponse(room.getId(), room.getMember().getNickname(), room.getMember().getId(), room.getGym().getId());
     }
 }

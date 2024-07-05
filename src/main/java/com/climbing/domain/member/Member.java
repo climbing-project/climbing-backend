@@ -51,6 +51,14 @@ public class Member {
         this.role = Role.USER;
     }
 
+    public void authorizeManager() {
+        this.role = Role.MANAGER;
+    }
+
+    public void authorizeAdmin() {
+        this.role = Role.ADMIN;
+    }
+
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {
         this.password = passwordEncoder.encode(password);
     }
