@@ -1,0 +1,2 @@
+ALTER TABLE gym
+    MODIFY COLUMN default_image VARCHAR(127);
