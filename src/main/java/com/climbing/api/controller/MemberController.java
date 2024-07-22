@@ -53,7 +53,7 @@ public class MemberController {
 
     @PutMapping("/oauth2/update")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity oauthJoin(@Valid @RequestBody OauthJoinRequest oauthJoinRequest) throws Exception {
+    public ResponseEntity<Void> oauthJoin(@Valid @RequestBody OauthJoinRequest oauthJoinRequest) throws Exception {
         memberService.oauthJoin(oauthJoinRequest);
         memberService.authorizeUser(oauthJoinRequest);
         EmailInfo emailInfo = EmailInfo.builder()
@@ -86,7 +86,7 @@ public class MemberController {
 
     @GetMapping("/myInfo")
     @PreAuthorize("hasRole('USER'||'ADMIN' || 'MANAGER')")
-    public ResponseEntity getMyInfo() throws Exception {
+    public ResponseEntity<MemberDto> getMyInfo() throws Exception {
         MemberDto dto = memberService.getMyInfo();
         return ResponseEntity.ok(dto);
     }
@@ -113,7 +113,7 @@ public class MemberController {
     }
 
     @PostMapping("/temp-password")
-    public ResponseEntity sendTempPassword(@RequestBody EmailRequest request) {
+    public ResponseEntity<Void> sendTempPassword(@RequestBody EmailRequest request) {
         EmailInfo emailInfo = EmailInfo.builder()
                 .receiver(request.email())
                 .title("[오르리] 임시 비밀번호 발급")
