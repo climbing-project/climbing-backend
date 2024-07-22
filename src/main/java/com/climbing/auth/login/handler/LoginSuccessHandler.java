@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                     map.put("email", member.getEmail());
                     response.setStatus(HttpStatus.OK.value());
                     response.setContentType("application/json");
+                    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                     try {
                         objectMapper.writeValue(response.getWriter(), map);
                     } catch (IOException e) {
